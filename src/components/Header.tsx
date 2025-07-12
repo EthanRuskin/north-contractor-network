@@ -25,11 +25,11 @@ const Header = () => {
             <a href="#" className="text-foreground hover:text-primary transition-colors">
               For Contractors
             </a>
-            <Button variant="outline" size="sm">
-              Sign In
+            <Button variant="outline" size="sm" asChild>
+              <a href="/auth">Sign In</a>
             </Button>
-            <Button variant="default" size="sm">
-              Join as Pro
+            <Button variant="default" size="sm" asChild>
+              <a href="/auth">Join as Pro</a>
             </Button>
           </nav>
           

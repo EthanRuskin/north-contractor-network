@@ -14,7 +14,212 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contractor_businesses: {
+        Row: {
+          address: string | null
+          business_name: string
+          city: string | null
+          created_at: string
+          description: string | null
+          email: string | null
+          gallery_images: string[] | null
+          id: string
+          insurance_verified: boolean | null
+          license_number: string | null
+          logo_url: string | null
+          phone: string | null
+          postal_code: string | null
+          province: string | null
+          rating: number | null
+          review_count: number | null
+          status: string
+          updated_at: string
+          user_id: string
+          website: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          address?: string | null
+          business_name: string
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          gallery_images?: string[] | null
+          id?: string
+          insurance_verified?: boolean | null
+          license_number?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          province?: string | null
+          rating?: number | null
+          review_count?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          gallery_images?: string[] | null
+          id?: string
+          insurance_verified?: boolean | null
+          license_number?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          province?: string | null
+          rating?: number | null
+          review_count?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
+      contractor_services: {
+        Row: {
+          contractor_id: string
+          created_at: string
+          id: string
+          service_id: string
+        }
+        Insert: {
+          contractor_id: string
+          created_at?: string
+          id?: string
+          service_id: string
+        }
+        Update: {
+          contractor_id?: string
+          created_at?: string
+          id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_services_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+          user_type?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          contractor_id: string
+          created_at: string
+          id: string
+          rating: number
+          reviewer_id: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          contractor_id: string
+          created_at?: string
+          id?: string
+          rating: number
+          reviewer_id: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          contractor_id?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewer_id?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
