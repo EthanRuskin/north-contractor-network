@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Wrench, Zap, Hammer, Paintbrush, Home, Thermometer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -11,8 +12,10 @@ const services = [
 ];
 
 const ServiceCategories = () => {
+  const navigate = useNavigate();
+  
   return (
-    <section className="py-16 bg-background">
+    <section id="services" className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
@@ -29,6 +32,7 @@ const ServiceCategories = () => {
               key={service.name}
               className="text-center p-6 rounded-xl border hover:border-primary hover:shadow-card-hover transition-all duration-300 cursor-pointer group"
               style={{ animationDelay: `${index * 100}ms` }}
+              onClick={() => navigate('/search')}
             >
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
                 <service.icon className="w-8 h-8 text-primary" />
@@ -40,7 +44,7 @@ const ServiceCategories = () => {
         </div>
         
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
+          <Button variant="outline" size="lg" onClick={() => navigate('/search')}>
             View All Services
           </Button>
         </div>

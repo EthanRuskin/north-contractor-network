@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ interface ContractorBusiness {
 
 const HomeownerDashboard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [contractors, setContractors] = useState<ContractorBusiness[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -237,25 +239,24 @@ const HomeownerDashboard = () => {
                     </p>
                   )}
 
-                  <div className="flex flex-wrap gap-2">
-                    {contractor.phone && (
-                      <Button size="sm" variant="outline" className="gap-1 text-xs">
-                        <Phone className="h-3 w-3" />
-                        Call
-                      </Button>
-                    )}
-                    {contractor.email && (
-                      <Button size="sm" variant="outline" className="gap-1 text-xs">
-                        <Mail className="h-3 w-3" />
-                        Email
-                      </Button>
-                    )}
-                    {contractor.website && (
-                      <Button size="sm" variant="outline" className="gap-1 text-xs">
-                        <Globe className="h-3 w-3" />
-                        Website
-                      </Button>
-                    )}
+                  <div className="flex justify-between items-center">
+                    <Button 
+                      size="sm" 
+                      onClick={() => navigate(`/contractor/${contractor.id}`)}
+                    >
+                      View Profile
+                    </Button>
+                    <div className="flex gap-2">
+                      {contractor.phone && (
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      {contractor.email && (
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      {contractor.website && (
+                        <Globe className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

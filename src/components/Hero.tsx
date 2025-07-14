@@ -1,9 +1,22 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
 import heroImage from "@/assets/hero-contractor.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      navigate(`/search?search=${encodeURIComponent(searchTerm)}`);
+    } else {
+      navigate('/search');
+    }
+  };
+
   return (
     <section className="relative bg-hero-gradient text-primary-foreground overflow-hidden">
       <div className="absolute inset-0 bg-black/20"></div>
@@ -27,6 +40,9 @@ const Hero = () => {
                   <Input 
                     placeholder="e.g., Plumbing, Electrical, Carpentry"
                     className="pl-10 h-12"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   />
                 </div>
                 <div className="flex-1 relative">
@@ -36,7 +52,7 @@ const Hero = () => {
                     className="pl-10 h-12"
                   />
                 </div>
-                <Button variant="hero" size="lg" className="h-12 px-8">
+                <Button variant="hero" size="lg" className="h-12 px-8" onClick={handleSearch}>
                   Search
                 </Button>
               </div>
