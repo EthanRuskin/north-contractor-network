@@ -112,15 +112,15 @@ const SearchContractors = () => {
       const matchesSearch = contractor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            contractor.description?.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesService = !selectedService || 
+      const matchesService = !selectedService || selectedService === 'all' || 
                             contractor.contractor_services.some(cs => 
                               cs.services.name === services.find(s => s.id === selectedService)?.name
                             );
       
-      const matchesCity = !selectedCity || 
+      const matchesCity = !selectedCity || selectedCity === 'all' || 
                          contractor.city?.toLowerCase().includes(selectedCity.toLowerCase());
       
-      const matchesProvince = !selectedProvince || 
+      const matchesProvince = !selectedProvince || selectedProvince === 'all' || 
                              contractor.province?.toLowerCase().includes(selectedProvince.toLowerCase());
 
       const matchesRating = contractor.rating >= minRating[0];
@@ -148,9 +148,9 @@ const SearchContractors = () => {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedService('');
-    setSelectedCity('');
-    setSelectedProvince('');
+    setSelectedService('all');
+    setSelectedCity('all');
+    setSelectedProvince('all');
     setMinRating([0]);
     setMinExperience([0]);
     setSortBy('rating');
@@ -210,7 +210,7 @@ const SearchContractors = () => {
                       <SelectValue placeholder="All Services" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Services</SelectItem>
+                      <SelectItem value="all">All Services</SelectItem>
                       {services.map(service => (
                         <SelectItem key={service.id} value={service.id}>
                           {service.name}
@@ -229,7 +229,7 @@ const SearchContractors = () => {
                         <SelectValue placeholder="All Cities" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Cities</SelectItem>
+                        <SelectItem value="all">All Cities</SelectItem>
                         {uniqueCities.map(city => (
                           <SelectItem key={city} value={city}>
                             {city}
@@ -246,7 +246,7 @@ const SearchContractors = () => {
                         <SelectValue placeholder="All Provinces" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Provinces</SelectItem>
+                        <SelectItem value="all">All Provinces</SelectItem>
                         {uniqueProvinces.map(province => (
                           <SelectItem key={province} value={province}>
                             {province}
