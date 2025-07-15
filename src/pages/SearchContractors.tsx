@@ -231,7 +231,7 @@ const SearchContractors = () => {
                       <SelectContent>
                         <SelectItem value="">All Cities</SelectItem>
                         {uniqueCities.map(city => (
-                          <SelectItem key={city} value={city || ''}>
+                          <SelectItem key={city} value={city}>
                             {city}
                           </SelectItem>
                         ))}
@@ -248,7 +248,7 @@ const SearchContractors = () => {
                       <SelectContent>
                         <SelectItem value="">All Provinces</SelectItem>
                         {uniqueProvinces.map(province => (
-                          <SelectItem key={province} value={province || ''}>
+                          <SelectItem key={province} value={province}>
                             {province}
                           </SelectItem>
                         ))}
