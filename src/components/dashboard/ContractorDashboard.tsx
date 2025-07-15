@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Star, MessageSquare } from 'lucide-react';
 import BusinessSetupForm from './BusinessSetupForm';
+import ContractorOnboarding from '../onboarding/ContractorOnboarding';
 import { useToast } from '@/hooks/use-toast';
 
 interface Business {
@@ -32,6 +33,7 @@ const ContractorDashboard = () => {
   const { toast } = useToast();
   const [business, setBusiness] = useState<Business | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const ContractorDashboard = () => {
       setBusiness(data);
       
       if (!data) {
-        setShowForm(true);
+        setShowOnboarding(true);
       }
     } catch (error) {
       console.error('Error fetching business:', error);
@@ -81,7 +83,18 @@ const ContractorDashboard = () => {
     );
   }
 
-  if (showForm || !business) {
+  if (showOnboarding && !business) {
+    return (
+      <ContractorOnboarding 
+        onComplete={() => {
+          setShowOnboarding(false);
+          fetchBusiness();
+        }}
+      />
+    );
+  }
+
+  if (showForm) {
     return (
       <BusinessSetupForm 
         business={business}

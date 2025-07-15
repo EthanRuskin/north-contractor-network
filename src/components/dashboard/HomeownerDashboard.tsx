@@ -1,105 +1,76 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, MapPin, Star, Phone, Mail, Globe } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-
-interface Service {
-  id: string;
-  name: string;
-}
+import { Button } from '@/components/ui/button';
+import { Search, Star, Users, TrendingUp, ArrowRight } from 'lucide-react';
+import HomeownerWelcome from '../onboarding/HomeownerWelcome';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ContractorBusiness {
   id: string;
   business_name: string;
   description: string;
-  phone: string;
-  email: string;
-  website: string;
   city: string;
   province: string;
-  years_experience: number;
   rating: number;
   review_count: number;
-  contractor_services: {
-    services: {
-      name: string;
-    };
-  }[];
 }
 
 const HomeownerDashboard = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [contractors, setContractors] = useState<ContractorBusiness[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedService, setSelectedService] = useState<string>('');
-  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [isFirstTime, setIsFirstTime] = useState(false);
 
   useEffect(() => {
-    fetchServicesAndContractors();
-  }, []);
+    checkFirstTimeUser();
+    fetchContractors();
+  }, [user]);
 
-  const fetchServicesAndContractors = async () => {
+  const checkFirstTimeUser = async () => {
     try {
-      // Fetch services
-      const { data: servicesData } = await supabase
-        .from('services')
-        .select('*')
-        .order('name');
-
-      setServices(servicesData || []);
-
-      // Fetch approved contractors with their services
-      const { data: contractorsData, error } = await supabase
-        .from('contractor_businesses')
-        .select(`
-          *,
-          contractor_services (
-            services (
-              name
-            )
-          )
-        `)
-        .eq('status', 'approved')
-        .order('rating', { ascending: false });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('created_at')
+        .eq('user_id', user?.id)
+        .single();
 
       if (error) throw error;
-      setContractors(contractorsData || []);
-    } catch (error: any) {
-      toast({
-        title: "Error loading contractors",
-        description: error.message,
-        variant: "destructive",
-      });
+      
+      // Check if user was created recently (within last 5 minutes)
+      const createdAt = new Date(data.created_at);
+      const now = new Date();
+      const timeDiff = now.getTime() - createdAt.getTime();
+      const minutesDiff = timeDiff / (1000 * 60);
+      
+      if (minutesDiff <= 5) {
+        setIsFirstTime(true);
+        setShowWelcome(true);
+      }
+    } catch (error) {
+      console.error('Error checking first time user:', error);
+    }
+  };
+
+  const fetchContractors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('contractor_businesses')
+        .select('id, business_name, description, city, province, rating, review_count')
+        .eq('status', 'approved')
+        .order('rating', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      setContractors(data || []);
+    } catch (error) {
+      console.error('Error fetching contractors:', error);
     } finally {
       setLoading(false);
     }
   };
-
-  const filteredContractors = contractors.filter(contractor => {
-    const matchesSearch = contractor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         contractor.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesService = !selectedService || 
-                          contractor.contractor_services.some(cs => 
-                            cs.services.name === services.find(s => s.id === selectedService)?.name
-                          );
-    
-    const matchesCity = !selectedCity || 
-                       contractor.city?.toLowerCase().includes(selectedCity.toLowerCase());
-
-    return matchesSearch && matchesService && matchesCity;
-  });
-
-  const uniqueCities = Array.from(new Set(contractors.map(c => c.city).filter(Boolean)));
 
   if (loading) {
     return (
@@ -109,160 +80,165 @@ const HomeownerDashboard = () => {
     );
   }
 
+  if (showWelcome && isFirstTime) {
+    return (
+      <HomeownerWelcome 
+        onComplete={() => setShowWelcome(false)}
+      />
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold text-foreground">Find Contractors</h2>
-        <p className="text-muted-foreground">Discover trusted contractors in your area</p>
+    <div className="space-y-8">
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground">Find Contractors</h2>
+          <p className="text-muted-foreground">Discover trusted professionals for your home projects</p>
+        </div>
+        <Button asChild className="gap-2">
+          <Link to="/search">
+            <Search className="h-4 w-4" />
+            Advanced Search
+          </Link>
+        </Button>
       </div>
 
-      {/* Search and Filter Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Search Contractors
-          </CardTitle>
-          <CardDescription>
-            Filter contractors by service type, location, or search by name
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <Input
-                placeholder="Search by business name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
-              />
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Contractors</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{contractors.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Available in your area
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {contractors.length > 0 
+                ? (contractors.reduce((acc, c) => acc + c.rating, 0) / contractors.length).toFixed(1)
+                : '0'
+              }
             </div>
-            <div className="space-y-2">
-              <Select value={selectedService} onValueChange={setSelectedService}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All Services" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All Services</SelectItem>
-                  {services.map(service => (
-                    <SelectItem key={service.id} value={service.id}>
-                      {service.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <p className="text-xs text-muted-foreground">
+              Quality professionals
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Most Popular</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Plumbing</div>
+            <p className="text-xs text-muted-foreground">
+              Service category
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">New This Week</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">3</div>
+            <p className="text-xs text-muted-foreground">
+              Recently joined
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Find what you need quickly</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+              <Link to="/search">
+                <Search className="h-4 w-4" />
+                Search All Contractors
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+              <Link to="/services/plumbing">
+                Find Plumbers
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+              <Link to="/services/electrical">
+                Find Electricians
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start gap-2">
+              <Link to="/services/roofing">
+                Find Roofers
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Top Rated Contractors</CardTitle>
+                <CardDescription>Highly recommended professionals</CardDescription>
+              </div>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/search" className="gap-1">
+                  View All <ArrowRight className="h-3 w-3" />
+                </Link>
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Select value={selectedCity} onValueChange={setSelectedCity}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All Cities" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All Cities</SelectItem>
-                  {uniqueCities.map(city => (
-                    <SelectItem key={city} value={city || ''}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Results */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold">
-            {filteredContractors.length} Contractors Found
-          </h3>
-        </div>
-
-        {filteredContractors.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">
-                No contractors found matching your criteria. Try adjusting your search filters.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredContractors.map(contractor => (
-              <Card key={contractor.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{contractor.business_name}</CardTitle>
-                      {contractor.city && contractor.province && (
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                          <MapPin className="h-3 w-3" />
-                          {contractor.city}, {contractor.province}
-                        </div>
-                      )}
-                    </div>
-                    {contractor.rating > 0 && (
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{contractor.rating.toFixed(1)}</span>
-                        <span className="text-xs text-muted-foreground">
-                          ({contractor.review_count})
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {contractor.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {contractor.description}
-                    </p>
-                  )}
-
-                  <div className="flex flex-wrap gap-1">
-                    {contractor.contractor_services.slice(0, 3).map((cs, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {cs.services.name}
-                      </Badge>
-                    ))}
-                    {contractor.contractor_services.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{contractor.contractor_services.length - 3} more
-                      </Badge>
-                    )}
-                  </div>
-
-                  {contractor.years_experience > 0 && (
-                    <p className="text-xs text-muted-foreground">
-                      {contractor.years_experience} years of experience
-                    </p>
-                  )}
-
-                  <div className="flex justify-between items-center">
-                    <Button 
-                      size="sm" 
-                      onClick={() => navigate(`/contractor/${contractor.id}`)}
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {contractors.slice(0, 3).map((contractor) => (
+                <div key={contractor.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                  <div className="flex-1">
+                    <Link 
+                      to={`/contractor/${contractor.id}`}
+                      className="font-medium text-foreground hover:text-primary transition-colors"
                     >
-                      View Profile
-                    </Button>
-                    <div className="flex gap-2">
-                      {contractor.phone && (
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                      )}
-                      {contractor.email && (
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                      )}
-                      {contractor.website && (
-                        <Globe className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
+                      {contractor.business_name}
+                    </Link>
+                    <p className="text-sm text-muted-foreground">
+                      {contractor.city}, {contractor.province}
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="text-sm font-medium">{contractor.rating}</span>
+                    <span className="text-sm text-muted-foreground">
+                      ({contractor.review_count})
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {contractors.length === 0 && (
+                <p className="text-center text-muted-foreground py-4">
+                  No contractors available yet
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

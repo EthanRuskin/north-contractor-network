@@ -98,6 +98,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         postal_code: formData.get('postalCode') as string,
         years_experience: parseInt(formData.get('yearsExperience') as string) || 0,
         license_number: formData.get('licenseNumber') as string,
+        status: 'approved', // Auto-approve new businesses for immediate visibility
       };
 
       let businessId = business?.id;
