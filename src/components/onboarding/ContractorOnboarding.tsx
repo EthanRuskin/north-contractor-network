@@ -39,8 +39,18 @@ const ContractorOnboarding = ({ onComplete }: ContractorOnboardingProps) => {
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-foreground mb-2">Setup Your Business Profile</h1>
           <p className="text-muted-foreground">
-            Complete your business information to start receiving inquiries from homeowners
+            Complete all required fields to start receiving inquiries from homeowners
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 text-left">
+            <h3 className="font-semibold text-blue-900 mb-2">Required Information:</h3>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li>• Business name and contact details</li>
+              <li>• Detailed business description (minimum 50 characters)</li>
+              <li>• Complete service area address</li>
+              <li>• Years of experience</li>
+              <li>• At least one service category</li>
+            </ul>
+          </div>
         </div>
         <BusinessSetupForm 
           business={null}

@@ -81,14 +81,32 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Validate required services
+    if (selectedServices.length === 0) {
+      toast({
+        title: "Services Required",
+        description: "Please select at least one service you offer.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       const formData = new FormData(e.currentTarget);
+      const description = formData.get('description') as string;
+      
+      // Additional validation
+      if (description.length < 50) {
+        throw new Error("Business description must be at least 50 characters long");
+      }
+
       const businessData = {
         user_id: user?.id,
         business_name: formData.get('businessName') as string,
-        description: formData.get('description') as string,
+        description: description,
         phone: formData.get('phone') as string,
         email: formData.get('email') as string,
         website: formData.get('website') as string,
@@ -147,10 +165,10 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
       }
 
       toast({
-        title: business ? "Business updated!" : "Business created!",
+        title: business ? "Business updated!" : "🎉 Business Profile Created!",
         description: business 
           ? "Your business information has been updated successfully."
-          : "Your business has been submitted for review.",
+          : "Your business is now live! Homeowners can find and contact you immediately.",
       });
 
       onComplete();
@@ -197,38 +215,48 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                   name="businessName"
                   defaultValue={business?.business_name}
                   required
+                  placeholder="Enter your business name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">Phone Number *</Label>
                 <Input
                   id="phone"
                   name="phone"
                   type="tel"
                   defaultValue={business?.phone}
+                  required
+                  placeholder="(123) 456-7890"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Business Description</Label>
+              <Label htmlFor="description">Business Description *</Label>
               <Textarea
                 id="description"
                 name="description"
-                placeholder="Describe your business and services..."
-                rows={3}
+                placeholder="Describe your business, services, and what makes you unique..."
+                rows={4}
                 defaultValue={business?.description}
+                required
+                minLength={50}
               />
+              <p className="text-xs text-muted-foreground">
+                Minimum 50 characters. Help customers understand what you do and why they should choose you.
+              </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="email">Business Email</Label>
+                <Label htmlFor="email">Business Email *</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   defaultValue={business?.email}
+                  required
+                  placeholder="business@example.com"
                 />
               </div>
               <div className="space-y-2">
@@ -237,74 +265,99 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                   id="website"
                   name="website"
                   type="url"
-                  placeholder="https://"
+                  placeholder="https://yourwebsite.com"
                   defaultValue={business?.website}
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                name="address"
-                defaultValue={business?.address}
-              />
-            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Service Area *</h3>
+              <div className="space-y-2">
+                <Label htmlFor="address">Street Address *</Label>
+                <Input
+                  id="address"
+                  name="address"
+                  defaultValue={business?.address}
+                  required
+                  placeholder="123 Main Street"
+                />
+              </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  name="city"
-                  defaultValue={business?.city}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="province">Province</Label>
-                <Input
-                  id="province"
-                  name="province"
-                  defaultValue={business?.province}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="postalCode">Postal Code</Label>
-                <Input
-                  id="postalCode"
-                  name="postalCode"
-                  defaultValue={business?.postal_code}
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="yearsExperience">Years of Experience</Label>
-                <Input
-                  id="yearsExperience"
-                  name="yearsExperience"
-                  type="number"
-                  min="0"
-                  defaultValue={business?.years_experience}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="licenseNumber">License Number</Label>
-                <Input
-                  id="licenseNumber"
-                  name="licenseNumber"
-                  defaultValue={business?.license_number}
-                />
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="city">City *</Label>
+                  <Input
+                    id="city"
+                    name="city"
+                    defaultValue={business?.city}
+                    required
+                    placeholder="City"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="province">Province *</Label>
+                  <Input
+                    id="province"
+                    name="province"
+                    defaultValue={business?.province}
+                    required
+                    placeholder="ON"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="postalCode">Postal Code *</Label>
+                  <Input
+                    id="postalCode"
+                    name="postalCode"
+                    defaultValue={business?.postal_code}
+                    required
+                    placeholder="A1A 1A1"
+                    pattern="[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Label>Services Offered</Label>
-              <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Professional Information</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="yearsExperience">Years of Experience *</Label>
+                  <Input
+                    id="yearsExperience"
+                    name="yearsExperience"
+                    type="number"
+                    min="0"
+                    max="50"
+                    defaultValue={business?.years_experience}
+                    required
+                    placeholder="5"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="licenseNumber">License Number</Label>
+                  <Input
+                    id="licenseNumber"
+                    name="licenseNumber"
+                    defaultValue={business?.license_number}
+                    placeholder="If applicable"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold">Services Offered *</Label>
+                <p className="text-sm text-muted-foreground">Select at least one service</p>
+              </div>
+              {selectedServices.length === 0 && (
+                <p className="text-sm text-destructive">Please select at least one service you offer</p>
+              )}
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {services.map(service => (
-                  <div key={service.id} className="flex items-center space-x-2">
+                  <div key={service.id} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-muted/50">
                     <Checkbox
                       id={service.id}
                       checked={selectedServices.includes(service.id)}
@@ -312,20 +365,29 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                     />
                     <Label 
                       htmlFor={service.id}
-                      className="text-sm font-normal cursor-pointer"
+                      className="text-sm font-normal cursor-pointer flex-1"
                     >
                       {service.name}
+                      {service.description && (
+                        <span className="block text-xs text-muted-foreground mt-1">
+                          {service.description}
+                        </span>
+                      )}
                     </Label>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" disabled={loading} className="flex-1">
+            <div className="flex gap-3 pt-6">
+              <Button 
+                type="submit" 
+                disabled={loading || selectedServices.length === 0} 
+                className="flex-1"
+              >
                 {loading 
-                  ? (business ? "Updating..." : "Creating...") 
-                  : (business ? "Update Business" : "Create Business")
+                  ? (business ? "Updating..." : "Creating Business Profile...") 
+                  : (business ? "Update Business" : "Complete Setup & Go Live")
                 }
               </Button>
               {business && (
@@ -334,6 +396,12 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                 </Button>
               )}
             </div>
+            
+            {!business && selectedServices.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center">
+                Please select at least one service to continue
+              </p>
+            )}
           </form>
         </CardContent>
       </Card>
