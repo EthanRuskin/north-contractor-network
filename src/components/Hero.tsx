@@ -8,13 +8,17 @@ import heroImage from "@/assets/hero-contractor.jpg";
 const Hero = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [location, setLocation] = useState("");
 
   const handleSearch = () => {
+    const params = new URLSearchParams();
     if (searchTerm.trim()) {
-      navigate(`/search?search=${encodeURIComponent(searchTerm)}`);
-    } else {
-      navigate('/search');
+      params.set('search', searchTerm);
     }
+    if (location.trim()) {
+      params.set('city', location);
+    }
+    navigate(`/search${params.toString() ? '?' + params.toString() : ''}`);
   };
 
   return (
@@ -50,6 +54,9 @@ const Hero = () => {
                   <Input 
                     placeholder="Enter your location"
                     className="pl-10 h-12"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   />
                 </div>
                 <Button variant="hero" size="lg" className="h-12 px-8" onClick={handleSearch}>
