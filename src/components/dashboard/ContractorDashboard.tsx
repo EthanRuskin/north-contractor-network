@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Star, MessageSquare } from 'lucide-react';
+import { Plus, Edit, Star, MessageSquare, TrendingUp, Zap, Target, ExternalLink } from 'lucide-react';
 import BusinessSetupForm from './BusinessSetupForm';
 import ContractorOnboarding from '../onboarding/ContractorOnboarding';
 import { useToast } from '@/hooks/use-toast';
@@ -213,6 +213,103 @@ const ContractorDashboard = () => {
                 </Button>
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Business Scaling Section */}
+      <Card className="border-l-4 border-l-primary bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-xl text-foreground">Ready to Scale Your Business?</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Take your contracting business to the next level with proven marketing strategies
+                </CardDescription>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 bg-primary/10 rounded">
+                <Target className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm text-foreground">Lead Generation</h4>
+                <p className="text-xs text-muted-foreground">Get consistent, high-quality leads every month</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 bg-primary/10 rounded">
+                <Zap className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm text-foreground">Digital Marketing</h4>
+                <p className="text-xs text-muted-foreground">Professional website, SEO, and social media management</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 bg-primary/10 rounded">
+                <TrendingUp className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm text-foreground">Business Growth</h4>
+                <p className="text-xs text-muted-foreground">Scale your operations and increase revenue</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-muted/50 rounded-lg p-4 border">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">
+                  🚀 <strong>Advertised Solutions</strong> - Your Marketing Partner
+                </h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  We specialize in helping contractors like you grow their business with proven marketing strategies. 
+                  Get more leads, build your brand, and increase your revenue.
+                </p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                    Free Consultation
+                  </Badge>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                    Proven Results
+                  </Badge>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                    Contractor Specialists
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 ml-4">
+                <Button 
+                  className="gap-2 whitespace-nowrap" 
+                  onClick={() => window.open('https://advertisedsolutions.com', '_blank')}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Get Free Consultation
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open('mailto:ethan@advertisedsolutions.com?subject=Contractor Marketing Consultation', '_blank')}
+                >
+                  Contact Us
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground">
+              Join <strong>100+</strong> contractors who have successfully scaled their business with our help
+            </p>
           </div>
         </CardContent>
       </Card>
