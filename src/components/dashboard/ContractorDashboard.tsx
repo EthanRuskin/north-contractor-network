@@ -106,6 +106,18 @@ const ContractorDashboard = () => {
     );
   }
 
+  // If business is still null after loading, redirect to onboarding
+  if (!business) {
+    return (
+      <ContractorOnboarding 
+        onComplete={() => {
+          setShowOnboarding(false);
+          fetchBusiness();
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
