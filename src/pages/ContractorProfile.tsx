@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import GoogleMap from '@/components/GoogleMap';
 import BusinessHours from '@/components/BusinessHours';
+import GoogleVerificationBadge from '@/components/GoogleVerificationBadge';
 
 interface ContractorBusiness {
   id: string;
@@ -33,6 +34,10 @@ interface ContractorBusiness {
   logo_url: string;
   gallery_images: string[];
   created_at: string;
+  google_business_verified: boolean;
+  google_place_id: string;
+  google_verification_date: string;
+  google_business_url: string;
   contractor_services: {
     services: {
       name: string;
@@ -325,7 +330,14 @@ const ContractorProfile = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-foreground">{contractor.business_name}</h1>
+                    <div className="flex items-start gap-3 mb-2">
+                      <h1 className="text-3xl font-bold text-foreground">{contractor.business_name}</h1>
+                      <GoogleVerificationBadge 
+                        isVerified={contractor.google_business_verified}
+                        verificationDate={contractor.google_verification_date}
+                        size="md"
+                      />
+                    </div>
                     <div className="flex items-center gap-4 mt-2">
                       {contractor.city && contractor.province && (
                         <div className="flex items-center gap-1 text-muted-foreground">

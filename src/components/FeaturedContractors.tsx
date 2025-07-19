@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, MapPin, Phone, Mail, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import GoogleVerificationBadge from "@/components/GoogleVerificationBadge";
 
 interface ContractorBusiness {
   id: string;
@@ -15,6 +16,8 @@ interface ContractorBusiness {
   rating: number;
   review_count: number;
   logo_url?: string;
+  google_business_verified: boolean;
+  google_verification_date: string;
   contractor_services: {
     services: {
       name: string;
@@ -115,9 +118,17 @@ const FeaturedContractors = () => {
                     )}
                   </AvatarFallback>
                 </Avatar>
-                <h3 className="text-xl font-semibold text-card-foreground mb-1">
-                  {contractor.business_name}
-                </h3>
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <h3 className="text-xl font-semibold text-card-foreground">
+                    {contractor.business_name}
+                  </h3>
+                  <GoogleVerificationBadge 
+                    isVerified={contractor.google_business_verified}
+                    verificationDate={contractor.google_verification_date}
+                    size="sm"
+                    showTooltip={false}
+                  />
+                </div>
                 <p className="text-primary font-medium mb-2">
                   {contractor.contractor_services[0]?.services.name || 'General Services'}
                 </p>

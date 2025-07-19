@@ -24,6 +24,10 @@ export type Database = {
           description: string | null
           email: string | null
           gallery_images: string[] | null
+          google_business_url: string | null
+          google_business_verified: boolean | null
+          google_place_id: string | null
+          google_verification_date: string | null
           id: string
           insurance_verified: boolean | null
           latitude: number | null
@@ -51,6 +55,10 @@ export type Database = {
           description?: string | null
           email?: string | null
           gallery_images?: string[] | null
+          google_business_url?: string | null
+          google_business_verified?: boolean | null
+          google_place_id?: string | null
+          google_verification_date?: string | null
           id?: string
           insurance_verified?: boolean | null
           latitude?: number | null
@@ -78,6 +86,10 @@ export type Database = {
           description?: string | null
           email?: string | null
           gallery_images?: string[] | null
+          google_business_url?: string | null
+          google_business_verified?: boolean | null
+          google_place_id?: string | null
+          google_verification_date?: string | null
           id?: string
           insurance_verified?: boolean | null
           latitude?: number | null

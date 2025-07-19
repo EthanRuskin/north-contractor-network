@@ -8,6 +8,7 @@ import { Plus, Edit, Star, MessageSquare, TrendingUp, Zap, Target, ExternalLink 
 import BusinessSetupForm from './BusinessSetupForm';
 import ContractorOnboarding from '../onboarding/ContractorOnboarding';
 import ProjectsManager from './ProjectsManager';
+import GoogleVerificationSetup from './GoogleVerificationSetup';
 import { useToast } from '@/hooks/use-toast';
 
 interface Business {
@@ -27,6 +28,10 @@ interface Business {
   rating: number;
   review_count: number;
   created_at: string;
+  google_business_verified: boolean;
+  google_place_id: string;
+  google_verification_date: string;
+  google_business_url: string;
 }
 
 const ContractorDashboard = () => {
@@ -217,6 +222,12 @@ const ContractorDashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Google Verification */}
+      <GoogleVerificationSetup 
+        business={business}
+        onVerificationComplete={fetchBusiness}
+      />
 
       {/* Projects Manager */}
       <ProjectsManager contractorId={business.id} />
