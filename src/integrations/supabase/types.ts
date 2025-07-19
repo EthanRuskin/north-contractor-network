@@ -34,7 +34,7 @@ export type Database = {
           review_count: number | null
           status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
           website: string | null
           years_experience: number | null
         }
@@ -57,7 +57,7 @@ export type Database = {
           review_count?: number | null
           status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           website?: string | null
           years_experience?: number | null
         }
@@ -80,7 +80,7 @@ export type Database = {
           review_count?: number | null
           status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           website?: string | null
           years_experience?: number | null
         }
