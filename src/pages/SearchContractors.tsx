@@ -73,12 +73,16 @@ const SearchContractors = () => {
   };
 
   useEffect(() => {
-    if (searchTerm) {
+    fetchServicesAndContractors();
+  }, []);
+
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
       searchContractors();
     } else {
       fetchServicesAndContractors();
     }
-  }, [searchTerm]);
+  };
 
   const searchContractors = async () => {
     setLoading(true);
@@ -244,15 +248,30 @@ const SearchContractors = () => {
                 {/* Search */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">🔍 Keyword Search</label>
-                  <Input
-                    placeholder='Try "best landscaper", "reliable plumber"...'
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border-primary/20 focus:border-primary"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder='Try "best landscaper", "reliable plumber"...'
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                      className="border-primary/20 focus:border-primary flex-1"
+                    />
+                    <Button 
+                      onClick={handleSearch}
+                      disabled={loading}
+                      className="px-4"
+                    >
+                      <Search className="h-4 w-4 mr-1" />
+                      Search
+                    </Button>
+                  </div>
                   {searchTerm && (
                     <p className="text-xs text-muted-foreground">
-                      Searching for: <span className="font-medium">"{searchTerm}"</span>
+                      Press Enter or click Search to find: <span className="font-medium">"{searchTerm}"</span>
                     </p>
                   )}
                 </div>
