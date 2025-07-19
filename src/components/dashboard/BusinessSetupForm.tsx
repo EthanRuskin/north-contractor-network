@@ -160,14 +160,23 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         license_number: formData.get('licenseNumber') as string,
         gallery_images: galleryImages,
         business_hours: businessHours as any,
-        instagram_url: formData.get('instagramUrl') as string || null,
-        facebook_url: formData.get('facebookUrl') as string || null,
-        linkedin_url: formData.get('linkedinUrl') as string || null,
-        tiktok_url: formData.get('tiktokUrl') as string || null,
-        x_url: formData.get('xUrl') as string || null,
-        youtube_url: formData.get('youtubeUrl') as string || null,
-        status: 'approved', // Auto-approve new businesses for immediate visibility
+        instagram_url: (formData.get('instagramUrl') as string)?.trim() || null,
+        facebook_url: (formData.get('facebookUrl') as string)?.trim() || null,
+        linkedin_url: (formData.get('linkedinUrl') as string)?.trim() || null,
+        tiktok_url: (formData.get('tiktokUrl') as string)?.trim() || null,
+        x_url: (formData.get('xUrl') as string)?.trim() || null,
+        youtube_url: (formData.get('youtubeUrl') as string)?.trim() || null,
+        status: business ? undefined : 'approved', // Don't change status for updates
       };
+
+      // Remove undefined values for updates
+      if (business) {
+        Object.keys(businessData).forEach(key => {
+          if (businessData[key as keyof typeof businessData] === undefined) {
+            delete businessData[key as keyof typeof businessData];
+          }
+        });
+      }
 
       let businessId = business?.id;
 
