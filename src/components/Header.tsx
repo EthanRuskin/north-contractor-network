@@ -29,9 +29,9 @@ const Header = () => {
               <Search className="h-4 w-4" />
               Find Contractors
             </button>
-            <a href="#how-it-works" className="text-foreground hover:text-primary transition-colors">
+            <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors">
               How It Works
-            </a>
+            </Link>
             <a href="#services" className="text-foreground hover:text-primary transition-colors">
               Services
             </a>
@@ -81,9 +81,9 @@ const Header = () => {
               >
                 Find Contractors
               </button>
-              <a href="#how-it-works" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
+              <Link to="/how-it-works" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
                 How It Works
-              </a>
+              </Link>
               <a href="#services" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
                 Services
               </a>

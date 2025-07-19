@@ -1,0 +1,181 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heart, MapPin, Users, Handshake } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Link } from "react-router-dom";
+
+const HowItWorks = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+            How It Works
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            Northern Contractor Network is a non-profit directory dedicated to helping Canadian contractors 
+            connect with homeowners while supporting Canadian families in need.
+          </p>
+          <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+            <Heart className="h-5 w-5 text-primary" />
+            <span className="text-primary font-medium">Created by Advertised Solutions</span>
+          </div>
+        </div>
+
+        {/* Mission Section */}
+        <div className="grid md:grid-cols-2 gap-12 mb-16">
+          <div>
+            <h2 className="text-3xl font-bold text-foreground mb-6">Our Mission</h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+              We believe in the power of community and giving back. As a non-profit organization, 
+              we're committed to creating opportunities for Canadian contractors while making a 
+              positive impact on families across Canada.
+            </p>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Every interaction on our platform contributes to our mission of supporting 
+              Canadian families through various charitable initiatives and community programs.
+            </p>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="w-full max-w-md">
+              <Card className="border-primary/20">
+                <CardHeader className="text-center">
+                  <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <MapPin className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-primary">Proudly Canadian</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-muted-foreground">
+                    Supporting contractors and families from coast to coast across Canada.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* How We Help Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">How We Help</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card>
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Connecting Communities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  We provide a trusted platform where Canadian homeowners can find qualified, 
+                  local contractors for their projects, fostering strong community connections.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Handshake className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Supporting Contractors</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  We help Canadian contractors grow their businesses by providing them with 
+                  a professional platform to showcase their work and connect with potential clients.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Heart className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Giving Back</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  All proceeds from our platform are allocated to programs that help Canadian 
+                  families in need, creating a positive impact in communities across the country.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Process Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">The Process</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
+                1
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Contractors Join</h3>
+              <p className="text-muted-foreground text-sm">
+                Canadian contractors create profiles showcasing their services and expertise.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
+                2
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Homeowners Search</h3>
+              <p className="text-muted-foreground text-sm">
+                Homeowners browse and find qualified contractors for their projects.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
+                3
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Connections Made</h3>
+              <p className="text-muted-foreground text-sm">
+                Quality matches are made between contractors and homeowners.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
+                4
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Families Benefit</h3>
+              <p className="text-muted-foreground text-sm">
+                Proceeds help support Canadian families through our charitable programs.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center bg-primary/5 rounded-2xl p-12">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
+            Ready to Make a Difference?
+          </h2>
+          <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+            Join our community of Canadian contractors and homeowners working together 
+            to build stronger communities and support families in need.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild>
+              <Link to="/auth">Join as a Contractor</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/search">Find Contractors</Link>
+            </Button>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default HowItWorks;
