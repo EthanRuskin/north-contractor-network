@@ -28,7 +28,8 @@ export default {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
 					hover: 'hsl(var(--primary-hover))',
-					light: 'hsl(var(--primary-light))'
+					light: 'hsl(var(--primary-light))',
+					dark: 'hsl(var(--primary-dark))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -66,9 +67,15 @@ export default {
 				}
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				'none': '0',
+				'sm': '2px',
+				DEFAULT: '5px',
+				'md': '5px',
+				'lg': '5px',
+				'xl': '8px',
+				'2xl': '12px',
+				'3xl': '16px',
+				'full': '9999px'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -115,15 +122,27 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'hero-gradient': 'var(--hero-gradient)'
+				'hero-gradient': 'var(--hero-gradient)',
+				'steel-gradient': 'var(--steel-gradient)',
+				'texture-metal': 'var(--texture-metal)'
 			},
 			boxShadow: {
 				'card': 'var(--card-shadow)',
 				'card-hover': 'var(--card-shadow-hover)',
-				'elegant': 'var(--shadow-elegant)'
+				'elegant': 'var(--shadow-elegant)',
+				'inset': 'var(--shadow-inset)',
+				'industrial': '0 1px 3px hsl(210 6% 15% / 0.2), 0 1px 2px hsl(210 6% 15% / 0.1)',
+				'industrial-hover': '0 4px 12px hsl(210 6% 15% / 0.3), 0 2px 4px hsl(210 6% 15% / 0.2)'
 			},
 			transitionProperty: {
 				'smooth': 'var(--transition-smooth)'
+			},
+			fontFamily: {
+				'industrial': ['Inter', 'system-ui', 'sans-serif'],
+				'mono-industrial': ['JetBrains Mono', 'Consolas', 'monospace']
+			},
+			spacing: {
+				'industrial': '0.375rem' /* 6px - precise industrial spacing */
 			}
 		}
 	},

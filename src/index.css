@@ -8,101 +8,118 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Industrial neutral base */
+    --background: 0 0% 96%;
+    --foreground: 210 6% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 6% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 210 6% 15%;
 
-    /* Professional blue contractor theme */
-    --primary: 215 84% 45%;
+    /* Industrial red primary theme */
+    --primary: 0 84% 42%;
     --primary-foreground: 0 0% 98%;
-    --primary-hover: 215 84% 40%;
-    --primary-light: 215 84% 55%;
+    --primary-hover: 0 84% 38%;
+    --primary-light: 0 84% 50%;
+    --primary-dark: 0 84% 32%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Industrial grays */
+    --secondary: 210 6% 93%;
+    --secondary-foreground: 210 6% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 6% 93%;
+    --muted-foreground: 210 6% 45%;
 
-    --accent: 43 74% 66%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Industrial accent - orange for warning/accent */
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 215 84% 45%;
+    /* Industrial borders - darker and more defined */
+    --border: 210 6% 85%;
+    --input: 210 6% 85%;
+    --ring: 0 84% 42%;
 
-    /* Custom contractor theme colors */
-    --hero-gradient: linear-gradient(135deg, hsl(215 84% 45%), hsl(215 84% 35%));
-    --card-shadow: 0 4px 6px -1px hsl(215 25% 27% / 0.1);
-    --card-shadow-hover: 0 10px 25px -3px hsl(215 25% 27% / 0.15);
+    /* Industrial theme colors with steel/metal feel */
+    --hero-gradient: linear-gradient(135deg, hsl(0 84% 42%), hsl(210 6% 25%));
+    --card-shadow: 0 2px 8px -2px hsl(210 6% 15% / 0.15);
+    --card-shadow-hover: 0 8px 25px -5px hsl(210 6% 15% / 0.25);
     
-    /* Professional spacing and effects */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-elegant: 0 10px 30px -10px hsl(215 84% 45% / 0.3);
+    /* Industrial spacing and effects - sharper, more defined */
+    --transition-smooth: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --shadow-elegant: 0 4px 20px -4px hsl(0 84% 42% / 0.3);
+    --shadow-inset: inset 0 2px 4px hsl(210 6% 15% / 0.1);
 
-    --radius: 0.75rem;
+    /* Reduced radius for industrial feel */
+    --radius: 0.3125rem; /* 5px */
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    /* Industrial sidebar */
+    --sidebar-background: 210 6% 97%;
+    --sidebar-foreground: 210 6% 20%;
+    --sidebar-primary: 0 84% 42%;
     --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 210 6% 90%;
+    --sidebar-accent-foreground: 210 6% 20%;
+    --sidebar-border: 210 6% 80%;
+    --sidebar-ring: 0 84% 42%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Industrial textures and patterns */
+    --texture-metal: linear-gradient(90deg, transparent 50%, hsl(210 6% 15% / 0.03) 50%);
+    --steel-gradient: linear-gradient(180deg, hsl(210 6% 95%), hsl(210 6% 88%));
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark industrial theme */
+    --background: 210 6% 8%;
+    --foreground: 210 6% 90%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 6% 10%;
+    --card-foreground: 210 6% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 6% 10%;
+    --popover-foreground: 210 6% 90%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Dark industrial red */
+    --primary: 0 84% 55%;
+    --primary-foreground: 210 6% 8%;
+    --primary-hover: 0 84% 50%;
+    --primary-light: 0 84% 60%;
+    --primary-dark: 0 84% 45%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 6% 15%;
+    --secondary-foreground: 210 6% 80%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 6% 15%;
+    --muted-foreground: 210 6% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 25 95% 60%;
+    --accent-foreground: 210 6% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 210 6% 8%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 210 6% 18%;
+    --input: 210 6% 18%;
+    --ring: 0 84% 55%;
+
+    /* Dark industrial gradients */
+    --hero-gradient: linear-gradient(135deg, hsl(0 84% 55%), hsl(210 6% 15%));
+    --card-shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+    --card-shadow-hover: 0 8px 25px -5px hsl(0 0% 0% / 0.4);
+    --shadow-elegant: 0 4px 20px -4px hsl(0 84% 55% / 0.4);
+
+    --sidebar-background: 210 6% 6%;
+    --sidebar-foreground: 210 6% 85%;
+    --sidebar-primary: 0 84% 55%;
+    --sidebar-primary-foreground: 210 6% 8%;
+    --sidebar-accent: 210 6% 12%;
+    --sidebar-accent-foreground: 210 6% 85%;
+    --sidebar-border: 210 6% 15%;
+    --sidebar-ring: 0 84% 55%;
   }
 }
 
@@ -113,5 +130,29 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+
+  /* Industrial typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Industrial button base styles */
+  .btn-industrial {
+    @apply font-medium tracking-wide uppercase text-sm;
+    letter-spacing: 0.5px;
+  }
+
+  /* Industrial card styling */
+  .card-industrial {
+    @apply bg-gradient-to-b from-card to-muted/30;
+    background-image: var(--texture-metal);
+  }
+
+  /* Industrial inputs */
+  .input-industrial {
+    @apply border-2 border-border focus:border-primary;
+    transition: all 0.2s ease;
   }
 }
