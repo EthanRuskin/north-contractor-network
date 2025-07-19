@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal } from 'lucide-react';
+import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Award, Building2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 
@@ -28,6 +28,7 @@ interface ContractorBusiness {
   years_experience: number;
   rating: number;
   review_count: number;
+  logo_url?: string;
   contractor_services: {
     services: {
       name: string;
@@ -327,66 +328,113 @@ const SearchContractors = () => {
                 {filteredAndSortedContractors.map(contractor => (
                   <Card 
                     key={contractor.id} 
-                    className="hover:shadow-lg transition-shadow cursor-pointer"
+                    className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer border-l-4 border-l-primary/20 hover:border-l-primary bg-gradient-to-br from-card to-card/80 backdrop-blur-sm"
                     onClick={() => navigate(`/contractor/${contractor.id}`)}
                   >
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-lg">{contractor.business_name}</CardTitle>
-                          {contractor.city && contractor.province && (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                              <MapPin className="h-3 w-3" />
-                              {contractor.city}, {contractor.province}
-                            </div>
-                          )}
-                        </div>
-                        {contractor.rating > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium">{contractor.rating.toFixed(1)}</span>
-                            <span className="text-xs text-muted-foreground">
-                              ({contractor.review_count})
-                            </span>
+                    {/* Header with Logo */}
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start gap-4">
+                        {/* Logo Section */}
+                        <div className="flex-shrink-0">
+                          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/10 flex items-center justify-center overflow-hidden group-hover:shadow-lg transition-shadow">
+                            {contractor.logo_url ? (
+                              <img 
+                                src={contractor.logo_url} 
+                                alt={`${contractor.business_name} logo`}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Building2 className="h-8 w-8 text-primary/60" />
+                            )}
                           </div>
-                        )}
+                        </div>
+                        
+                        {/* Header Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="min-w-0 flex-1">
+                              <CardTitle className="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                                {contractor.business_name}
+                              </CardTitle>
+                              {contractor.city && contractor.province && (
+                                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                                  <span className="truncate">{contractor.city}, {contractor.province}</span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Rating Badge */}
+                            {contractor.rating > 0 && (
+                              <div className="flex-shrink-0 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 px-3 py-1.5 rounded-full border border-yellow-200 dark:border-yellow-800">
+                                <div className="flex items-center gap-1">
+                                  <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                                  <span className="text-sm font-semibold text-yellow-700 dark:text-yellow-300">
+                                    {contractor.rating.toFixed(1)}
+                                  </span>
+                                  <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                                    ({contractor.review_count})
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </CardHeader>
+
                     <CardContent className="space-y-4">
+                      {/* Description */}
                       {contractor.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                           {contractor.description}
                         </p>
                       )}
 
-                      <div className="flex flex-wrap gap-1">
+                      {/* Services */}
+                      <div className="flex flex-wrap gap-1.5">
                         {contractor.contractor_services.slice(0, 3).map((cs, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge 
+                            key={index} 
+                            variant="secondary" 
+                            className="text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                          >
                             {cs.services.name}
                           </Badge>
                         ))}
                         {contractor.contractor_services.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs border-dashed">
                             +{contractor.contractor_services.length - 3} more
                           </Badge>
                         )}
                       </div>
 
-                      <div className="flex justify-between items-center">
+                      {/* Footer */}
+                      <div className="flex justify-between items-center pt-2 border-t border-border/50">
+                        {/* Experience */}
                         {contractor.years_experience > 0 && (
-                          <p className="text-xs text-muted-foreground">
-                            {contractor.years_experience} years experience
-                          </p>
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Award className="h-3 w-3" />
+                            <span className="font-medium">{contractor.years_experience} years experience</span>
+                          </div>
                         )}
+                        
+                        {/* Contact Icons */}
                         <div className="flex gap-2">
                           {contractor.phone && (
-                            <Phone className="h-4 w-4 text-muted-foreground" />
+                            <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
+                              <Phone className="h-3 w-3 text-primary" />
+                            </div>
                           )}
                           {contractor.email && (
-                            <Mail className="h-4 w-4 text-muted-foreground" />
+                            <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
+                              <Mail className="h-3 w-3 text-primary" />
+                            </div>
                           )}
                           {contractor.website && (
-                            <Globe className="h-4 w-4 text-muted-foreground" />
+                            <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
+                              <Globe className="h-3 w-3 text-primary" />
+                            </div>
                           )}
                         </div>
                       </div>
