@@ -1,20 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import ContractorDashboard from '@/components/dashboard/ContractorDashboard';
 import HomeownerDashboard from '@/components/dashboard/HomeownerDashboard';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { LogOut, Edit, Search, Users, Home } from 'lucide-react';
+import Header from '@/components/Header';
 
 interface Profile {
   user_type: string;
   full_name: string;
 }
 
+interface ContractorBusiness {
+  id: string;
+}
+
 const Dashboard = () => {
   const { user, signOut, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [contractorBusiness, setContractorBusiness] = useState<ContractorBusiness | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,6 +41,19 @@ const Dashboard = () => {
 
       if (error) throw error;
       setProfile(data);
+
+      // If contractor, fetch business ID
+      if (data?.user_type === 'contractor') {
+        const { data: businessData } = await supabase
+          .from('contractor_businesses')
+          .select('id')
+          .eq('user_id', user?.id)
+          .single();
+        
+        if (businessData) {
+          setContractorBusiness(businessData);
+        }
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -61,20 +82,73 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-primary">Northern Contractor Network</h1>
-            <p className="text-sm text-muted-foreground">
-              Welcome, {profile?.full_name || user.email}
-            </p>
+      <Header />
+      
+      {/* Contractor Quick Actions Bar */}
+      {profile?.user_type === 'contractor' && (
+        <div className="border-b bg-card">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h2 className="text-lg font-semibold text-foreground">Contractor Dashboard</h2>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => navigate('/')} 
+                    variant="ghost" 
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Home className="h-4 w-4" />
+                    Home
+                  </Button>
+                  <Button 
+                    onClick={() => navigate('/search')} 
+                    variant="ghost" 
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Search className="h-4 w-4" />
+                    Browse Contractors
+                  </Button>
+                  {contractorBusiness && (
+                    <Button 
+                      onClick={() => navigate(`/contractor/${contractorBusiness.id}`)} 
+                      variant="ghost" 
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      View My Profile
+                    </Button>
+                  )}
+                </div>
+              </div>
+              <Button onClick={handleSignOut} variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
-          <Button onClick={handleSignOut} variant="outline" size="sm">
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
         </div>
-      </header>
+      )}
+
+      {/* Homeowner Welcome */}
+      {profile?.user_type === 'homeowner' && (
+        <div className="border-b bg-card">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Welcome back, {profile?.full_name || user.email}!</h2>
+                <p className="text-sm text-muted-foreground">Find and connect with trusted contractors</p>
+              </div>
+              <Button onClick={handleSignOut} variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="container mx-auto px-4 py-8">
         {profile?.user_type === 'contractor' ? (
