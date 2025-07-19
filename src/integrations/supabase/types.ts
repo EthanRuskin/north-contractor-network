@@ -17,6 +17,7 @@ export type Database = {
       contractor_businesses: {
         Row: {
           address: string | null
+          business_hours: Json | null
           business_name: string
           city: string | null
           created_at: string
@@ -40,6 +41,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          business_hours?: Json | null
           business_name: string
           city?: string | null
           created_at?: string
@@ -63,6 +65,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          business_hours?: Json | null
           business_name?: string
           city?: string | null
           created_at?: string

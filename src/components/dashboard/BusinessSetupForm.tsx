@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { Upload, Image as ImageIcon, Trash2, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Service {
@@ -30,6 +30,23 @@ interface Business {
   years_experience: number;
   license_number: string;
   gallery_images?: string[];
+  business_hours?: BusinessHours;
+}
+
+interface DayHours {
+  open: string;
+  close: string;
+  closed: boolean;
+}
+
+interface BusinessHours {
+  monday: DayHours;
+  tuesday: DayHours;
+  wednesday: DayHours;
+  thursday: DayHours;
+  friday: DayHours;
+  saturday: DayHours;
+  sunday: DayHours;
 }
 
 interface BusinessSetupFormProps {
@@ -45,6 +62,21 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>(business?.gallery_images || []);
   const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Default business hours
+  const defaultBusinessHours: BusinessHours = {
+    monday: { open: "08:00", close: "18:00", closed: false },
+    tuesday: { open: "08:00", close: "18:00", closed: false },
+    wednesday: { open: "08:00", close: "18:00", closed: false },
+    thursday: { open: "08:00", close: "18:00", closed: false },
+    friday: { open: "08:00", close: "18:00", closed: false },
+    saturday: { open: "09:00", close: "16:00", closed: false },
+    sunday: { open: "09:00", close: "16:00", closed: true }
+  };
+  
+  const [businessHours, setBusinessHours] = useState<BusinessHours>(
+    business?.business_hours || defaultBusinessHours
+  );
 
   useEffect(() => {
     fetchServices();
@@ -121,6 +153,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         years_experience: parseInt(formData.get('yearsExperience') as string) || 0,
         license_number: formData.get('licenseNumber') as string,
         gallery_images: galleryImages,
+        business_hours: businessHours as any,
         status: 'approved', // Auto-approve new businesses for immediate visibility
       };
 
@@ -249,6 +282,29 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         });
       }
     }
+  };
+
+  const updateBusinessHours = (day: keyof BusinessHours, field: keyof DayHours, value: string | boolean) => {
+    setBusinessHours(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        [field]: value
+      }
+    }));
+  };
+
+  const copyHoursToAll = (sourceDay: keyof BusinessHours) => {
+    const sourceHours = businessHours[sourceDay];
+    setBusinessHours(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(day => {
+        if (day !== sourceDay) {
+          updated[day as keyof BusinessHours] = { ...sourceHours };
+        }
+      });
+      return updated;
+    });
   };
 
   return (
@@ -503,6 +559,89 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                     <p className="text-sm text-muted-foreground">Upload photos to showcase your work</p>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Business Hours Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  Business Hours
+                </Label>
+                <p className="text-sm text-muted-foreground">Set your operating hours</p>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Let customers know when your business is open for calls and appointments.
+              </p>
+              
+              <div className="space-y-3">
+                {Object.entries(businessHours).map(([day, hours]) => (
+                  <div key={day} className="grid grid-cols-12 gap-3 items-center p-3 border rounded-lg bg-muted/20">
+                    <div className="col-span-3">
+                      <Label className="font-medium capitalize">{day}</Label>
+                    </div>
+                    
+                    <div className="col-span-2">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={hours.closed}
+                          onCheckedChange={(checked) => 
+                            updateBusinessHours(day as keyof BusinessHours, 'closed', !!checked)
+                          }
+                        />
+                        <Label className="text-sm">Closed</Label>
+                      </div>
+                    </div>
+                    
+                    {!hours.closed && (
+                      <>
+                        <div className="col-span-3">
+                          <Input
+                            type="time"
+                            value={hours.open}
+                            onChange={(e) => 
+                              updateBusinessHours(day as keyof BusinessHours, 'open', e.target.value)
+                            }
+                            className="text-sm"
+                          />
+                        </div>
+                        <div className="col-span-1 text-center text-sm text-muted-foreground">
+                          to
+                        </div>
+                        <div className="col-span-3">
+                          <Input
+                            type="time"
+                            value={hours.close}
+                            onChange={(e) => 
+                              updateBusinessHours(day as keyof BusinessHours, 'close', e.target.value)
+                            }
+                            className="text-sm"
+                          />
+                        </div>
+                      </>
+                    )}
+                    
+                    {hours.closed && <div className="col-span-7" />}
+                    
+                    <div className="col-span-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyHoursToAll(day as keyof BusinessHours)}
+                        className="text-xs px-2 py-1 h-6"
+                        title="Copy to all days"
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded">
+                💡 <strong>Tip:</strong> Use the "Copy" button to apply the same hours to all days, then adjust individual days as needed.
               </div>
             </div>
 
