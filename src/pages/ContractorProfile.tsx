@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users, FolderOpen } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users, FolderOpen, Instagram, Facebook, Linkedin, Video, Music } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import GoogleMap from '@/components/GoogleMap';
@@ -38,6 +38,12 @@ interface ContractorBusiness {
   google_place_id: string;
   google_verification_date: string;
   google_business_url: string;
+  instagram_url?: string;
+  facebook_url?: string;
+  linkedin_url?: string;
+  tiktok_url?: string;
+  x_url?: string;
+  youtube_url?: string;
   contractor_services: {
     services: {
       name: string;
@@ -717,6 +723,66 @@ const ContractorProfile = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Social Profiles */}
+            {(contractor.instagram_url || contractor.facebook_url || contractor.linkedin_url || 
+              contractor.tiktok_url || contractor.x_url || contractor.youtube_url) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Social Profiles</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {contractor.instagram_url && (
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
+                      <a href={contractor.instagram_url} target="_blank" rel="noopener noreferrer">
+                        <Instagram className="h-4 w-4" />
+                        Instagram
+                      </a>
+                    </Button>
+                  )}
+                  {contractor.facebook_url && (
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
+                      <a href={contractor.facebook_url} target="_blank" rel="noopener noreferrer">
+                        <Facebook className="h-4 w-4" />
+                        Facebook
+                      </a>
+                    </Button>
+                  )}
+                  {contractor.linkedin_url && (
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
+                      <a href={contractor.linkedin_url} target="_blank" rel="noopener noreferrer">
+                        <Linkedin className="h-4 w-4" />
+                        LinkedIn
+                      </a>
+                    </Button>
+                  )}
+                  {contractor.tiktok_url && (
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
+                      <a href={contractor.tiktok_url} target="_blank" rel="noopener noreferrer">
+                        <Music className="h-4 w-4" />
+                        TikTok
+                      </a>
+                    </Button>
+                  )}
+                  {contractor.x_url && (
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
+                      <a href={contractor.x_url} target="_blank" rel="noopener noreferrer">
+                        <X className="h-4 w-4" />
+                        X (Twitter)
+                      </a>
+                    </Button>
+                  )}
+                  {contractor.youtube_url && (
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
+                      <a href={contractor.youtube_url} target="_blank" rel="noopener noreferrer">
+                        <Video className="h-4 w-4" />
+                        YouTube
+                      </a>
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Location & Hours */}
             <Card>
