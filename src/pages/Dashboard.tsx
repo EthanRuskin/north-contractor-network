@@ -84,54 +84,6 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Contractor Quick Actions Bar */}
-      {profile?.user_type === 'contractor' && (
-        <div className="border-b bg-card">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <h2 className="text-lg font-semibold text-foreground">Contractor Dashboard</h2>
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => navigate('/')} 
-                    variant="ghost" 
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Home className="h-4 w-4" />
-                    Home
-                  </Button>
-                  <Button 
-                    onClick={() => navigate('/search')} 
-                    variant="ghost" 
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Search className="h-4 w-4" />
-                    Browse Contractors
-                  </Button>
-                  {contractorBusiness && (
-                    <Button 
-                      onClick={() => navigate(`/contractor/${contractorBusiness.id}`)} 
-                      variant="ghost" 
-                      size="sm"
-                      className="gap-2"
-                    >
-                      <Users className="h-4 w-4" />
-                      View My Profile
-                    </Button>
-                  )}
-                </div>
-              </div>
-              <Button onClick={handleSignOut} variant="outline" size="sm">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Homeowner Welcome */}
       {profile?.user_type === 'homeowner' && (
         <div className="border-b bg-card">
