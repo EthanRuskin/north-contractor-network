@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Service {
@@ -28,6 +29,7 @@ interface Business {
   postal_code: string;
   years_experience: number;
   license_number: string;
+  gallery_images?: string[];
 }
 
 interface BusinessSetupFormProps {
@@ -41,6 +43,8 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>(business?.gallery_images || []);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     fetchServices();
@@ -116,6 +120,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         postal_code: formData.get('postalCode') as string,
         years_experience: parseInt(formData.get('yearsExperience') as string) || 0,
         license_number: formData.get('licenseNumber') as string,
+        gallery_images: galleryImages,
         status: 'approved', // Auto-approve new businesses for immediate visibility
       };
 
@@ -189,6 +194,61 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         ? prev.filter(id => id !== serviceId)
         : [...prev, serviceId]
     );
+  };
+
+  const uploadGalleryImage = async (file: File) => {
+    if (!user) return;
+
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('contractor-galleries')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('contractor-galleries')
+        .getPublicUrl(fileName);
+
+      if (data.publicUrl) {
+        setGalleryImages(prev => [...prev, data.publicUrl]);
+        toast({
+          title: "Image uploaded",
+          description: "Gallery image uploaded successfully",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeGalleryImage = (imageUrl: string) => {
+    setGalleryImages(prev => prev.filter(url => url !== imageUrl));
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        uploadGalleryImage(file);
+      } else {
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   return (
@@ -376,6 +436,73 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                     </Label>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Gallery Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold">Work Gallery</Label>
+                <p className="text-sm text-muted-foreground">Showcase your best work</p>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Upload photos of your completed projects to show potential customers your quality of work.
+              </p>
+              
+              <div className="grid gap-4">
+                {/* Upload Button */}
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="gallery-upload"
+                  />
+                  <Label
+                    htmlFor="gallery-upload"
+                    className="flex items-center gap-2 cursor-pointer bg-muted hover:bg-muted/80 px-4 py-2 rounded-md transition-colors"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {uploadingImage ? 'Uploading...' : 'Add Photo'}
+                  </Label>
+                  {uploadingImage && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                      Uploading image...
+                    </div>
+                  )}
+                </div>
+
+                {/* Gallery Grid */}
+                {galleryImages.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {galleryImages.map((imageUrl, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={imageUrl}
+                          alt={`Gallery image ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-md border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeGalleryImage(imageUrl)}
+                          className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {galleryImages.length === 0 && (
+                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+                    <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No gallery images yet</p>
+                    <p className="text-sm text-muted-foreground">Upload photos to showcase your work</p>
+                  </div>
+                )}
               </div>
             </div>
 

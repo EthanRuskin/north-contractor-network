@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 
@@ -62,6 +62,7 @@ const ContractorProfile = () => {
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -109,10 +110,14 @@ const ContractorProfile = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setReviews((data || []).map(review => ({ 
-        ...review, 
-        profiles: { full_name: 'Anonymous' } 
-      })));
+      
+      // For now, set reviews without profile information since there's no FK relationship
+      const reviewsWithProfiles = (data || []).map(review => ({
+        ...review,
+        profiles: { full_name: 'Anonymous User' }
+      }));
+      
+      setReviews(reviewsWithProfiles);
     } catch (error: any) {
       console.error('Error fetching reviews:', error);
     }
@@ -449,21 +454,26 @@ const ContractorProfile = () => {
             {contractor.gallery_images && contractor.gallery_images.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Gallery</CardTitle>
+                  <CardTitle>Work Gallery ({contractor.gallery_images.length})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-2">
-                    {contractor.gallery_images.slice(0, 4).map((image, index) => (
+                    {contractor.gallery_images.map((image, index) => (
                       <img
                         key={index}
                         src={image}
                         alt={`${contractor.business_name} work ${index + 1}`}
-                        className="w-full h-20 object-cover rounded-md"
+                        className="w-full h-20 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => setSelectedImage(image)}
                       />
                     ))}
                   </div>
                   {contractor.gallery_images.length > 4 && (
-                    <Button variant="outline" className="w-full mt-2">
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-2"
+                      onClick={() => setSelectedImage(contractor.gallery_images[0])}
+                    >
                       View All Photos ({contractor.gallery_images.length})
                     </Button>
                   )}
@@ -472,6 +482,32 @@ const ContractorProfile = () => {
             )}
           </div>
         </div>
+
+        {/* Image Modal */}
+        {selectedImage && (
+          <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>Gallery Image</DialogTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-2"
+                  onClick={() => setSelectedImage(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </DialogHeader>
+              <div className="flex justify-center">
+                <img
+                  src={selectedImage}
+                  alt="Gallery image"
+                  className="max-w-full max-h-[70vh] object-contain rounded-md"
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );
