@@ -75,6 +75,7 @@ const ContractorProfile = () => {
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ContractorProject | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -397,36 +398,82 @@ const ContractorProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {projects.map((project) => (
-                      <div key={project.id} className="border rounded-lg p-4">
-                        <h3 className="font-semibold text-lg mb-2">{project.title}</h3>
-                        {project.description && (
-                          <p className="text-muted-foreground mb-4">{project.description}</p>
-                        )}
-                        {project.images && project.images.length > 0 && (
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {project.images.map((image, index) => (
-                              <div
-                                key={index}
-                                className="aspect-square overflow-hidden rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-                                onClick={() => setSelectedImage(image)}
-                              >
-                                <img
-                                  src={image}
-                                  alt={`${project.title} image ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ))}
+                      <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
+                        <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
+                          {project.images.length > 0 ? (
+                            <img
+                              src={project.images[0]}
+                              alt={project.title}
+                              className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <FolderOpen className="h-12 w-12 text-gray-400" />
+                            </div>
+                          )}
+                          
+                          {/* Image count badge */}
+                          {project.images.length > 0 && (
+                            <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
+                              <span>{project.images.length}</span>
+                            </div>
+                          )}
+                          
+                          {/* Title overlay */}
+                          <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-3">
+                            <h3 className="text-white font-semibold text-sm leading-tight">{project.title}</h3>
                           </div>
-                        )}
+                        </div>
+                        
+                        {/* Project info */}
+                        <div className="mt-2">
+                          <p className="text-sm text-muted-foreground">
+                            Created {new Date(project.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </CardContent>
               </Card>
             )}
+
+            {/* Project Gallery Dialog */}
+            <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+                {selectedProject && (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle>{selectedProject.title}</DialogTitle>
+                      {selectedProject.description && (
+                        <p className="text-muted-foreground">{selectedProject.description}</p>
+                      )}
+                    </DialogHeader>
+                    <div className="overflow-y-auto max-h-[70vh]">
+                      {selectedProject.images.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {selectedProject.images.map((image, index) => (
+                            <img
+                              key={index}
+                              src={image}
+                              alt={`${selectedProject.title} ${index + 1}`}
+                              className="w-full h-64 object-cover rounded-lg"
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-32 text-muted-foreground">
+                          <FolderOpen className="h-8 w-8 mr-2" />
+                          No images in this project
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
 
             {/* Gallery */}
             {contractor.gallery_images && contractor.gallery_images.length > 0 && (
