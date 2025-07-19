@@ -23,15 +23,18 @@ export type Database = {
           created_at: string
           description: string | null
           email: string | null
+          facebook_url: string | null
           gallery_images: string[] | null
           google_business_url: string | null
           google_business_verified: boolean | null
           google_place_id: string | null
           google_verification_date: string | null
           id: string
+          instagram_url: string | null
           insurance_verified: boolean | null
           latitude: number | null
           license_number: string | null
+          linkedin_url: string | null
           logo_url: string | null
           longitude: number | null
           phone: string | null
@@ -41,10 +44,13 @@ export type Database = {
           review_count: number | null
           search_vector: unknown | null
           status: string
+          tiktok_url: string | null
           updated_at: string
           user_id: string | null
           website: string | null
+          x_url: string | null
           years_experience: number | null
+          youtube_url: string | null
         }
         Insert: {
           address?: string | null
@@ -54,15 +60,18 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          facebook_url?: string | null
           gallery_images?: string[] | null
           google_business_url?: string | null
           google_business_verified?: boolean | null
           google_place_id?: string | null
           google_verification_date?: string | null
           id?: string
+          instagram_url?: string | null
           insurance_verified?: boolean | null
           latitude?: number | null
           license_number?: string | null
+          linkedin_url?: string | null
           logo_url?: string | null
           longitude?: number | null
           phone?: string | null
@@ -72,10 +81,13 @@ export type Database = {
           review_count?: number | null
           search_vector?: unknown | null
           status?: string
+          tiktok_url?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
+          x_url?: string | null
           years_experience?: number | null
+          youtube_url?: string | null
         }
         Update: {
           address?: string | null
@@ -85,15 +97,18 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          facebook_url?: string | null
           gallery_images?: string[] | null
           google_business_url?: string | null
           google_business_verified?: boolean | null
           google_place_id?: string | null
           google_verification_date?: string | null
           id?: string
+          instagram_url?: string | null
           insurance_verified?: boolean | null
           latitude?: number | null
           license_number?: string | null
+          linkedin_url?: string | null
           logo_url?: string | null
           longitude?: number | null
           phone?: string | null
@@ -103,10 +118,13 @@ export type Database = {
           review_count?: number | null
           search_vector?: unknown | null
           status?: string
+          tiktok_url?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
+          x_url?: string | null
           years_experience?: number | null
+          youtube_url?: string | null
         }
         Relationships: []
       }

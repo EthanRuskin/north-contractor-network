@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Upload, Image as ImageIcon, Trash2, Clock } from 'lucide-react';
+import { Upload, Image as ImageIcon, Trash2, Clock, Instagram, Facebook, Linkedin, Music, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Service {
@@ -31,6 +31,12 @@ interface Business {
   license_number: string;
   gallery_images?: string[];
   business_hours?: BusinessHours;
+  instagram_url?: string;
+  facebook_url?: string;
+  linkedin_url?: string;
+  tiktok_url?: string;
+  x_url?: string;
+  youtube_url?: string;
 }
 
 interface DayHours {
@@ -154,6 +160,12 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         license_number: formData.get('licenseNumber') as string,
         gallery_images: galleryImages,
         business_hours: businessHours as any,
+        instagram_url: formData.get('instagramUrl') as string || null,
+        facebook_url: formData.get('facebookUrl') as string || null,
+        linkedin_url: formData.get('linkedinUrl') as string || null,
+        tiktok_url: formData.get('tiktokUrl') as string || null,
+        x_url: formData.get('xUrl') as string || null,
+        youtube_url: formData.get('youtubeUrl') as string || null,
         status: 'approved', // Auto-approve new businesses for immediate visibility
       };
 
@@ -699,6 +711,105 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
               
               <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded">
                 💡 <strong>Tip:</strong> Use the "Copy" button to apply the same hours to all days, then adjust individual days as needed.
+              </div>
+            </div>
+
+            {/* Social Media Links Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold">Social Media Links</Label>
+                <p className="text-sm text-muted-foreground">Connect your social profiles</p>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Add links to your social media profiles to help customers connect with your business. Only the platforms you provide will appear on your profile.
+              </p>
+              
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="instagramUrl" className="flex items-center gap-2">
+                    <Instagram className="h-4 w-4" />
+                    Instagram
+                  </Label>
+                  <Input
+                    id="instagramUrl"
+                    name="instagramUrl"
+                    type="url"
+                    defaultValue={business?.instagram_url}
+                    placeholder="https://instagram.com/yourbusiness"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="facebookUrl" className="flex items-center gap-2">
+                    <Facebook className="h-4 w-4" />
+                    Facebook
+                  </Label>
+                  <Input
+                    id="facebookUrl"
+                    name="facebookUrl"
+                    type="url"
+                    defaultValue={business?.facebook_url}
+                    placeholder="https://facebook.com/yourbusiness"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="linkedinUrl" className="flex items-center gap-2">
+                    <Linkedin className="h-4 w-4" />
+                    LinkedIn
+                  </Label>
+                  <Input
+                    id="linkedinUrl"
+                    name="linkedinUrl"
+                    type="url"
+                    defaultValue={business?.linkedin_url}
+                    placeholder="https://linkedin.com/company/yourbusiness"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="tiktokUrl" className="flex items-center gap-2">
+                    <Music className="h-4 w-4" />
+                    TikTok
+                  </Label>
+                  <Input
+                    id="tiktokUrl"
+                    name="tiktokUrl"
+                    type="url"
+                    defaultValue={business?.tiktok_url}
+                    placeholder="https://tiktok.com/@yourbusiness"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="xUrl" className="flex items-center gap-2">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    X (Twitter)
+                  </Label>
+                  <Input
+                    id="xUrl"
+                    name="xUrl"
+                    type="url"
+                    defaultValue={business?.x_url}
+                    placeholder="https://x.com/yourbusiness"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="youtubeUrl" className="flex items-center gap-2">
+                    <Video className="h-4 w-4" />
+                    YouTube
+                  </Label>
+                  <Input
+                    id="youtubeUrl"
+                    name="youtubeUrl"
+                    type="url"
+                    defaultValue={business?.youtube_url}
+                    placeholder="https://youtube.com/@yourbusiness"
+                  />
+                </div>
               </div>
             </div>
 
