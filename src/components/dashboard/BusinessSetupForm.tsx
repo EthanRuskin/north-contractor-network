@@ -471,27 +471,84 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
               {selectedServices.length === 0 && (
                 <p className="text-sm text-destructive">Please select at least one service you offer</p>
               )}
-              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {services.map(service => (
-                  <div key={service.id} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-muted/50">
-                    <Checkbox
-                      id={service.id}
-                      checked={selectedServices.includes(service.id)}
-                      onCheckedChange={() => handleServiceToggle(service.id)}
+              <div className="space-y-4">
+                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                  {services.map(service => (
+                    <div key={service.id} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-muted/50">
+                      <Checkbox
+                        id={service.id}
+                        checked={selectedServices.includes(service.id)}
+                        onCheckedChange={() => handleServiceToggle(service.id)}
+                      />
+                      <Label 
+                        htmlFor={service.id}
+                        className="text-sm font-normal cursor-pointer flex-1"
+                      >
+                        {service.name}
+                        {service.description && (
+                          <span className="block text-xs text-muted-foreground mt-1">
+                            {service.description}
+                          </span>
+                        )}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <Label className="text-sm font-medium">Add Custom Service</Label>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      placeholder="Enter custom service name"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const input = e.currentTarget;
+                          const serviceName = input.value.trim();
+                          if (serviceName && !selectedServices.includes(`custom-${serviceName}`)) {
+                            setSelectedServices(prev => [...prev, `custom-${serviceName}`]);
+                            input.value = '';
+                          }
+                        }
+                      }}
                     />
-                    <Label 
-                      htmlFor={service.id}
-                      className="text-sm font-normal cursor-pointer flex-1"
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={(e) => {
+                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                        const serviceName = input.value.trim();
+                        if (serviceName && !selectedServices.includes(`custom-${serviceName}`)) {
+                          setSelectedServices(prev => [...prev, `custom-${serviceName}`]);
+                          input.value = '';
+                        }
+                      }}
                     >
-                      {service.name}
-                      {service.description && (
-                        <span className="block text-xs text-muted-foreground mt-1">
-                          {service.description}
-                        </span>
-                      )}
-                    </Label>
+                      Add
+                    </Button>
                   </div>
-                ))}
+                  {selectedServices.filter(id => id.startsWith('custom-')).length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <Label className="text-xs text-muted-foreground">Custom Services:</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedServices
+                          .filter(id => id.startsWith('custom-'))
+                          .map(customId => (
+                            <div key={customId} className="flex items-center gap-1 bg-muted px-2 py-1 rounded text-sm">
+                              <span>{customId.replace('custom-', '')}</span>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedServices(prev => prev.filter(id => id !== customId))}
+                                className="text-muted-foreground hover:text-foreground"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
