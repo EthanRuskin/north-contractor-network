@@ -282,6 +282,35 @@ export type Database = {
         }
         Returns: number
       }
+      search_contractors_with_ranking: {
+        Args: {
+          search_query?: string
+          service_filter?: string
+          city_filter?: string
+          province_filter?: string
+          min_rating_filter?: number
+          min_experience_filter?: number
+        }
+        Returns: {
+          id: string
+          business_name: string
+          description: string
+          phone: string
+          email: string
+          website: string
+          city: string
+          province: string
+          years_experience: number
+          rating: number
+          review_count: number
+          logo_url: string
+          gallery_images: string[]
+          service_ids: string[]
+          service_names: string[]
+          base_ranking_score: number
+          search_ranking_score: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

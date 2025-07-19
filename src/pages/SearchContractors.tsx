@@ -90,21 +90,23 @@ const SearchContractors = () => {
         .order('name');
       setServices(servicesData || []);
 
-      // Use database function to search with ranking
-      const { data, error } = await supabase
-        .rpc('calculate_contractor_ranking', { 
-          contractor_row: null,
-          search_query: searchTerm 
-        });
+      // Use RPC for search with ranking
+      const { data: searchResults, error } = await supabase.rpc('search_contractors_with_ranking', {
+        search_query: searchTerm || null,
+        service_filter: selectedService && selectedService !== 'all' ? selectedService : null,
+        city_filter: selectedCity && selectedCity !== 'all' ? selectedCity : null,
+        province_filter: selectedProvince && selectedProvince !== 'all' ? selectedProvince : null,
+        min_rating_filter: minRating[0],
+        min_experience_filter: minExperience[0]
+      });
 
       if (error) {
-        console.warn('Search function failed, using fallback');
+        console.warn('Search RPC failed:', error.message);
         await fetchServicesAndContractors();
         return;
       }
 
-      // For now, let's use the existing view and filter client-side
-      await fetchServicesAndContractors();
+      setContractors(searchResults || []);
     } catch (error: any) {
       console.warn('Search failed, using fallback:', error.message);
       await fetchServicesAndContractors();
