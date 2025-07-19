@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Wrapper } from '@googlemaps/react-wrapper';
+import { supabase } from '@/integrations/supabase/client';
 
 // Simple type declarations for Google Maps
 declare global {
@@ -54,11 +55,47 @@ const MapComponent = ({ address, businessName, city, province }: GoogleMapProps)
 };
 
 const GoogleMap = ({ address, businessName, city, province }: GoogleMapProps) => {
-  // For demo purposes - in production you'd want to use environment variables
-  const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with actual API key
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-google-maps-key');
+        
+        if (error) {
+          console.error('Error fetching Google Maps API key:', error);
+          setError('Failed to load map');
+        } else if (data?.apiKey) {
+          setApiKey(data.apiKey);
+        } else {
+          setError('No API key configured');
+        }
+      } catch (err) {
+        console.error('Error calling get-google-maps-key function:', err);
+        setError('Failed to load map');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApiKey();
+  }, []);
   
-  // Fallback component when no API key is provided
-  if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY') {
+  // Loading state
+  if (loading) {
+    return (
+      <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
+        <div className="text-center text-muted-foreground">
+          <p className="text-sm">Loading map...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error or no API key
+  if (error || !apiKey) {
     return (
       <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
         <div className="text-center text-muted-foreground">
@@ -67,7 +104,7 @@ const GoogleMap = ({ address, businessName, city, province }: GoogleMapProps) =>
             {address}, {city}, {province}
           </p>
           <p className="text-xs mt-2 opacity-75">
-            Google Maps API key required for live maps
+            {error || 'Google Maps API key required for live maps'}
           </p>
         </div>
       </div>
