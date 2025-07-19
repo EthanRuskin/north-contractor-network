@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Award, Building2 } from 'lucide-react';
+import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Award, Building2, ChevronLeft, ChevronRight, Send } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 
@@ -463,6 +464,48 @@ const SearchContractors = () => {
                         <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                           {contractor.description}
                         </p>
+                      )}
+
+                      {/* Image Gallery */}
+                      {contractor.gallery_images && contractor.gallery_images.length > 0 && (
+                        <div className="relative" onClick={(e) => e.stopPropagation()}>
+                          <Carousel className="w-full">
+                            <CarouselContent>
+                              {contractor.gallery_images.map((image, index) => (
+                                <CarouselItem key={index}>
+                                  <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                                    <img 
+                                      src={image} 
+                                      alt={`${contractor.business_name} gallery ${index + 1}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                </CarouselItem>
+                              ))}
+                            </CarouselContent>
+                            {contractor.gallery_images.length > 1 && (
+                              <>
+                                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-border" />
+                                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 hover:bg-background border-border" />
+                              </>
+                            )}
+                          </Carousel>
+                        </div>
+                      )}
+
+                      {/* Send Message Button */}
+                      {contractor.email && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}
+                          >
+                            <Send className="h-4 w-4 mr-2" />
+                            Send a Message
+                          </Button>
+                        </div>
                       )}
 
                       {/* Services */}
