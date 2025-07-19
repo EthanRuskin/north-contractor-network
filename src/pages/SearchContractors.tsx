@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Award, Building2, ChevronLeft, ChevronRight, Send } from 'lucide-react';
+import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Award, Building2, ChevronLeft, ChevronRight, Send, Navigation, Target } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
@@ -35,12 +35,22 @@ interface ContractorBusiness {
   service_names?: string[];
   base_ranking_score?: number;
   search_ranking_score?: number;
+  latitude?: number;
+  longitude?: number;
+  distance_km?: number;
+}
+
+interface UserLocation {
+  latitude: number;
+  longitude: number;
+  address?: string;
 }
 
 const SearchContractors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const autocompleteRef = useRef<HTMLInputElement>(null);
   
   const [contractors, setContractors] = useState<ContractorBusiness[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -52,6 +62,13 @@ const SearchContractors = () => {
   const [minRating, setMinRating] = useState([parseFloat(searchParams.get('minRating') || '0')]);
   const [minExperience, setMinExperience] = useState([parseInt(searchParams.get('minExperience') || '0')]);
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'rating');
+  
+  // Location-based search state
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [locationQuery, setLocationQuery] = useState('');
+  const [radius, setRadius] = useState([parseInt(searchParams.get('radius') || '30')]);
+  const [isUsingLocation, setIsUsingLocation] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   useEffect(() => {
     fetchServicesAndContractors();
@@ -59,7 +76,45 @@ const SearchContractors = () => {
 
   useEffect(() => {
     updateSearchParams();
-  }, [searchTerm, selectedService, selectedCity, selectedProvince, minRating, minExperience, sortBy]);
+  }, [searchTerm, selectedService, selectedCity, selectedProvince, minRating, minExperience, sortBy, radius]);
+
+  // Initialize Google Places Autocomplete
+  useEffect(() => {
+    const initAutocomplete = () => {
+      if (!window.google || !autocompleteRef.current) return;
+
+      const autocomplete = new window.google.maps.places.Autocomplete(autocompleteRef.current, {
+        types: ['geocode'],
+        componentRestrictions: { country: 'ca' } // Restrict to Canada
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry && place.geometry.location) {
+          const location: UserLocation = {
+            latitude: place.geometry.location.lat(),
+            longitude: place.geometry.location.lng(),
+            address: place.formatted_address
+          };
+          setUserLocation(location);
+          setLocationQuery(place.formatted_address || '');
+          setIsUsingLocation(true);
+        }
+      });
+    };
+
+    // Load Google Maps API if not already loaded
+    if (!window.google) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = initAutocomplete;
+      document.head.appendChild(script);
+    } else {
+      initAutocomplete();
+    }
+  }, []);
 
   const updateSearchParams = () => {
     const params = new URLSearchParams();
@@ -70,7 +125,55 @@ const SearchContractors = () => {
     if (minRating[0] > 0) params.set('minRating', minRating[0].toString());
     if (minExperience[0] > 0) params.set('minExperience', minExperience[0].toString());
     if (sortBy !== 'rating') params.set('sortBy', sortBy);
+    if (radius[0] !== 30) params.set('radius', radius[0].toString());
     setSearchParams(params);
+  };
+
+  // Get user's current location
+  const getCurrentLocation = () => {
+    setGettingLocation(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location: UserLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          setUserLocation(location);
+          setIsUsingLocation(true);
+          setLocationQuery('Current Location');
+          setGettingLocation(false);
+          
+          // Reverse geocode to get address
+          if (window.google) {
+            const geocoder = new window.google.maps.Geocoder();
+            geocoder.geocode({
+              location: { lat: location.latitude, lng: location.longitude }
+            }, (results, status) => {
+              if (status === 'OK' && results[0]) {
+                setLocationQuery(results[0].formatted_address);
+                setUserLocation(prev => prev ? { ...prev, address: results[0].formatted_address } : null);
+              }
+            });
+          }
+        },
+        (error) => {
+          setGettingLocation(false);
+          toast({
+            title: "Location Error",
+            description: "Unable to get your current location. Please enter an address manually.",
+            variant: "destructive",
+          });
+        }
+      );
+    } else {
+      setGettingLocation(false);
+      toast({
+        title: "Geolocation Not Supported",
+        description: "Your browser doesn't support geolocation. Please enter an address manually.",
+        variant: "destructive",
+      });
+    }
   };
 
   useEffect(() => {
@@ -95,29 +198,55 @@ const SearchContractors = () => {
         .order('name');
       setServices(servicesData || []);
 
-      // Use RPC for search with ranking
-      const { data: searchResults, error } = await supabase.rpc('search_contractors_with_ranking', {
-        search_query: searchTerm || null,
-        service_filter: selectedService && selectedService !== 'all' ? selectedService : null,
-        city_filter: selectedCity && selectedCity !== 'all' ? selectedCity : null,
-        province_filter: selectedProvince && selectedProvince !== 'all' ? selectedProvince : null,
-        min_rating_filter: minRating[0],
-        min_experience_filter: minExperience[0]
-      });
+      // Use location-based search if user location is available
+      if (isUsingLocation && userLocation) {
+        const { data: searchResults, error } = await supabase.rpc('search_contractors_with_location', {
+          search_query: searchTerm || null,
+          service_filter: selectedService && selectedService !== 'all' ? selectedService : null,
+          city_filter: !isUsingLocation && selectedCity && selectedCity !== 'all' ? selectedCity : null,
+          province_filter: !isUsingLocation && selectedProvince && selectedProvince !== 'all' ? selectedProvince : null,
+          min_rating_filter: minRating[0],
+          min_experience_filter: minExperience[0],
+          user_latitude: userLocation.latitude,
+          user_longitude: userLocation.longitude,
+          radius_km: radius[0]
+        });
 
-      if (error) {
-        console.warn('Search RPC failed:', error.message);
-        await fetchServicesAndContractors();
-        return;
+        if (error) {
+          console.warn('Location-based search failed:', error.message);
+          await fallbackSearch();
+          return;
+        }
+
+        setContractors(searchResults || []);
+      } else {
+        await fallbackSearch();
       }
-
-      setContractors(searchResults || []);
     } catch (error: any) {
       console.warn('Search failed, using fallback:', error.message);
       await fetchServicesAndContractors();
     } finally {
       setLoading(false);
     }
+  };
+
+  const fallbackSearch = async () => {
+    const { data: searchResults, error } = await supabase.rpc('search_contractors_with_ranking', {
+      search_query: searchTerm || null,
+      service_filter: selectedService && selectedService !== 'all' ? selectedService : null,
+      city_filter: selectedCity && selectedCity !== 'all' ? selectedCity : null,
+      province_filter: selectedProvince && selectedProvince !== 'all' ? selectedProvince : null,
+      min_rating_filter: minRating[0],
+      min_experience_filter: minExperience[0]
+    });
+
+    if (error) {
+      console.warn('Fallback search failed:', error.message);
+      await fetchServicesAndContractors();
+      return;
+    }
+
+    setContractors(searchResults || []);
   };
 
   const fetchServicesAndContractors = async () => {
@@ -208,6 +337,10 @@ const SearchContractors = () => {
     setMinRating([0]);
     setMinExperience([0]);
     setSortBy('rating');
+    setRadius([30]);
+    setUserLocation(null);
+    setLocationQuery('');
+    setIsUsingLocation(false);
   };
 
   if (loading) {
@@ -298,38 +431,110 @@ const SearchContractors = () => {
                 {/* Location */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">City</label>
-                    <Select value={selectedCity} onValueChange={setSelectedCity}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="All Cities" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Cities</SelectItem>
-                        {uniqueCities.map(city => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Location
+                    </label>
+                    
+                    {/* Google Places Autocomplete */}
+                    <div className="space-y-2">
+                      <Input
+                        ref={autocompleteRef}
+                        placeholder="Enter your address or location..."
+                        value={locationQuery}
+                        onChange={(e) => setLocationQuery(e.target.value)}
+                        className="border-primary/20 focus:border-primary"
+                      />
+                      
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={getCurrentLocation}
+                        disabled={gettingLocation}
+                        className="w-full"
+                      >
+                        {gettingLocation ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                        ) : (
+                          <Target className="h-4 w-4 mr-2" />
+                        )}
+                        Use My Current Location
+                      </Button>
+                    </div>
+
+                    {/* Show current location */}
+                    {userLocation && (
+                      <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
+                        <div className="flex items-center gap-1">
+                          <Navigation className="h-3 w-3" />
+                          <span>Using location: {userLocation.address || 'Current Location'}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Radius Selector */}
+                    {userLocation && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          Search Radius: {radius[0]} km
+                        </label>
+                        <Select value={radius[0].toString()} onValueChange={(value) => setRadius([parseInt(value)])}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="10">10 km</SelectItem>
+                            <SelectItem value="20">20 km</SelectItem>
+                            <SelectItem value="30">30 km</SelectItem>
+                            <SelectItem value="40">40 km</SelectItem>
+                            <SelectItem value="50">50 km</SelectItem>
+                            <SelectItem value="75">75 km</SelectItem>
+                            <SelectItem value="100">100 km</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Province</label>
-                    <Select value={selectedProvince} onValueChange={setSelectedProvince}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="All Provinces" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Provinces</SelectItem>
-                        {uniqueProvinces.map(province => (
-                          <SelectItem key={province} value={province}>
-                            {province}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Fallback city/province selectors */}
+                  {!isUsingLocation && (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">City</label>
+                        <Select value={selectedCity} onValueChange={setSelectedCity}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="All Cities" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Cities</SelectItem>
+                            {uniqueCities.map(city => (
+                              <SelectItem key={city} value={city}>
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Province</label>
+                        <Select value={selectedProvince} onValueChange={setSelectedProvince}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="All Provinces" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Provinces</SelectItem>
+                            {uniqueProvinces.map(province => (
+                              <SelectItem key={province} value={province}>
+                                {province}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Rating */}
@@ -435,12 +640,19 @@ const SearchContractors = () => {
                                   <CardTitle className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
                                     {contractor.business_name}
                                   </CardTitle>
-                                  {contractor.city && contractor.province && (
-                                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                                      <MapPin className="h-3 w-3 flex-shrink-0" />
-                                      <span className="truncate">{contractor.city}, {contractor.province}</span>
-                                    </div>
-                                  )}
+                                   {contractor.city && contractor.province && (
+                                     <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                                       <MapPin className="h-3 w-3 flex-shrink-0" />
+                                       <span className="truncate">
+                                         {contractor.city}, {contractor.province}
+                                         {contractor.distance_km && (
+                                           <span className="ml-1 text-primary font-medium">
+                                             • {contractor.distance_km.toFixed(1)} km away
+                                           </span>
+                                         )}
+                                       </span>
+                                     </div>
+                                   )}
                                 </div>
                                 
                                 {/* Rating Badge */}

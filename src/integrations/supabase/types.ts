@@ -26,8 +26,10 @@ export type Database = {
           gallery_images: string[] | null
           id: string
           insurance_verified: boolean | null
+          latitude: number | null
           license_number: string | null
           logo_url: string | null
+          longitude: number | null
           phone: string | null
           postal_code: string | null
           province: string | null
@@ -51,8 +53,10 @@ export type Database = {
           gallery_images?: string[] | null
           id?: string
           insurance_verified?: boolean | null
+          latitude?: number | null
           license_number?: string | null
           logo_url?: string | null
+          longitude?: number | null
           phone?: string | null
           postal_code?: string | null
           province?: string | null
@@ -76,8 +80,10 @@ export type Database = {
           gallery_images?: string[] | null
           id?: string
           insurance_verified?: boolean | null
+          latitude?: number | null
           license_number?: string | null
           logo_url?: string | null
+          longitude?: number | null
           phone?: string | null
           postal_code?: string | null
           province?: string | null
@@ -281,6 +287,45 @@ export type Database = {
           search_query?: string
         }
         Returns: number
+      }
+      calculate_distance: {
+        Args: { lat1: number; lon1: number; lat2: number; lon2: number }
+        Returns: number
+      }
+      search_contractors_with_location: {
+        Args: {
+          search_query?: string
+          service_filter?: string
+          city_filter?: string
+          province_filter?: string
+          min_rating_filter?: number
+          min_experience_filter?: number
+          user_latitude?: number
+          user_longitude?: number
+          radius_km?: number
+        }
+        Returns: {
+          id: string
+          business_name: string
+          description: string
+          phone: string
+          email: string
+          website: string
+          city: string
+          province: string
+          years_experience: number
+          rating: number
+          review_count: number
+          logo_url: string
+          gallery_images: string[]
+          service_ids: string[]
+          service_names: string[]
+          base_ranking_score: number
+          search_ranking_score: number
+          latitude: number
+          longitude: number
+          distance_km: number
+        }[]
       }
       search_contractors_with_ranking: {
         Args: {
