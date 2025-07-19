@@ -33,6 +33,7 @@ export type Database = {
           province: string | null
           rating: number | null
           review_count: number | null
+          search_vector: unknown | null
           status: string
           updated_at: string
           user_id: string | null
@@ -57,6 +58,7 @@ export type Database = {
           province?: string | null
           rating?: number | null
           review_count?: number | null
+          search_vector?: unknown | null
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -81,6 +83,7 @@ export type Database = {
           province?: string | null
           rating?: number | null
           review_count?: number | null
+          search_vector?: unknown | null
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -114,6 +117,13 @@ export type Database = {
             columns: ["contractor_id"]
             isOneToOne: false
             referencedRelation: "contractor_businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_services_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_search_results"
             referencedColumns: ["id"]
           },
           {
@@ -197,6 +207,13 @@ export type Database = {
             referencedRelation: "contractor_businesses"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "reviews_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_search_results"
+            referencedColumns: ["id"]
+          },
         ]
       }
       services: {
@@ -225,10 +242,46 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      contractor_search_results: {
+        Row: {
+          address: string | null
+          base_ranking_score: number | null
+          business_hours: Json | null
+          business_name: string | null
+          city: string | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          gallery_images: string[] | null
+          id: string | null
+          insurance_verified: boolean | null
+          license_number: string | null
+          logo_url: string | null
+          phone: string | null
+          postal_code: string | null
+          province: string | null
+          rating: number | null
+          review_count: number | null
+          search_vector: unknown | null
+          service_ids: string[] | null
+          service_names: string[] | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          website: string | null
+          years_experience: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      calculate_contractor_ranking: {
+        Args: {
+          contractor_row: Database["public"]["Tables"]["contractor_businesses"]["Row"]
+          search_query?: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

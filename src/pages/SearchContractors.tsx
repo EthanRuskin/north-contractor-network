@@ -29,11 +29,11 @@ interface ContractorBusiness {
   rating: number;
   review_count: number;
   logo_url?: string;
-  contractor_services: {
-    services: {
-      name: string;
-    };
-  }[];
+  gallery_images?: string[];
+  service_ids?: string[];
+  service_names?: string[];
+  base_ranking_score?: number;
+  search_ranking_score?: number;
 }
 
 const SearchContractors = () => {
@@ -72,6 +72,47 @@ const SearchContractors = () => {
     setSearchParams(params);
   };
 
+  useEffect(() => {
+    if (searchTerm) {
+      searchContractors();
+    } else {
+      fetchServicesAndContractors();
+    }
+  }, [searchTerm]);
+
+  const searchContractors = async () => {
+    setLoading(true);
+    try {
+      // Fetch services first
+      const { data: servicesData } = await supabase
+        .from('services')
+        .select('*')
+        .order('name');
+      setServices(servicesData || []);
+
+      // Use database function to search with ranking
+      const { data, error } = await supabase
+        .rpc('calculate_contractor_ranking', { 
+          contractor_row: null,
+          search_query: searchTerm 
+        });
+
+      if (error) {
+        console.warn('Search function failed, using fallback');
+        await fetchServicesAndContractors();
+        return;
+      }
+
+      // For now, let's use the existing view and filter client-side
+      await fetchServicesAndContractors();
+    } catch (error: any) {
+      console.warn('Search failed, using fallback:', error.message);
+      await fetchServicesAndContractors();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchServicesAndContractors = async () => {
     try {
       // Fetch services
@@ -82,21 +123,20 @@ const SearchContractors = () => {
 
       setServices(servicesData || []);
 
-      // Fetch approved contractors with their services
+      // Use the new contractor_search_results view
       const { data: contractorsData, error } = await supabase
-        .from('contractor_businesses')
-        .select(`
-          *,
-          contractor_services (
-            services (
-              name
-            )
-          )
-        `)
-        .eq('status', 'approved');
+        .from('contractor_search_results')
+        .select('*');
 
       if (error) throw error;
-      setContractors(contractorsData || []);
+      
+      // Transform data for compatibility
+      const transformedData = contractorsData?.map(contractor => ({
+        ...contractor,
+        service_names: contractor.service_names || []
+      })) || [];
+      
+      setContractors(transformedData);
     } catch (error: any) {
       toast({
         title: "Error loading contractors",
@@ -110,12 +150,13 @@ const SearchContractors = () => {
 
   const filteredAndSortedContractors = contractors
     .filter(contractor => {
-      const matchesSearch = contractor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           contractor.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = !searchTerm || 
+        contractor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contractor.description?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesService = !selectedService || selectedService === 'all' || 
-                            contractor.contractor_services.some(cs => 
-                              cs.services.name === services.find(s => s.id === selectedService)?.name
+                            contractor.service_names?.some(serviceName => 
+                              serviceName === services.find(s => s.id === selectedService)?.name
                             );
       
       const matchesCity = !selectedCity || selectedCity === 'all' || 
@@ -131,6 +172,11 @@ const SearchContractors = () => {
     })
     .sort((a, b) => {
       switch (sortBy) {
+        case 'relevance':
+          // Sort by search ranking score when available, fallback to base ranking
+          const scoreA = a.search_ranking_score || a.base_ranking_score || 0;
+          const scoreB = b.search_ranking_score || b.base_ranking_score || 0;
+          return scoreB - scoreA;
         case 'name':
           return a.business_name.localeCompare(b.business_name);
         case 'rating':
@@ -140,7 +186,7 @@ const SearchContractors = () => {
         case 'reviews':
           return b.review_count - a.review_count;
         default:
-          return b.rating - a.rating;
+          return (b.search_ranking_score || b.base_ranking_score || 0) - (a.search_ranking_score || a.base_ranking_score || 0);
       }
     });
 
@@ -195,12 +241,18 @@ const SearchContractors = () => {
               <CardContent className="space-y-6">
                 {/* Search */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Search</label>
+                  <label className="text-sm font-medium">🔍 Keyword Search</label>
                   <Input
-                    placeholder="Business name or description..."
+                    placeholder='Try "best landscaper", "reliable plumber"...'
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    className="border-primary/20 focus:border-primary"
                   />
+                  {searchTerm && (
+                    <p className="text-xs text-muted-foreground">
+                      Searching for: <span className="font-medium">"{searchTerm}"</span>
+                    </p>
+                  )}
                 </div>
 
                 {/* Service */}
@@ -296,10 +348,11 @@ const SearchContractors = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="rating">Highest Rating</SelectItem>
-                      <SelectItem value="reviews">Most Reviews</SelectItem>
-                      <SelectItem value="experience">Most Experience</SelectItem>
-                      <SelectItem value="name">Name A-Z</SelectItem>
+                      {searchTerm && <SelectItem value="relevance">🎯 Best Match</SelectItem>}
+                      <SelectItem value="rating">⭐ Highest Rating</SelectItem>
+                      <SelectItem value="reviews">💬 Most Reviews</SelectItem>
+                      <SelectItem value="experience">🏆 Most Experience</SelectItem>
+                      <SelectItem value="name">📝 Name A-Z</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -393,18 +446,18 @@ const SearchContractors = () => {
 
                       {/* Services */}
                       <div className="flex flex-wrap gap-1.5">
-                        {contractor.contractor_services.slice(0, 3).map((cs, index) => (
+                        {contractor.service_names?.slice(0, 3).map((serviceName, index) => (
                           <Badge 
                             key={index} 
                             variant="secondary" 
                             className="text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                           >
-                            {cs.services.name}
+                            {serviceName}
                           </Badge>
                         ))}
-                        {contractor.contractor_services.length > 3 && (
+                        {contractor.service_names && contractor.service_names.length > 3 && (
                           <Badge variant="outline" className="text-xs border-dashed">
-                            +{contractor.contractor_services.length - 3} more
+                            +{contractor.service_names.length - 3} more
                           </Badge>
                         )}
                       </div>
