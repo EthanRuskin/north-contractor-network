@@ -31,6 +31,7 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
     images: [] as string[]
   });
   const [uploading, setUploading] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -300,57 +301,94 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects.map((project) => (
-              <Card key={project.id} className="border">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="font-semibold text-lg">{project.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Created {new Date(project.created_at).toLocaleDateString()}
-                      </p>
+              <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
+                <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
+                  {project.images.length > 0 ? (
+                    <img
+                      src={project.images[0]}
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <FolderOpen className="h-12 w-12 text-gray-400" />
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => deleteProject(project.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {project.description && (
-                    <p className="text-muted-foreground mb-3">{project.description}</p>
                   )}
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="secondary">
-                      {project.images.length} images
-                    </Badge>
-                  </div>
+                  
+                  {/* Image count badge */}
                   {project.images.length > 0 && (
-                    <div className="grid grid-cols-4 gap-2">
-                      {project.images.slice(0, 4).map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`${project.title} ${index + 1}`}
-                          className="w-full h-16 object-cover rounded"
-                        />
-                      ))}
-                      {project.images.length > 4 && (
-                        <div className="w-full h-16 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-600">
-                          +{project.images.length - 4}
-                        </div>
-                      )}
+                    <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
+                      <span>{project.images.length}</span>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                  
+                  {/* Delete button */}
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteProject(project.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  
+                  {/* Title overlay */}
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-3">
+                    <h3 className="text-white font-semibold text-sm leading-tight">{project.title}</h3>
+                  </div>
+                </div>
+                
+                {/* Project info */}
+                <div className="mt-2">
+                  <p className="text-sm text-muted-foreground">
+                    Created {new Date(project.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         )}
       </CardContent>
+
+      {/* Project Gallery Dialog */}
+      <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+          {selectedProject && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{selectedProject.title}</DialogTitle>
+                {selectedProject.description && (
+                  <p className="text-muted-foreground">{selectedProject.description}</p>
+                )}
+              </DialogHeader>
+              <div className="overflow-y-auto max-h-[70vh]">
+                {selectedProject.images.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedProject.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`${selectedProject.title} ${index + 1}`}
+                        className="w-full h-64 object-cover rounded-lg"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-32 text-muted-foreground">
+                    <FolderOpen className="h-8 w-8 mr-2" />
+                    No images in this project
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
