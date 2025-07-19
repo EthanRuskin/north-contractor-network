@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
+import GoogleMap from '@/components/GoogleMap';
+import BusinessHours from '@/components/BusinessHours';
 
 interface ContractorBusiness {
   id: string;
@@ -449,6 +451,28 @@ const ContractorProfile = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Location & Hours */}
+            {contractor.address && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Location & Hours
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <GoogleMap 
+                    address={contractor.address}
+                    businessName={contractor.business_name}
+                    city={contractor.city}
+                    province={contractor.province}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            <BusinessHours businessName={contractor.business_name} />
 
             {/* Gallery */}
             {contractor.gallery_images && contractor.gallery_images.length > 0 && (
