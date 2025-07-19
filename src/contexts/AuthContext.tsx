@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (email: string, password: string, userData: { full_name: string; user_type: string }) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -58,12 +58,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
     
-    if (!error && session?.user) {
-      // Update user profile with user_type
+    if (!error && data.user) {
+      // Update user profile with user_type immediately after signup
       await supabase
         .from('profiles')
-        .update({ user_type: userData.user_type })
-        .eq('user_id', session.user.id);
+        .update({ 
+          user_type: userData.user_type,
+          full_name: userData.full_name 
+        })
+        .eq('user_id', data.user.id);
     }
     
     return { error };
