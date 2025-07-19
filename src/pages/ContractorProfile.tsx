@@ -345,6 +345,23 @@ const ContractorProfile = () => {
                     </div>
                   </div>
                 </div>
+                
+                {/* Gallery Images */}
+                {contractor.gallery_images && contractor.gallery_images.length > 0 && (
+                  <div className="mt-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {contractor.gallery_images.map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`${contractor.business_name} work ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => setSelectedImage(image)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -475,36 +492,6 @@ const ContractorProfile = () => {
               </DialogContent>
             </Dialog>
 
-            {/* Gallery */}
-            {contractor.gallery_images && contractor.gallery_images.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Work Gallery ({contractor.gallery_images.length})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {contractor.gallery_images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`${contractor.business_name} work ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => setSelectedImage(image)}
-                      />
-                    ))}
-                  </div>
-                  {contractor.gallery_images.length > 8 && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full mt-4"
-                      onClick={() => setSelectedImage(contractor.gallery_images[0])}
-                    >
-                      View All Photos ({contractor.gallery_images.length})
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )}
 
             {/* Reviews */}
             <Card>
