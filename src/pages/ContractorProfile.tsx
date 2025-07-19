@@ -707,24 +707,22 @@ const ContractorProfile = () => {
             </Card>
 
             {/* Location & Hours */}
-            {contractor.address && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Location & Hours
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <GoogleMap 
-                    address={contractor.address}
-                    businessName={contractor.business_name}
-                    city={contractor.city}
-                    province={contractor.province}
-                  />
-                </CardContent>
-              </Card>
-            )}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  Location & Hours
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <GoogleMap 
+                  address={contractor.address || contractor.city || ""}
+                  businessName={contractor.business_name}
+                  city={contractor.city}
+                  province={contractor.province}
+                />
+              </CardContent>
+            </Card>
 
             <BusinessHours businessName={contractor.business_name} />
 
