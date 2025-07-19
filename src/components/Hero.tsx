@@ -43,7 +43,7 @@ const Hero = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                   <Input 
                     placeholder="e.g., Plumbing, Electrical, Carpentry"
-                    className="pl-10 h-12"
+                    className="pl-10 h-12 text-foreground"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -53,7 +53,7 @@ const Hero = () => {
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                   <Input 
                     placeholder="Enter your location"
-                    className="pl-10 h-12"
+                    className="pl-10 h-12 text-foreground"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
