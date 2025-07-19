@@ -98,6 +98,51 @@ export type Database = {
         }
         Relationships: []
       }
+      contractor_projects: {
+        Row: {
+          contractor_id: string
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contractor_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contractor_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_contractor_projects_contractor"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_contractor_projects_contractor"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_search_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contractor_services: {
         Row: {
           contractor_id: string

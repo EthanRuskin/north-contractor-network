@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Star, MessageSquare, TrendingUp, Zap, Target, ExternalLink } from 'lucide-react';
 import BusinessSetupForm from './BusinessSetupForm';
 import ContractorOnboarding from '../onboarding/ContractorOnboarding';
+import ProjectsManager from './ProjectsManager';
 import { useToast } from '@/hooks/use-toast';
 
 interface Business {
@@ -216,6 +217,9 @@ const ContractorDashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Projects Manager */}
+      <ProjectsManager contractorId={business.id} />
 
       {/* Business Scaling Section */}
       <Card className="border-l-4 border-l-primary bg-gradient-to-r from-primary/5 to-transparent">

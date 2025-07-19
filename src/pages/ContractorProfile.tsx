@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users, FolderOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import GoogleMap from '@/components/GoogleMap';
@@ -51,6 +51,14 @@ interface Review {
   } | null;
 }
 
+interface ContractorProject {
+  id: string;
+  title: string;
+  description: string | null;
+  images: string[];
+  created_at: string;
+}
+
 const ContractorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -59,6 +67,7 @@ const ContractorProfile = () => {
   
   const [contractor, setContractor] = useState<ContractorBusiness | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [projects, setProjects] = useState<ContractorProject[]>([]);
   const [suggestedContractors, setSuggestedContractors] = useState<ContractorBusiness[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewRating, setReviewRating] = useState<number>(5);
@@ -71,6 +80,7 @@ const ContractorProfile = () => {
     if (id) {
       fetchContractorProfile();
       fetchReviews();
+      fetchProjects();
     }
   }, [id]);
 
@@ -129,6 +139,21 @@ const ContractorProfile = () => {
       setReviews(reviewsWithProfiles);
     } catch (error: any) {
       console.error('Error fetching reviews:', error);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('contractor_projects')
+        .select('*')
+        .eq('contractor_id', id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProjects(data || []);
+    } catch (error: any) {
+      console.error('Error fetching projects:', error);
     }
   };
 
@@ -361,6 +386,47 @@ const ContractorProfile = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Projects */}
+            {projects.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FolderOpen className="h-5 w-5" />
+                    Projects ({projects.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {projects.map((project) => (
+                      <div key={project.id} className="border rounded-lg p-4">
+                        <h3 className="font-semibold text-lg mb-2">{project.title}</h3>
+                        {project.description && (
+                          <p className="text-muted-foreground mb-4">{project.description}</p>
+                        )}
+                        {project.images && project.images.length > 0 && (
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {project.images.map((image, index) => (
+                              <div
+                                key={index}
+                                className="aspect-square overflow-hidden rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                                onClick={() => setSelectedImage(image)}
+                              >
+                                <img
+                                  src={image}
+                                  alt={`${project.title} image ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Gallery */}
             {contractor.gallery_images && contractor.gallery_images.length > 0 && (
