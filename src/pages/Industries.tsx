@@ -10,6 +10,7 @@ import { Search, Wrench, Zap, Home, Droplets, Hammer, Paintbrush, TreePine, Car,
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CallToAction from '@/components/CallToAction';
 interface Industry {
   id: string;
   name: string;
@@ -490,6 +491,7 @@ const Industries = () => {
           </CardContent>
         </Card>
       </div>
+      <CallToAction />
       <Footer />
     </div>;
 };
