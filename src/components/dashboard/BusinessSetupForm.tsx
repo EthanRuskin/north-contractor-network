@@ -210,7 +210,45 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
 
         // Insert new services
         if (selectedServices.length > 0) {
-          const serviceInserts = selectedServices.map(serviceId => ({
+          const processedServiceIds = [];
+          
+          // Process each selected service
+          for (const serviceId of selectedServices) {
+            if (serviceId.startsWith('custom-')) {
+              // Handle custom service - create it first
+              const customServiceName = serviceId.replace('custom-', '');
+              
+              // Check if this custom service already exists
+              const { data: existingService } = await supabase
+                .from('services')
+                .select('id')
+                .eq('name', customServiceName)
+                .single();
+              
+              if (existingService) {
+                processedServiceIds.push(existingService.id);
+              } else {
+                // Create new custom service
+                const { data: newService, error: serviceError } = await supabase
+                  .from('services')
+                  .insert({
+                    name: customServiceName,
+                    description: `Custom service: ${customServiceName}`
+                  })
+                  .select('id')
+                  .single();
+                
+                if (serviceError) throw serviceError;
+                processedServiceIds.push(newService.id);
+              }
+            } else {
+              // Regular service - use the ID as is
+              processedServiceIds.push(serviceId);
+            }
+          }
+
+          // Insert contractor services with processed IDs
+          const serviceInserts = processedServiceIds.map(serviceId => ({
             contractor_id: businessId,
             service_id: serviceId,
           }));
