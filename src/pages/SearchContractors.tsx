@@ -656,7 +656,7 @@ const SearchContractors = () => {
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start gap-2">
                                 <div className="min-w-0 flex-1">
-                                  <CardTitle className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                                  <CardTitle className="text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
                                     {contractor.business_name}
                                   </CardTitle>
                                    {contractor.city && contractor.province && (
@@ -673,21 +673,6 @@ const SearchContractors = () => {
                                      </div>
                                    )}
                                 </div>
-                                
-                                {/* Rating Badge */}
-                                {contractor.rating > 0 && (
-                                  <div className="flex-shrink-0 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 px-2 py-1 rounded-full border border-yellow-200 dark:border-yellow-800">
-                                    <div className="flex items-center gap-1">
-                                      <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
-                                      <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300">
-                                        {contractor.rating.toFixed(1)}
-                                      </span>
-                                      <span className="text-xs text-yellow-600 dark:text-yellow-400">
-                                        ({contractor.review_count})
-                                      </span>
-                                    </div>
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>
@@ -721,13 +706,30 @@ const SearchContractors = () => {
 
                           {/* Footer */}
                           <div className="flex justify-between items-center pt-2 border-t border-border/50">
-                            {/* Experience */}
-                            {contractor.years_experience > 0 && (
-                              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                <Award className="h-3 w-3" />
-                                <span className="font-medium">{contractor.years_experience}y exp</span>
-                              </div>
-                            )}
+                            <div className="flex items-center gap-3">
+                              {/* Experience */}
+                              {contractor.years_experience > 0 && (
+                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                  <Award className="h-3 w-3" />
+                                  <span className="font-medium">{contractor.years_experience}y exp</span>
+                                </div>
+                              )}
+                              
+                              {/* Rating Badge - moved here under experience */}
+                              {contractor.rating > 0 && (
+                                <div className="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 px-2 py-1 rounded-full border border-yellow-200 dark:border-yellow-800">
+                                  <div className="flex items-center gap-1">
+                                    <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                                    <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300">
+                                      {contractor.rating.toFixed(1)}
+                                    </span>
+                                    <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                                      ({contractor.review_count})
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                             
                             {/* Contact Icons */}
                             <div className="flex gap-2">
@@ -751,10 +753,10 @@ const SearchContractors = () => {
                         </CardContent>
                       </div>
 
-                      {/* Right Side - Image Gallery and Actions */}
-                      {contractor.gallery_images && contractor.gallery_images.length > 0 && (
-                        <div className="w-48 flex flex-col" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex-1 p-3">
+                      {/* Right Side - Image Gallery and Actions - Always show this section */}
+                      <div className="w-48 flex flex-col" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex-1 p-3">
+                          {contractor.gallery_images && contractor.gallery_images.length > 0 ? (
                             <Carousel className="w-full h-full">
                               <CarouselContent>
                                 {contractor.gallery_images.map((image, index) => (
@@ -776,24 +778,31 @@ const SearchContractors = () => {
                                 </>
                               )}
                             </Carousel>
-                          </div>
-                          
-                          {/* Send Message Button */}
-                          {contractor.email && (
-                            <div className="p-3 pt-0">
-                              <Button 
-                                variant="outline"
-                                size="sm"
-                                className="w-full text-xs"
-                                onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}
-                              >
-                                <Send className="h-3 w-3 mr-1" />
-                                Message
-                              </Button>
+                          ) : (
+                            <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
+                              <div className="text-center text-muted-foreground">
+                                <Building2 className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                <p className="text-xs">No images</p>
+                              </div>
                             </div>
                           )}
                         </div>
-                      )}
+                        
+                        {/* Send Message Button */}
+                        {contractor.email && (
+                          <div className="p-3 pt-0">
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              className="w-full text-xs"
+                              onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}
+                            >
+                              <Send className="h-3 w-3 mr-1" />
+                              Message
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </Card>
                 ))}
