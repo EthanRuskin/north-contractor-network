@@ -686,80 +686,6 @@ const ContractorProfile = () => {
               </CardContent>
             </Card>
 
-            {/* Suggested Contractors */}
-            {suggestedContractors.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Similar Contractors You Might Like
-                  </CardTitle>
-                  <CardDescription>
-                    Other trusted contractors offering related services in your area
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {suggestedContractors.map((suggestedContractor) => (
-                      <Card 
-                        key={suggestedContractor.id} 
-                        className="cursor-pointer hover:shadow-md transition-shadow"
-                        onClick={() => navigate(`/contractor/${suggestedContractor.id}`)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-start gap-3">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={suggestedContractor.logo_url || ''} />
-                              <AvatarFallback className="text-sm">
-                                {suggestedContractor.business_name.slice(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-sm truncate">
-                                {suggestedContractor.business_name}
-                              </h4>
-                              <div className="flex items-center gap-1 mt-1">
-                                {suggestedContractor.rating > 0 && (
-                                  <>
-                                    {renderStars(suggestedContractor.rating)}
-                                    <span className="text-xs text-muted-foreground ml-1">
-                                      {suggestedContractor.rating.toFixed(1)} ({suggestedContractor.review_count})
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                                <MapPin className="h-3 w-3" />
-                                {suggestedContractor.city}, {suggestedContractor.province}
-                              </div>
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {suggestedContractor.contractor_services.slice(0, 2).map((cs, index) => (
-                                  <Badge key={index} variant="outline" className="text-xs">
-                                    {cs.services.name}
-                                  </Badge>
-                                ))}
-                                {suggestedContractor.contractor_services.length > 2 && (
-                                  <Badge variant="outline" className="text-xs">
-                                    +{suggestedContractor.contractor_services.length - 2}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    className="w-full mt-4"
-                    onClick={() => navigate('/search')}
-                  >
-                    Browse All Contractors
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Sidebar */}
@@ -899,6 +825,83 @@ const ContractorProfile = () => {
 
           </div>
         </div>
+
+        {/* Suggested Contractors - Full Width Section */}
+        {suggestedContractors.length > 0 && (
+          <div className="mt-12">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Similar Contractors You Might Like
+                </CardTitle>
+                <CardDescription>
+                  Other trusted contractors offering related services in your area
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {suggestedContractors.map((suggestedContractor) => (
+                    <Card 
+                      key={suggestedContractor.id} 
+                      className="cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => navigate(`/contractor/${suggestedContractor.id}`)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={suggestedContractor.logo_url || ''} />
+                            <AvatarFallback className="text-sm">
+                              {suggestedContractor.business_name.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm truncate">
+                              {suggestedContractor.business_name}
+                            </h4>
+                            <div className="flex items-center gap-1 mt-1">
+                              {suggestedContractor.rating > 0 && (
+                                <>
+                                  {renderStars(suggestedContractor.rating)}
+                                  <span className="text-xs text-muted-foreground ml-1">
+                                    {suggestedContractor.rating.toFixed(1)} ({suggestedContractor.review_count})
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                              <MapPin className="h-3 w-3" />
+                              {suggestedContractor.city}, {suggestedContractor.province}
+                            </div>
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {suggestedContractor.contractor_services.slice(0, 2).map((cs, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {cs.services.name}
+                                </Badge>
+                              ))}
+                              {suggestedContractor.contractor_services.length > 2 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{suggestedContractor.contractor_services.length - 2}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={() => navigate('/search')}
+                >
+                  Browse All Contractors
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Image Modal */}
         {selectedImage && (
