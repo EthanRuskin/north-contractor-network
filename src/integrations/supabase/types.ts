@@ -297,6 +297,42 @@ export type Database = {
           },
         ]
       }
+      saved_contractors: {
+        Row: {
+          contractor_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          contractor_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          contractor_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_contractors_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_contractors_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_search_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           created_at: string

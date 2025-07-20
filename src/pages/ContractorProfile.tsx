@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users, FolderOpen, Instagram, Facebook, Linkedin, Video, Music } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users, FolderOpen, Instagram, Facebook, Linkedin, Video, Music, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import GoogleMap from '@/components/GoogleMap';
@@ -87,14 +87,19 @@ const ContractorProfile = () => {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<ContractorProject | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [savingContractor, setSavingContractor] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchContractorProfile();
       fetchReviews();
       fetchProjects();
+      if (user) {
+        checkIfSaved();
+      }
     }
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     if (contractor) {
@@ -264,6 +269,77 @@ const ContractorProfile = () => {
     }
   };
 
+  const checkIfSaved = async () => {
+    if (!user || !id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('saved_contractors')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('contractor_id', id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      setIsSaved(!!data);
+    } catch (error: any) {
+      console.error('Error checking if contractor is saved:', error);
+    }
+  };
+
+  const toggleSaveContractor = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to save contractors",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSavingContractor(true);
+    try {
+      if (isSaved) {
+        // Unsave contractor
+        const { error } = await supabase
+          .from('saved_contractors')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('contractor_id', id!);
+        
+        if (error) throw error;
+        setIsSaved(false);
+        toast({
+          title: "Contractor removed",
+          description: "Contractor removed from your saved list",
+        });
+      } else {
+        // Save contractor
+        const { error } = await supabase
+          .from('saved_contractors')
+          .insert({
+            user_id: user.id,
+            contractor_id: id!,
+          });
+        
+        if (error) throw error;
+        setIsSaved(true);
+        toast({
+          title: "Contractor saved",
+          description: "Contractor added to your saved list",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSavingContractor(false);
+    }
+  };
+
   const renderStars = (rating: number, interactive = false, onRate?: (rating: number) => void) => {
     return (
       <div className="flex gap-1">
@@ -336,13 +412,30 @@ const ContractorProfile = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="flex items-start gap-3 mb-2">
-                      <h1 className="text-3xl font-bold text-foreground">{contractor.business_name}</h1>
-                      <GoogleVerificationBadge 
-                        isVerified={contractor.google_business_verified}
-                        verificationDate={contractor.google_verification_date}
-                        size="md"
-                      />
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-start gap-3">
+                        <h1 className="text-3xl font-bold text-foreground">{contractor.business_name}</h1>
+                        <GoogleVerificationBadge 
+                          isVerified={contractor.google_business_verified}
+                          verificationDate={contractor.google_verification_date}
+                          size="md"
+                        />
+                      </div>
+                      {user && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={toggleSaveContractor}
+                          disabled={savingContractor}
+                          className="h-10 w-10 rounded-full hover:bg-red-50 hover:text-red-600 transition-colors"
+                        >
+                          <Heart 
+                            className={`h-5 w-5 transition-colors ${
+                              isSaved ? 'fill-red-500 text-red-500' : 'text-muted-foreground'
+                            }`} 
+                          />
+                        </Button>
+                      )}
                     </div>
                     <div className="flex items-center gap-4 mt-2">
                       {contractor.city && contractor.province && (
