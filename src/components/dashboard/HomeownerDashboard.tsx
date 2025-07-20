@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, Star, Users, TrendingUp, ArrowRight, MessageSquare } from 'lucide-react';
+import { Search, Star, Users, TrendingUp, ArrowRight, MessageSquare, Heart, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface ContractorBusiness {
   id: string;
@@ -16,13 +17,25 @@ interface ContractorBusiness {
   review_count: number;
 }
 
+interface SavedContractor {
+  id: string;
+  contractor_id: string;
+  created_at: string;
+  contractor_businesses: ContractorBusiness;
+}
+
 const HomeownerDashboard = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [contractors, setContractors] = useState<ContractorBusiness[]>([]);
+  const [savedContractors, setSavedContractors] = useState<SavedContractor[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchContractors();
+    if (user) {
+      fetchSavedContractors();
+    }
   }, [user]);
 
   const fetchContractors = async () => {
@@ -41,6 +54,59 @@ const HomeownerDashboard = () => {
       console.error('Error fetching contractors:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSavedContractors = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('saved_contractors')
+        .select(`
+          id,
+          contractor_id,
+          created_at,
+          contractor_businesses (
+            id,
+            business_name,
+            description,
+            city,
+            province,
+            rating,
+            review_count
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setSavedContractors(data || []);
+    } catch (error) {
+      console.error('Error fetching saved contractors:', error);
+    }
+  };
+
+  const removeSavedContractor = async (savedContractorId: string) => {
+    try {
+      const { error } = await supabase
+        .from('saved_contractors')
+        .delete()
+        .eq('id', savedContractorId);
+
+      if (error) throw error;
+
+      setSavedContractors(prev => prev.filter(sc => sc.id !== savedContractorId));
+      toast({
+        title: "Contractor removed",
+        description: "Contractor removed from your saved list",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -215,6 +281,73 @@ const HomeownerDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Saved Contractors */}
+      {savedContractors.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-red-500" />
+                  Saved Contractors ({savedContractors.length})
+                </CardTitle>
+                <CardDescription>
+                  Contractors you've saved for easy access
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {savedContractors.map((savedContractor) => (
+                <Card key={savedContractor.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{savedContractor.contractor_businesses.business_name}</CardTitle>
+                        <CardDescription className="text-sm">
+                          {savedContractor.contractor_businesses.city}, {savedContractor.contractor_businesses.province}
+                        </CardDescription>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeSavedContractor(savedContractor.id)}
+                        className="h-8 w-8 text-muted-foreground hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium">{savedContractor.contractor_businesses.rating}</span>
+                      <span className="text-sm text-muted-foreground">
+                        ({savedContractor.contractor_businesses.review_count} reviews)
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      {savedContractor.contractor_businesses.description}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">
+                        Saved {new Date(savedContractor.created_at).toLocaleDateString()}
+                      </span>
+                      <Button size="sm" asChild>
+                        <Link to={`/contractor/${savedContractor.contractor_businesses.id}`}>
+                          View Profile
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Top Rated Contractors */}
       <Card>
