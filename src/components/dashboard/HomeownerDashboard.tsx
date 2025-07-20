@@ -297,7 +297,7 @@ const HomeownerDashboard = () => {
             <div className="flex justify-between items-center">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-red-500" />
+                  <Heart className="h-5 w-5" style={{ color: '#A4161A' }} />
                   Saved Contractors ({savedContractors.length})
                 </CardTitle>
                 <CardDescription>
@@ -322,7 +322,7 @@ const HomeownerDashboard = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeSavedContractor(savedContractor.id)}
-                        className="h-8 w-8 text-muted-foreground hover:text-red-600"
+                        className="h-8 w-8 text-muted-foreground hover:text-primary"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

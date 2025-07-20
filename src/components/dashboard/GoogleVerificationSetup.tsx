@@ -195,13 +195,13 @@ const GoogleVerificationSetup = ({ business, onVerificationComplete }: GoogleVer
         </div>
 
         {verificationResult && (
-          <Alert className={verificationResult.verified ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+          <Alert className={verificationResult.verified ? "border-green-200 bg-green-50" : "border-primary"} style={verificationResult.verified ? {} : { backgroundColor: '#A4161A20' }}>
             {verificationResult.verified ? (
               <Check className="h-4 w-4 text-green-600" />
             ) : (
-              <AlertCircle className="h-4 w-4 text-red-600" />
+              <AlertCircle className="h-4 w-4" style={{ color: '#A4161A' }} />
             )}
-            <AlertDescription className={verificationResult.verified ? "text-green-800" : "text-red-800"}>
+            <AlertDescription className={verificationResult.verified ? "text-green-800" : ""} style={verificationResult.verified ? {} : { color: '#A4161A' }}>
               {verificationResult.verified ? (
                 <>
                   <strong>Verification successful!</strong> Your business has been verified with Google Business Profile.

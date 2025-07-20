@@ -427,12 +427,12 @@ const ContractorProfile = () => {
                           size="icon"
                           onClick={toggleSaveContractor}
                           disabled={savingContractor}
-                          className="h-10 w-10 rounded-full hover:bg-red-50 hover:text-red-600 transition-colors"
+                          className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
                         >
                           <Heart 
                             className={`h-5 w-5 transition-colors ${
-                              isSaved ? 'fill-red-500 text-red-500' : 'text-muted-foreground'
-                            }`} 
+                              isSaved ? 'fill-primary text-primary' : 'text-muted-foreground'
+                            }`}
                           />
                         </Button>
                       )}
