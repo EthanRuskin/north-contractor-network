@@ -472,14 +472,7 @@ const Industries = () => {
                   <Label htmlFor="industry-name">Industry Name *</Label>
                   <Input id="industry-name" placeholder="e.g., Pool Maintenance, Solar Installation" value={newIndustryName} onChange={e => setNewIndustryName(e.target.value)} required />
                 </div>
-                <div>
-                  <Label htmlFor="industry-category">Suggested Category</Label>
-                  <select id="industry-category" className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm">
-                    <option value="">Select a category</option>
-                    {categories.map(category => <option key={category} value={category}>{category}</option>)}
-                    <option value="other">Other</option>
-                  </select>
-                </div>
+                
               </div>
               
               <div>
