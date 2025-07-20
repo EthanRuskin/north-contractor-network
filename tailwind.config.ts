@@ -122,9 +122,7 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'hero-gradient': 'var(--hero-gradient)',
-				'steel-gradient': 'var(--steel-gradient)',
-				'texture-metal': 'var(--texture-metal)'
+				/* Removed gradients for clean industrial look */
 			},
 			boxShadow: {
 				'card': 'var(--card-shadow)',
