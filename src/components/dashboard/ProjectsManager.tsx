@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { FolderOpen, Plus, Trash2, Upload, X } from 'lucide-react';
+import { FolderOpen, Plus, Trash2, Upload, X, Edit3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Project {
@@ -32,6 +32,8 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
   });
   const [uploading, setUploading] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editImages, setEditImages] = useState<string[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -105,6 +107,49 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
     }
   };
 
+  const handleEditImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (const file of Array.from(files)) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `project-${Date.now()}-${Math.random()}.${fileExt}`;
+        const filePath = `${contractorId}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('contractor-galleries')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('contractor-galleries')
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(publicUrl);
+      }
+
+      setEditImages(prev => [...prev, ...uploadedUrls]);
+
+      toast({
+        title: "Images uploaded",
+        description: `${uploadedUrls.length} image(s) uploaded successfully`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const removeImage = (index: number) => {
     setNewProject(prev => ({
       ...prev,
@@ -145,6 +190,45 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
     } catch (error: any) {
       toast({
         title: "Error creating project",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const removeEditImage = (index: number) => {
+    setEditImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const startEditingProject = (project: Project) => {
+    setEditingProject(project);
+    setEditImages([...project.images]);
+  };
+
+  const updateProject = async () => {
+    if (!editingProject) return;
+
+    try {
+      const { error } = await supabase
+        .from('contractor_projects')
+        .update({
+          images: editImages
+        })
+        .eq('id', editingProject.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Project updated",
+        description: "Project images have been updated successfully",
+      });
+
+      setEditingProject(null);
+      setEditImages([]);
+      fetchProjects();
+    } catch (error: any) {
+      toast({
+        title: "Error updating project",
         description: error.message,
         variant: "destructive",
       });
@@ -337,6 +421,19 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                   
+                  {/* Edit button */}
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="absolute top-2 right-12 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEditingProject(project);
+                    }}
+                  >
+                    <Edit3 className="h-4 w-4" />
+                  </Button>
+                  
                   {/* Title overlay */}
                   <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-3">
                     <h3 className="text-white font-semibold text-sm leading-tight">{project.title}</h3>
@@ -384,6 +481,109 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
                     No images in this project
                   </div>
                 )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Project Images Dialog */}
+      <Dialog open={!!editingProject} onOpenChange={() => {
+        setEditingProject(null);
+        setEditImages([]);
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden">
+          {editingProject && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Edit Images - {editingProject.title}</DialogTitle>
+                <p className="text-muted-foreground">Add, remove, or reorder project images</p>
+              </DialogHeader>
+              <div className="overflow-y-auto max-h-[70vh] space-y-4">
+                {/* Upload new images */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Add New Images</label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600 mb-2">
+                      Upload additional project photos
+                    </p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleEditImageUpload}
+                      className="hidden"
+                      id="edit-image-upload"
+                      disabled={uploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={uploading}
+                      onClick={() => document.getElementById('edit-image-upload')?.click()}
+                    >
+                      {uploading ? 'Uploading...' : 'Add Images'}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Current images */}
+                {editImages.length > 0 && (
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      Current Images ({editImages.length})
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {editImages.map((image, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={image}
+                            alt={`Project image ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg"
+                          />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => removeEditImage(index)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                          <div className="absolute bottom-1 left-1 bg-black/70 text-white px-1 py-0.5 rounded text-xs">
+                            {index + 1}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {editImages.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FolderOpen className="h-8 w-8 mx-auto mb-2" />
+                    No images in this project
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex gap-2 pt-4 border-t">
+                <Button 
+                  onClick={updateProject} 
+                  disabled={uploading}
+                >
+                  Save Changes
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setEditingProject(null);
+                    setEditImages([]);
+                  }}
+                >
+                  Cancel
+                </Button>
               </div>
             </>
           )}
