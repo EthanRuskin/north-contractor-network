@@ -22,7 +22,7 @@ const Header = () => {
             </h1>
           </Link>
           
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-6">
             <button 
               onClick={() => navigate('/search')}
               className="text-foreground hover:text-primary transition-colors flex items-center gap-1"
@@ -62,16 +62,16 @@ const Header = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile & Tablet Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t">
+          <div className="lg:hidden mt-4 pb-4 border-t">
             <nav className="mt-4 space-y-2">
               <button 
                 onClick={() => {
