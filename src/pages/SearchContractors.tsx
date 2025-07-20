@@ -377,14 +377,14 @@ const SearchContractors = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Find Contractors</h1>
-          <p className="text-muted-foreground">Discover trusted contractors in your area</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">Find Contractors</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Discover trusted contractors in your area</p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-4">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 order-2 lg:order-1">
             <Card className="lg:sticky lg:top-4">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -401,9 +401,9 @@ const SearchContractors = () => {
                 {/* Search */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">🔍 Keyword Search</label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
-                      placeholder='Try "best landscaper", "reliable plumber"...'
+                      placeholder='Try "best landscaper"...'
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       onKeyDown={(e) => {
@@ -416,7 +416,7 @@ const SearchContractors = () => {
                     <Button 
                       onClick={handleSearch}
                       disabled={loading}
-                      className="px-4"
+                      className="px-4 w-full sm:w-auto"
                     >
                       <Search className="h-4 w-4 mr-1" />
                       Search
@@ -607,9 +607,9 @@ const SearchContractors = () => {
           </div>
 
           {/* Results */}
-          <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">
+          <div className="lg:col-span-3 order-1 lg:order-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-2">
+              <h2 className="text-lg sm:text-xl font-semibold">
                 {filteredAndSortedContractors.length} Contractors Found
               </h2>
             </div>
@@ -623,16 +623,16 @@ const SearchContractors = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-1">
                 {filteredAndSortedContractors.map(contractor => (
                   <Card 
                     key={contractor.id} 
                     className="group hover:shadow-xl hover:scale-[1.01] transition-all duration-300 cursor-pointer border-l-4 border-l-primary/20 hover:border-l-primary bg-gradient-to-br from-card to-card/80 backdrop-blur-sm"
                     onClick={() => navigate(`/contractor/${contractor.id}`)}
                   >
-                    {/* Landscape Layout */}
-                    <div className="flex h-full">
-                      {/* Left Side - Content */}
+                    {/* Mobile-First Layout */}
+                    <div className="flex flex-col sm:flex-row h-full">
+                      {/* Main Content */}
                       <div className="flex-1 flex flex-col">
                         {/* Header */}
                         <CardHeader className="pb-3">
@@ -656,7 +656,7 @@ const SearchContractors = () => {
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start gap-2">
                                 <div className="min-w-0 flex-1">
-                                  <CardTitle className="text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
+                                  <CardTitle className="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
                                     {contractor.business_name}
                                   </CardTitle>
                                    {contractor.city && contractor.province && (
@@ -753,8 +753,8 @@ const SearchContractors = () => {
                         </CardContent>
                       </div>
 
-                      {/* Right Side - Image Gallery and Actions - Always show this section */}
-                      <div className="w-48 flex flex-col" onClick={(e) => e.stopPropagation()}>
+                      {/* Image Gallery Section - Hide on mobile, show on larger screens */}
+                      <div className="hidden sm:flex w-48 flex-col" onClick={(e) => e.stopPropagation()}>
                         <div className="flex-1 p-3">
                           {contractor.gallery_images && contractor.gallery_images.length > 0 ? (
                             <Carousel className="w-full h-full">
@@ -802,6 +802,40 @@ const SearchContractors = () => {
                             </Button>
                           </div>
                         )}
+                      </div>
+
+                      {/* Mobile Image Gallery - Show on mobile only */}
+                      <div className="sm:hidden" onClick={(e) => e.stopPropagation()}>
+                        <CardContent className="pt-0 pb-3">
+                          <h4 className="text-sm font-medium text-foreground mb-2">Portfolio Images</h4>
+                          {contractor.gallery_images && contractor.gallery_images.length > 0 ? (
+                            <div className="grid grid-cols-2 gap-2">
+                              {contractor.gallery_images.slice(0, 4).map((image, index) => (
+                                <img
+                                  key={index}
+                                  src={image}
+                                  alt={`${contractor.business_name} work ${index + 1}`}
+                                  className="w-full h-20 object-cover rounded-md"
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm italic">No images</p>
+                          )}
+                          
+                          {/* Mobile Message Button */}
+                          {contractor.email && (
+                            <Button 
+                              variant="outline"
+                              size="sm"
+                              className="w-full mt-3 text-sm"
+                              onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}
+                            >
+                              <Send className="h-4 w-4 mr-2" />
+                              Send Message
+                            </Button>
+                          )}
+                        </CardContent>
                       </div>
                     </div>
                   </Card>
