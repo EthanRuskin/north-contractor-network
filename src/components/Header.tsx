@@ -32,9 +32,9 @@ const Header = () => {
             <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors">
               How It Works
             </Link>
-            <a href="#services" className="text-foreground hover:text-primary transition-colors">
-              Services
-            </a>
+            <Link to="/industries" className="text-foreground hover:text-primary transition-colors">
+              Industries
+            </Link>
             
             {user ? (
               <div className="flex items-center gap-2">
@@ -84,9 +84,9 @@ const Header = () => {
               <Link to="/how-it-works" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
                 How It Works
               </Link>
-              <a href="#services" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
-                Services
-              </a>
+              <Link to="/industries" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
+                Industries
+              </Link>
               
               {user ? (
                 <div className="space-y-2 pt-2 border-t">
