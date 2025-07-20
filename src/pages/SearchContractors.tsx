@@ -384,7 +384,7 @@ const SearchContractors = () => {
 
         <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
-          <div className="lg:col-span-1 order-2 lg:order-1">
+          <div className="lg:col-span-1 order-1">
             <Card className="lg:sticky lg:top-4">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -607,7 +607,7 @@ const SearchContractors = () => {
           </div>
 
           {/* Results */}
-          <div className="lg:col-span-3 order-1 lg:order-2">
+          <div className="lg:col-span-3 order-2">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-2">
               <h2 className="text-lg sm:text-xl font-semibold">
                 {filteredAndSortedContractors.length} Contractors Found
