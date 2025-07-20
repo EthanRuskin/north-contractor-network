@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users, FolderOpen, Instagram, Facebook, Linkedin, Video, Music, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import CallToAction from '@/components/CallToAction';
 import GoogleMap from '@/components/GoogleMap';
 import BusinessHours from '@/components/BusinessHours';
 import GoogleVerificationBadge from '@/components/GoogleVerificationBadge';
@@ -928,7 +930,10 @@ const ContractorProfile = () => {
             </DialogContent>
           </Dialog>
         )}
+
+        <CallToAction />
       </div>
+      <Footer />
     </div>
   );
 };
