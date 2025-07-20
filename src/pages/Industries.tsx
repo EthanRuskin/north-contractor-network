@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Search, Wrench, Zap, Home, Droplets, Hammer, Paintbrush, TreePine, Car, Flame, Send, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface Industry {
   id: string;
@@ -305,6 +306,7 @@ const Industries = () => {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 };
