@@ -391,7 +391,7 @@ const ContractorProfile = () => {
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/search')}
           className="mb-6 gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
