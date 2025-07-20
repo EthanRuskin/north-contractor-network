@@ -26,19 +26,19 @@ const ServiceCategories = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
           {services.map((service, index) => (
             <div 
               key={service.name}
-              className="text-center p-6 rounded-xl border hover:border-primary hover:shadow-card-hover transition-all duration-300 cursor-pointer group"
+              className="text-center p-4 sm:p-6 rounded-xl border hover:border-primary hover:shadow-card-hover transition-all duration-300 cursor-pointer group"
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={() => navigate('/search')}
             >
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                <service.icon className="w-8 h-8 text-primary" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-primary/20 transition-colors">
+                <service.icon className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">{service.name}</h3>
-              <p className="text-sm text-muted-foreground hidden lg:block">{service.description}</p>
+              <h3 className="font-semibold text-foreground mb-2 text-sm sm:text-base">{service.name}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground hidden lg:block">{service.description}</p>
             </div>
           ))}
         </div>

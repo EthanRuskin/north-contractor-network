@@ -122,7 +122,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mx-auto">
         <div className="flex items-center justify-center mb-8">
           <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
             <ArrowLeft className="h-4 w-4" />
@@ -131,7 +131,7 @@ const Auth = () => {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">Northern Contractor Network</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">Northern Contractor Network</h1>
           <p className="text-muted-foreground mt-2">Connect with trusted contractors</p>
         </div>
 
@@ -266,19 +266,19 @@ const Auth = () => {
                       autoComplete="new-password"
                     />
                   </div>
-                  <div className="space-y-3">
-                    <Label>I am a:</Label>
-                    <RadioGroup name="userType" defaultValue="homeowner" className="flex gap-6">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="homeowner" id="homeowner" />
-                        <Label htmlFor="homeowner">Homeowner</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="contractor" id="contractor" />
-                        <Label htmlFor="contractor">Contractor</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
+                   <div className="space-y-3">
+                     <Label>I am a:</Label>
+                     <RadioGroup name="userType" defaultValue="homeowner" className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                       <div className="flex items-center space-x-2">
+                         <RadioGroupItem value="homeowner" id="homeowner" />
+                         <Label htmlFor="homeowner">Homeowner</Label>
+                       </div>
+                       <div className="flex items-center space-x-2">
+                         <RadioGroupItem value="contractor" id="contractor" />
+                         <Label htmlFor="contractor">Contractor</Label>
+                       </div>
+                     </RadioGroup>
+                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Creating Account..." : "Create Account"}
                   </Button>

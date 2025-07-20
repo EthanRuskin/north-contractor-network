@@ -34,8 +34,8 @@ const Hero = () => {
               Connect with pre-screened professionals for your home improvement and repair needs.
             </p>
             
-            <div className="bg-background/95 p-6 rounded-xl shadow-elegant space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">
+            <div className="bg-background/95 p-4 sm:p-6 rounded-xl shadow-elegant space-y-4">
+              <h3 className="text-base sm:text-lg font-semibold text-foreground">
                 What do you need help with?
               </h3>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -65,12 +65,12 @@ const Hero = () => {
               </div>
             </div>
             
-            <div className="flex flex-wrap gap-4 text-sm">
-              <span className="text-primary-foreground/80">Popular:</span>
+            <div className="flex flex-wrap gap-2 sm:gap-4 text-sm">
+              <span className="text-primary-foreground/80 hidden sm:inline">Popular:</span>
               {["Plumbing", "Electrical", "Roofing", "HVAC", "Painting"].map((service) => (
                 <button 
                   key={service}
-                  className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition-colors"
+                  className="bg-white/20 hover:bg-white/30 px-2 sm:px-3 py-1 rounded-full transition-colors text-xs sm:text-sm"
                 >
                   {service}
                 </button>

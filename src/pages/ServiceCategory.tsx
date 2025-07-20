@@ -134,7 +134,7 @@ const ServiceCategory = () => {
         </Button>
 
         {/* Service Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 px-4 sm:px-0">
           <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
             {service.icon ? (
               <span className="text-2xl">{service.icon}</span>
@@ -142,13 +142,13 @@ const ServiceCategory = () => {
               <span className="text-2xl">🔧</span>
             )}
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">{service.name}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{service.name}</h1>
           {service.description && (
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
               {service.description}
             </p>
           )}
-          <div className="flex items-center justify-center gap-4 mt-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
               <span>{contractors.length} contractors available</span>
@@ -181,7 +181,7 @@ const ServiceCategory = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {contractors.slice(0, 6).map(contractor => (
                 <Card 
                   key={contractor.id} 
@@ -250,7 +250,7 @@ const ServiceCategory = () => {
             <CardTitle>About {service.name} Services</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
               <div>
                 <h4 className="font-semibold mb-3">What to Expect</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">

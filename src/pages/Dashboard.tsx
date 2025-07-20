@@ -88,12 +88,12 @@ const Dashboard = () => {
       {profile?.user_type === 'homeowner' && (
         <div className="border-b bg-card">
           <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-foreground">Welcome back, {profile?.full_name || user.email}!</h2>
                 <p className="text-sm text-muted-foreground">Find and connect with trusted contractors</p>
               </div>
-              <Button onClick={handleSignOut} variant="outline" size="sm">
+              <Button onClick={handleSignOut} variant="outline" size="sm" className="self-start sm:self-center">
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>

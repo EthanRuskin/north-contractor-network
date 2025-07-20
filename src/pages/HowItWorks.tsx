@@ -12,11 +12,11 @@ const HowItWorks = () => {
       
       <main className="container mx-auto px-4 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+        <div className="text-center mb-16 px-4 sm:px-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
             How It Works
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
             Northern Contractor Network is a non-profit directory dedicated to helping Canadian contractors 
             connect with homeowners while supporting Canadian families in need.
           </p>
@@ -27,7 +27,7 @@ const HowItWorks = () => {
         </div>
 
         {/* Mission Section */}
-        <div className="grid md:grid-cols-2 gap-12 mb-16">
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-16">
           <div>
             <h2 className="text-3xl font-bold text-foreground mb-6">Our Mission</h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
@@ -61,8 +61,8 @@ const HowItWorks = () => {
 
         {/* How We Help Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-12">How We Help</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-12">How We Help</h2>
+          <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <Card>
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
@@ -112,8 +112,8 @@ const HowItWorks = () => {
 
         {/* Process Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-12">The Process</h2>
-          <div className="grid md:grid-cols-4 gap-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-12">The Process</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-xl">
                 1
@@ -154,11 +154,11 @@ const HowItWorks = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-primary/5 rounded-2xl p-12">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
+        <div className="text-center bg-primary/5 rounded-2xl p-6 sm:p-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
             Ready to Make a Difference?
           </h2>
-          <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base sm:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto">
             Join our community of Canadian contractors and homeowners working together 
             to build stronger communities and support families in need.
           </p>

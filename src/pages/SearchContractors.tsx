@@ -385,7 +385,7 @@ const SearchContractors = () => {
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-4">
+            <Card className="lg:sticky lg:top-4">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
@@ -623,7 +623,7 @@ const SearchContractors = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
                 {filteredAndSortedContractors.map(contractor => (
                   <Card 
                     key={contractor.id} 

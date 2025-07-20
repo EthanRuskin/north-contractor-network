@@ -198,27 +198,27 @@ const Industries = () => {
         </Card>
 
         {/* Industries Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-12">
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-12">
           {filteredIndustries.map((industry) => (
             <Card key={industry.id} className="hover:shadow-md transition-shadow cursor-pointer group">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <industry.icon className="h-6 w-6 text-primary" />
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
+                    <industry.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-1 sm:gap-2">
+                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-sm sm:text-base">
                         {industry.name}
                       </h3>
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs self-start">
                         {industry.category}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2">
                       {industry.description}
                     </p>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0 text-xs text-muted-foreground">
                       <span>{industry.contractorCount} contractors</span>
                       <div className="flex items-center gap-1">
                         <span>★ {industry.avgRating}</span>
@@ -255,7 +255,7 @@ const Industries = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleRequestSubmit} className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
                 <div>
                   <Label htmlFor="industry-name">Industry Name *</Label>
                   <Input

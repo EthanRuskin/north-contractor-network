@@ -16,8 +16,9 @@ const Header = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">N</span>
             </div>
-            <h1 className="text-xl font-bold text-foreground">
-              Northern Contractor Network
+            <h1 className="text-lg sm:text-xl font-bold text-foreground">
+              <span className="hidden sm:inline">Northern Contractor Network</span>
+              <span className="sm:hidden">NCN</span>
             </h1>
           </Link>
           

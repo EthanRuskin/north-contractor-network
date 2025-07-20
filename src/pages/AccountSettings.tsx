@@ -129,7 +129,7 @@ const AccountSettings = () => {
           Back to Dashboard
         </Button>
 
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Account Settings</h1>
             <p className="text-muted-foreground mt-2">

@@ -400,21 +400,21 @@ const ContractorProfile = () => {
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 order-last lg:order-first">
             {/* Header */}
             <Card>
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src={contractor.logo_url || ''} />
-                    <AvatarFallback className="text-lg">
-                      {contractor.business_name.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-start gap-3">
-                        <h1 className="text-3xl font-bold text-foreground">{contractor.business_name}</h1>
+                 <div className="flex flex-col sm:flex-row items-start gap-4">
+                   <Avatar className="h-16 w-16 mx-auto sm:mx-0">
+                     <AvatarImage src={contractor.logo_url || ''} />
+                     <AvatarFallback className="text-lg">
+                       {contractor.business_name.slice(0, 2).toUpperCase()}
+                     </AvatarFallback>
+                   </Avatar>
+                   <div className="flex-1 text-center sm:text-left">
+                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
+                       <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
+                         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{contractor.business_name}</h1>
                         <GoogleVerificationBadge 
                           isVerified={contractor.google_business_verified}
                           verificationDate={contractor.google_verification_date}
@@ -457,22 +457,22 @@ const ContractorProfile = () => {
                   </div>
                 </div>
                 
-                {/* Gallery Images */}
-                {contractor.gallery_images && contractor.gallery_images.length > 0 && (
-                  <div className="mt-6">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {contractor.gallery_images.map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`${contractor.business_name} work ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => setSelectedImage(image)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
+                 {/* Gallery Images */}
+                 {contractor.gallery_images && contractor.gallery_images.length > 0 && (
+                   <div className="mt-6">
+                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-4">
+                       {contractor.gallery_images.map((image, index) => (
+                         <img
+                           key={index}
+                           src={image}
+                           alt={`${contractor.business_name} work ${index + 1}`}
+                           className="w-full h-24 sm:h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                           onClick={() => setSelectedImage(image)}
+                         />
+                       ))}
+                     </div>
+                   </div>
+                 )}
               </CardContent>
             </Card>
 
