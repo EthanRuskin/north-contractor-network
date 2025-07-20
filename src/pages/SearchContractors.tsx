@@ -11,6 +11,8 @@ import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Aw
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
+import CallToAction from '@/components/CallToAction';
+import Footer from '@/components/Footer';
 
 interface Service {
   id: string;
@@ -845,6 +847,12 @@ const SearchContractors = () => {
           </div>
         </div>
       </div>
+      
+      {/* CTA Section */}
+      <CallToAction />
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
