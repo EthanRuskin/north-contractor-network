@@ -12,7 +12,7 @@ const CallToAction = () => {
     <section className="py-16 text-foreground" style={{ backgroundColor: '#D3D3D3' }}>
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-6" style={{ color: '#A4161A' }}>
             Ready to Start Your Project?
           </h2>
           <p className="text-xl mb-8 text-primary-foreground/90">
