@@ -140,7 +140,7 @@ export default {
 			fontFamily: {
 				'industrial': ['Inter', 'system-ui', 'sans-serif'],
 				'mono-industrial': ['JetBrains Mono', 'Consolas', 'monospace'],
-				'heading': ['Special Gothic Expanded One', 'sans-serif']
+				'heading': ['Michroma', 'sans-serif']
 			},
 			spacing: {
 				'industrial': '0.375rem' /* 6px - precise industrial spacing */
