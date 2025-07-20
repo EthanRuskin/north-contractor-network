@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Star, MessageSquare, TrendingUp, Zap, Target, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Star, MessageSquare, TrendingUp, Zap, Target, ExternalLink, Settings } from 'lucide-react';
 import BusinessSetupForm from './BusinessSetupForm';
 import ContractorOnboarding from '../onboarding/ContractorOnboarding';
 import ProjectsManager from './ProjectsManager';
@@ -131,10 +132,18 @@ const ContractorDashboard = () => {
           <h2 className="text-3xl font-bold text-foreground">Contractor Dashboard</h2>
           <p className="text-muted-foreground">Manage your business profile and services</p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="gap-2">
-          <Edit className="h-4 w-4" />
-          Edit Business
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="gap-2">
+            <Link to="/account-settings">
+              <Settings className="h-4 w-4" />
+              Account Settings
+            </Link>
+          </Button>
+          <Button onClick={() => setShowForm(true)} className="gap-2">
+            <Edit className="h-4 w-4" />
+            Edit Business
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, Star, Users, TrendingUp, ArrowRight, MessageSquare, Heart, Trash2 } from 'lucide-react';
+import { Search, Star, Users, TrendingUp, ArrowRight, MessageSquare, Heart, Trash2, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -121,13 +121,21 @@ const HomeownerDashboard = () => {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-foreground mb-4">
-          Welcome to Northern Contractor Network
-        </h1>
-        <p className="text-xl text-muted-foreground">
-          Find trusted contractors for your home improvement projects
-        </p>
+      <div className="flex justify-between items-start">
+        <div className="text-center flex-1">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Welcome to Northern Contractor Network
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Find trusted contractors for your home improvement projects
+          </p>
+        </div>
+        <Button asChild variant="outline" className="gap-2">
+          <Link to="/account-settings">
+            <Settings className="h-4 w-4" />
+            Account Settings
+          </Link>
+        </Button>
       </div>
 
       {/* How it works cards */}
