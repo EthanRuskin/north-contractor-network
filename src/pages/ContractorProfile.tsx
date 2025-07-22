@@ -931,37 +931,39 @@ const ContractorProfile = () => {
           </Dialog>
         )}
 
-        <section className="py-16 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Find Your Perfect Contractor?
-            </h2>
-            <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
-              Join thousands of homeowners who have found reliable, verified contractors through our platform
-            </p>
-            
-            <div className="flex flex-wrap justify-center gap-6 mb-8">
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                <span className="text-sm">Verified & Insured Contractors</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                <span className="text-sm">Quick Response Times</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span className="text-sm">Thousands of Satisfied Customers</span>
-              </div>
-            </div>
-            
-            <Button size="lg" variant="secondary" className="group">
-              Get Started Today
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Button>
-          </div>
-        </section>
       </div>
+
+      {/* CTA Section - Full Width */}
+      <section className="py-16 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Find Your Perfect Contractor?
+          </h2>
+          <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
+            Join thousands of homeowners who have found reliable, verified contractors through our platform
+          </p>
+          
+          <div className="flex flex-wrap justify-center gap-6 mb-8">
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              <span className="text-sm">Verified & Insured Contractors</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              <span className="text-sm">Quick Response Times</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              <span className="text-sm">Thousands of Satisfied Customers</span>
+            </div>
+          </div>
+          
+          <Button size="lg" variant="secondary" className="group">
+            Get Started Today
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </div>
+      </section>
       <Footer />
     </div>
   );
