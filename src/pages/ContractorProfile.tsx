@@ -209,7 +209,7 @@ const ContractorProfile = () => {
           }, 0)
         }))
         .sort((a, b) => b.relevanceScore - a.relevanceScore || b.rating - a.rating)
-        .slice(0, 3);
+        .slice(0, 6);
       
       setSuggestedContractors(suggested);
     } catch (error: any) {
@@ -842,7 +842,7 @@ const ContractorProfile = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                   {suggestedContractors.map((suggestedContractor) => (
                     <Card 
                       key={suggestedContractor.id} 
