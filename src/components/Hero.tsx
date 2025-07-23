@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
 import heroImage from "@/assets/hero-contractor.jpg";
+import canadaFlagSubtle from "@/assets/canada-flag-subtle.png";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -23,7 +24,13 @@ const Hero = () => {
 
   return (
     <section className="relative bg-hero-gradient text-primary-foreground overflow-hidden">
-      <div className="absolute inset-0" style={{ backgroundColor: '#A4161A' }}></div>
+      <div 
+        className="absolute inset-0 bg-no-repeat bg-center bg-cover opacity-80"
+        style={{
+          backgroundImage: `url(${canadaFlagSubtle})`,
+          backgroundColor: '#A4161A'
+        }}
+      ></div>
       <div className="relative container mx-auto px-4 py-20 lg:py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8 animate-fade-in">
