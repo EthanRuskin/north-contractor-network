@@ -4,11 +4,22 @@ import { Heart, MapPin, Users, Handshake } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
+import canadaMapSubtle from "@/assets/canada-map-subtle.png";
 
 const HowItWorks = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-background relative">
+      {/* Canadian Map Background */}
+      <div 
+        className="fixed inset-0 opacity-5 bg-no-repeat bg-center bg-contain pointer-events-none z-0"
+        style={{
+          backgroundImage: `url(${canadaMapSubtle})`,
+          backgroundSize: '80%',
+        }}
+      ></div>
+      
+      <div className="relative z-10">
+        <Header />
       
       <main className="container mx-auto px-4 py-12">
         {/* Hero Section */}
@@ -202,6 +213,7 @@ const HowItWorks = () => {
       </section>
 
       <Footer />
+      </div>
     </div>
   );
 };

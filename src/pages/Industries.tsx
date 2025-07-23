@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CallToAction from '@/components/CallToAction';
+import canadaMapSubtle from "@/assets/canada-map-subtle.png";
 interface Industry {
   id: string;
   name: string;
@@ -352,9 +353,19 @@ const Industries = () => {
       setSubmittingRequest(false);
     }, 1000);
   };
-  return <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+  return <div className="min-h-screen bg-background relative">
+      {/* Canadian Map Background */}
+      <div 
+        className="fixed inset-0 opacity-5 bg-no-repeat bg-center bg-contain pointer-events-none z-0"
+        style={{
+          backgroundImage: `url(${canadaMapSubtle})`,
+          backgroundSize: '80%',
+        }}
+      ></div>
+      
+      <div className="relative z-10">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">
@@ -493,6 +504,7 @@ const Industries = () => {
       </div>
       <CallToAction />
       <Footer />
+      </div>
     </div>;
 };
 export default Industries;
