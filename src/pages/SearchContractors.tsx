@@ -395,7 +395,7 @@ const SearchContractors = () => {
             <p className="text-sm sm:text-base text-muted-foreground">Discover trusted contractors in your area</p>
           </div>
 
-        <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
+          <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1 order-1">
             <Card className="lg:sticky lg:top-4">
@@ -856,6 +856,7 @@ const SearchContractors = () => {
               </div>
             )}
           </div>
+        </div>
         </div>
         
         {/* CTA Section */}
