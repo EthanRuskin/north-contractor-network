@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import CallToAction from '@/components/CallToAction';
 import Footer from '@/components/Footer';
+import canadaMapSubtle from '@/assets/canada-map-subtle.png';
 
 interface Service {
   id: string;
@@ -376,13 +377,23 @@ const SearchContractors = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">Find Contractors</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Discover trusted contractors in your area</p>
-        </div>
+    <div className="min-h-screen bg-background relative">
+      {/* Canadian Map Background */}
+      <div 
+        className="fixed inset-0 opacity-5 bg-no-repeat bg-center bg-contain pointer-events-none z-0"
+        style={{
+          backgroundImage: `url(${canadaMapSubtle})`,
+          backgroundSize: '80%',
+        }}
+      ></div>
+      
+      <div className="relative z-10">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">Find Contractors</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Discover trusted contractors in your area</p>
+          </div>
 
         <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
@@ -846,13 +857,13 @@ const SearchContractors = () => {
             )}
           </div>
         </div>
+        
+        {/* CTA Section */}
+        <CallToAction />
+        
+        {/* Footer */}
+        <Footer />
       </div>
-      
-      {/* CTA Section */}
-      <CallToAction />
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };
