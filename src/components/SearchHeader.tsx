@@ -45,7 +45,7 @@ const SearchHeader = ({
           {/* Logo */}
           <Link to="/" className="flex items-center flex-shrink-0">
             <img 
-              src="/lovable-uploads/4eac4151-bd18-49d2-8c36-86fdd4488e08.png" 
+              src="/lovable-uploads/c15adedd-179b-4525-a858-3396d72eeb9c.png" 
               alt="Northern Contractor Network" 
               className="h-8 sm:h-10 w-auto max-w-[200px] object-contain" 
             />
