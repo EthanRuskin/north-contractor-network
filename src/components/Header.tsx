@@ -16,7 +16,7 @@ const Header = () => {
             <img 
               src="/lovable-uploads/331e323b-8177-4b3d-bae3-e5583eaaaf68.png" 
               alt="Northern Contractor Network" 
-              className="h-8 sm:h-10 w-auto max-w-[200px] sm:max-w-[250px] object-contain"
+              className="h-12 sm:h-16 w-auto max-w-[300px] sm:max-w-[400px] object-contain"
             />
           </Link>
           
