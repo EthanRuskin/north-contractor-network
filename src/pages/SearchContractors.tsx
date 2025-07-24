@@ -389,11 +389,56 @@ const SearchContractors = () => {
       
       <div className="relative z-10">
         <Header />
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">Find Contractors</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Discover trusted contractors in your area</p>
+        
+        {/* Main Search Bar */}
+        <div className="bg-gradient-to-r from-primary/5 to-primary/10 py-8">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-foreground mb-6">Find Contractors</h1>
+              <div className="flex flex-col md:flex-row gap-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <div className="flex-1">
+                  <Input
+                    placeholder="What service do you need? (e.g., Plumbers, Electrician)"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                    className="border-0 focus:ring-0 focus:outline-none h-14 text-lg rounded-none"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    ref={autocompleteRef}
+                    placeholder="Where? (e.g., Toronto, ON)"
+                    value={locationQuery}
+                    onChange={(e) => setLocationQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                    className="border-0 focus:ring-0 focus:outline-none h-14 text-lg border-l border-gray-200 dark:border-gray-600 rounded-none"
+                  />
+                </div>
+                <Button 
+                  onClick={handleSearch}
+                  disabled={loading}
+                  size="lg"
+                  className="h-14 px-8 rounded-none"
+                >
+                  <Search className="h-5 w-5 mr-2" />
+                  Search
+                </Button>
+              </div>
+              <p className="text-center text-sm text-muted-foreground mt-4">Discover trusted contractors in your area</p>
+            </div>
           </div>
+        </div>
+        
+        <div className="container mx-auto px-4 py-8">
 
           <div className="grid gap-6 lg:gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
