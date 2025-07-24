@@ -518,37 +518,6 @@ const ContractorProfile = () => {
               </CardContent>
             </Card>
 
-            {/* Projects */}
-            {projects.length > 0 && <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FolderOpen className="h-5 w-5" />
-                    Projects ({projects.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {projects.map(project => <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
-                        <div className="relative overflow-hidden rounded-lg aspect-square">
-                          {project.images.length > 0 ? <img src={project.images[0]} alt={project.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" /> : <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <FolderOpen className="h-8 w-8 text-gray-400" />
-                            </div>}
-                          
-                          {/* Image count badge */}
-                          {project.images.length > 0 && <div className="absolute bottom-1 left-1 bg-black/70 text-white px-1.5 py-0.5 rounded text-xs flex items-center gap-1">
-                              <span>{project.images.length}</span>
-                            </div>}
-                          
-                          {/* Title overlay */}
-                          <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-2">
-                            <h3 className="text-white font-semibold text-xs leading-tight line-clamp-2">{project.title}</h3>
-                          </div>
-                        </div>
-                      </div>)}
-                  </div>
-                </CardContent>
-              </Card>}
-
             {/* About */}
             <Card>
               <CardHeader>
@@ -580,6 +549,44 @@ const ContractorProfile = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Projects */}
+            {projects.length > 0 && <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FolderOpen className="h-5 w-5" />
+                    Projects ({projects.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {projects.map(project => <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
+                        <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
+                          {project.images.length > 0 ? <img src={project.images[0]} alt={project.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" /> : <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <FolderOpen className="h-12 w-12 text-gray-400" />
+                            </div>}
+                          
+                          {/* Image count badge */}
+                          {project.images.length > 0 && <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
+                              <span>{project.images.length}</span>
+                            </div>}
+                          
+                          {/* Title overlay */}
+                          <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-3">
+                            <h3 className="text-white font-semibold text-sm leading-tight">{project.title}</h3>
+                          </div>
+                        </div>
+                        
+                        {/* Project info */}
+                        <div className="mt-2">
+                          <p className="text-sm text-muted-foreground">
+                            Created {new Date(project.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>)}
+                  </div>
+                </CardContent>
+              </Card>}
 
             {/* Project Gallery Dialog */}
             <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
