@@ -68,13 +68,13 @@ export default {
 			},
 			borderRadius: {
 				'none': '0',
-				'sm': '1px',
-				DEFAULT: '2px',
-				'md': '2px',
-				'lg': '3px',
-				'xl': '4px',
-				'2xl': '6px',
-				'3xl': '8px',
+				'sm': '9px',
+				DEFAULT: '9px',
+				'md': '9px',
+				'lg': '9px',
+				'xl': '9px',
+				'2xl': '9px',
+				'3xl': '9px',
 				'full': '9999px'
 			},
 			keyframes: {

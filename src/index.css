@@ -54,7 +54,7 @@ All colors MUST be HSL.
     --shadow-inset: inset 0 2px 4px hsl(208 13% 10% / 0.1);
 
     /* Minimal radius for industrial feel */
-    --radius: 0.125rem; /* 2px */
+    --radius: 0.5625rem; /* 9px */
 
     /* Industrial sidebar */
     --sidebar-background: 0 0% 100%; /* FFFFFF - Pure white */
