@@ -503,25 +503,37 @@ const ContractorProfile = () => {
             </Card>
 
             {/* Projects */}
-            {projects.length > 0 && <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FolderOpen className="h-5 w-5" />
-                    Projects ({projects.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FolderOpen className="h-5 w-5" />
+                  Projects ({projects.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {projects.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">
+                    No projects yet.
+                  </p>
+                ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {projects.map(project => <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
+                    {projects.map(project => (
+                      <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
                         <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
-                          {project.images.length > 0 ? <img src={project.images[0]} alt={project.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" /> : <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          {project.images.length > 0 ? (
+                            <img src={project.images[0]} alt={project.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                               <FolderOpen className="h-12 w-12 text-gray-400" />
-                            </div>}
+                            </div>
+                          )}
                           
                           {/* Image count badge */}
-                          {project.images.length > 0 && <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
+                          {project.images.length > 0 && (
+                            <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
                               <span>{project.images.length}</span>
-                            </div>}
+                            </div>
+                          )}
                           
                           {/* Title overlay */}
                           <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-3">
@@ -535,10 +547,12 @@ const ContractorProfile = () => {
                             Created {new Date(project.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                      </div>)}
+                      </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>}
+                )}
+              </CardContent>
+            </Card>
 
             {/* Project Gallery Dialog */}
             <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
