@@ -495,140 +495,132 @@ const ContractorProfile = () => {
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
+          <div className="lg:col-span-2 space-y-6 order-last lg:order-first">
             {/* Header */}
-            <div className="pb-12">
-              <div className="pt-8">
-                 <div className="flex flex-col sm:flex-row items-start gap-6">
-                    <Avatar className="h-20 w-20 mx-auto sm:mx-0 ring-2 ring-muted">
-                      <AvatarImage src={contractor.logo_url || ''} />
-                      <AvatarFallback className="text-xl font-bold bg-gradient-to-br from-primary/10 to-primary/20">
-                        {contractor.business_name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 text-center sm:text-left">
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                          <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">{contractor.business_name}</h1>
-                         <GoogleVerificationBadge 
-                           isVerified={contractor.google_business_verified}
-                           verificationDate={contractor.google_verification_date}
-                           size="md"
+            <Card>
+              <CardContent className="pt-6">
+                 <div className="flex flex-col sm:flex-row items-start gap-4">
+                   <Avatar className="h-16 w-16 mx-auto sm:mx-0">
+                     <AvatarImage src={contractor.logo_url || ''} />
+                     <AvatarFallback className="text-lg">
+                       {contractor.business_name.slice(0, 2).toUpperCase()}
+                     </AvatarFallback>
+                   </Avatar>
+                   <div className="flex-1 text-center sm:text-left">
+                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
+                       <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
+                         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{contractor.business_name}</h1>
+                        <GoogleVerificationBadge 
+                          isVerified={contractor.google_business_verified}
+                          verificationDate={contractor.google_verification_date}
+                          size="md"
+                        />
+                      </div>
+                      {user && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={toggleSaveContractor}
+                          disabled={savingContractor}
+                          className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                        >
+                          <Heart 
+                            className={`h-5 w-5 transition-colors ${
+                              isSaved ? 'fill-primary text-primary' : 'text-muted-foreground'
+                            }`}
+                          />
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-4 mt-2">
+                      {contractor.city && contractor.province && (
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                          <MapPin className="h-4 w-4" />
+                          {contractor.city}, {contractor.province}
+                        </div>
+                      )}
+                      {contractor.rating > 0 && (
+                        <div className="flex items-center gap-2">
+                          {renderStars(contractor.rating)}
+                          <span className="font-medium">{contractor.rating.toFixed(1)}</span>
+                          <span className="text-muted-foreground">
+                            ({contractor.review_count} reviews)
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                 {/* Gallery Images */}
+                 {contractor.gallery_images && contractor.gallery_images.length > 0 && (
+                   <div className="mt-6">
+                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-4">
+                       {contractor.gallery_images.map((image, index) => (
+                         <img
+                           key={index}
+                           src={image}
+                           alt={`${contractor.business_name} work ${index + 1}`}
+                           className="w-full h-24 sm:h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                           onClick={() => setSelectedImage(image)}
                          />
-                       </div>
-                       {user && (
-                         <Button
-                           variant="ghost"
-                           size="icon"
-                           onClick={toggleSaveContractor}
-                           disabled={savingContractor}
-                           className="h-12 w-12 rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-200 hover:scale-105"
-                         >
-                           <Heart 
-                             className={`h-6 w-6 transition-all duration-200 ${
-                               isSaved ? 'fill-primary text-primary' : 'text-muted-foreground'
-                             }`}
-                           />
-                         </Button>
-                       )}
-                     </div>
-                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-3">
-                       {contractor.city && contractor.province && (
-                         <div className="flex items-center gap-2 text-muted-foreground">
-                           <MapPin className="h-5 w-5" />
-                           <span className="text-base font-medium">{contractor.city}, {contractor.province}</span>
-                         </div>
-                       )}
-                       {contractor.rating > 0 && (
-                         <div className="flex items-center gap-3">
-                           {renderStars(contractor.rating)}
-                           <span className="text-lg font-semibold">{contractor.rating.toFixed(1)}</span>
-                           <span className="text-muted-foreground text-base">
-                             ({contractor.review_count} reviews)
-                           </span>
-                         </div>
-                       )}
+                       ))}
                      </div>
                    </div>
-                 </div>
-                 
-                  {/* Gallery Images */}
-                  {contractor.gallery_images && contractor.gallery_images.length > 0 && (
-                    <div className="mt-8">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4">
-                        {contractor.gallery_images.map((image, index) => (
-                          <div key={index} className="group relative overflow-hidden rounded-lg aspect-[4/3] bg-muted">
-                            <img
-                              src={image}
-                              alt={`${contractor.business_name} work ${index + 1}`}
-                              className="w-full h-full object-cover cursor-pointer transition-all duration-300 group-hover:scale-105"
-                              onClick={() => setSelectedImage(image)}
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-              </div>
-            </div>
-
-            {/* Separator */}
-            <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
+                 )}
+              </CardContent>
+            </Card>
 
             {/* About */}
-            <div className="pb-12">
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight">About</h2>
-              </div>
-              <div className="space-y-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>About</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 {contractor.description && (
-                  <p className="text-muted-foreground text-lg leading-relaxed">{contractor.description}</p>
+                  <p className="text-muted-foreground">{contractor.description}</p>
                 )}
                 
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   {contractor.years_experience > 0 && (
-                    <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/30">
-                      <Award className="h-5 w-5 text-primary" />
-                      <span className="text-base font-medium">
+                    <div className="flex items-center gap-2">
+                      <Award className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">
                         {contractor.years_experience} years of experience
                       </span>
                     </div>
                   )}
                   {contractor.license_number && (
-                    <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/30">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      <span className="text-base font-medium">License: {contractor.license_number}</span>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">License: {contractor.license_number}</span>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <h4 className="text-lg font-semibold mb-4">Services Offered</h4>
-                  <div className="flex flex-wrap gap-3">
+                  <h4 className="font-semibold mb-2">Services Offered</h4>
+                  <div className="flex flex-wrap gap-2">
                     {contractor.contractor_services.map((cs, index) => (
-                      <Badge key={index} variant="secondary" className="px-4 py-2 text-sm font-medium">
+                      <Badge key={index} variant="secondary">
                         {cs.services.name}
                       </Badge>
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Separator */}
-            <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
+              </CardContent>
+            </Card>
 
             {/* Projects */}
             {projects.length > 0 && (
-              <div className="pb-12">
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
                     <FolderOpen className="h-5 w-5" />
                     Projects ({projects.length})
-                  </h2>
-                </div>
-                <div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {projects.map((project) => (
                       <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
@@ -666,13 +658,10 @@ const ContractorProfile = () => {
                         </div>
                       </div>
                     ))}
-                </div>
-                </div>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
-
-            {/* Separator */}
-            {projects.length > 0 && <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>}
 
             {/* Project Gallery Dialog */}
             <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
@@ -711,34 +700,32 @@ const ContractorProfile = () => {
 
 
             {/* Reviews */}
-            <div className="pb-12">
-              <div className="mb-8">
+            <Card>
+              <CardHeader>
                 <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2">
                     <MessageSquare className="h-5 w-5" />
                     Reviews ({reviews.length})
-                  </h2>
+                  </CardTitle>
                   {(!user || userProfile?.user_type === 'homeowner') && (
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button onClick={handleWriteReviewClick} className="hover:scale-105 transition-transform duration-200">
-                          Write Review
-                        </Button>
+                        <Button onClick={handleWriteReviewClick}>Write Review</Button>
                       </DialogTrigger>
                       {user && userProfile?.user_type === 'homeowner' && (
-                      <DialogContent className="sm:max-w-lg">
+                      <DialogContent>
                         <DialogHeader>
-                          <DialogTitle className="text-xl font-semibold">Write a Review</DialogTitle>
+                          <DialogTitle>Write a Review</DialogTitle>
                         </DialogHeader>
-                        <div className="space-y-6">
+                        <div className="space-y-4">
                           <div>
-                            <label className="text-sm font-medium mb-3 block">Rating</label>
+                            <label className="text-sm font-medium mb-2 block">Rating</label>
                             {renderStars(reviewRating, true, setReviewRating)}
                           </div>
                            <div>
                              <label className="text-sm font-medium mb-2 block">Title (optional)</label>
                              <input
-                               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                               className="w-full p-2 border rounded-md"
                                value={reviewTitle}
                                onChange={(e) => setReviewTitle(e.target.value.slice(0, 200))}
                                placeholder="Review title"
@@ -756,7 +743,6 @@ const ContractorProfile = () => {
                                placeholder="Share your experience... (minimum 10 characters)"
                                rows={4}
                                maxLength={1000}
-                               className="focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                              />
                              <p className="text-xs text-muted-foreground mt-1">
                                {reviewComment.length}/1000 characters (minimum 10)
@@ -765,7 +751,7 @@ const ContractorProfile = () => {
                            <Button
                              onClick={submitReview}
                              disabled={submittingReview || reviewComment.trim().length < 10}
-                             className="w-full h-12 text-base font-medium"
+                             className="w-full"
                            >
                              {submittingReview ? 'Submitting...' : 'Submit Review'}
                            </Button>
@@ -775,76 +761,74 @@ const ContractorProfile = () => {
                     </Dialog>
                   )}
                 </div>
-              </div>
-              <div>
+              </CardHeader>
+              <CardContent>
                 {reviews.length === 0 ? (
-                  <div className="text-center py-12 bg-muted/20 rounded-lg">
-                    <p className="text-muted-foreground text-lg">
-                      No reviews yet. Be the first to leave a review!
-                    </p>
-                  </div>
+                  <p className="text-muted-foreground text-center py-8">
+                    No reviews yet. Be the first to leave a review!
+                  </p>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {reviews.map((review) => (
-                      <div key={review.id} className="p-6 rounded-lg bg-muted/20 border-l-4 border-primary/20">
-                        <div className="flex justify-between items-start mb-3">
+                      <div key={review.id} className="border-b pb-4 last:border-b-0">
+                        <div className="flex justify-between items-start mb-2">
                           <div>
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-2 mb-1">
                               {renderStars(review.rating)}
-                              {review.title && <span className="font-semibold text-base">{review.title}</span>}
+                              <span className="font-medium">{review.title}</span>
                             </div>
-                            <p className="text-sm text-muted-foreground font-medium">
+                            <p className="text-sm text-muted-foreground">
                               by {review.profiles?.full_name || 'Anonymous'} • {' '}
                               {new Date(review.created_at).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
-                        <p className="text-base leading-relaxed">{review.comment}</p>
+                        <p className="text-sm">{review.comment}</p>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Contact */}
-            <div className="pb-12">
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight">Contact Information</h2>
-              </div>
-              <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 {contractor.phone && (
-                  <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                  <Button asChild variant="outline" className="w-full justify-start gap-2">
                     <a href={`tel:${contractor.phone}`}>
-                      <Phone className="h-5 w-5" />
+                      <Phone className="h-4 w-4" />
                       {contractor.phone}
                     </a>
                   </Button>
                 )}
                 {contractor.email && (
-                  <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                  <Button asChild variant="outline" className="w-full justify-start gap-2">
                     <a href={`mailto:${contractor.email}`}>
-                      <Mail className="h-5 w-5" />
+                      <Mail className="h-4 w-4" />
                       {contractor.email}
                     </a>
                   </Button>
                 )}
                 {contractor.website && (
-                  <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                  <Button asChild variant="outline" className="w-full justify-start gap-2">
                     <a href={contractor.website} target="_blank" rel="noopener noreferrer">
-                      <Globe className="h-5 w-5" />
+                      <Globe className="h-4 w-4" />
                       Visit Website
                     </a>
                   </Button>
                 )}
                 {contractor.address && (
-                  <div className="pt-4 border-t border-muted">
-                    <p className="text-base font-semibold mb-3">Address</p>
-                    <p className="text-base text-muted-foreground leading-relaxed">
+                  <div className="pt-2 border-t">
+                    <p className="text-sm font-medium mb-1">Address</p>
+                    <p className="text-sm text-muted-foreground">
                       {contractor.address}
                       {contractor.city && contractor.province && (
                         <>
@@ -860,96 +844,87 @@ const ContractorProfile = () => {
                       )}
                     </p>
                   </div>
-                 )}
-               </div>
-            </div>
-
-            {/* Separator */}
-            <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Social Profiles */}
             {(contractor.instagram_url || contractor.facebook_url || contractor.linkedin_url || 
               contractor.tiktok_url || contractor.x_url || contractor.youtube_url) && (
-              <div className="pb-12">
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold tracking-tight">Social Profiles</h2>
-                </div>
-                <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Social Profiles</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
                   {contractor.instagram_url && (
-                    <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
                       <a href={contractor.instagram_url} target="_blank" rel="noopener noreferrer">
-                        <Instagram className="h-5 w-5" />
+                        <Instagram className="h-4 w-4" />
                         Instagram
                       </a>
                     </Button>
                   )}
                   {contractor.facebook_url && (
-                    <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
                       <a href={contractor.facebook_url} target="_blank" rel="noopener noreferrer">
-                        <Facebook className="h-5 w-5" />
+                        <Facebook className="h-4 w-4" />
                         Facebook
                       </a>
                     </Button>
                   )}
                   {contractor.linkedin_url && (
-                    <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
                       <a href={contractor.linkedin_url} target="_blank" rel="noopener noreferrer">
-                        <Linkedin className="h-5 w-5" />
+                        <Linkedin className="h-4 w-4" />
                         LinkedIn
                       </a>
                     </Button>
                   )}
                   {contractor.tiktok_url && (
-                    <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
                       <a href={contractor.tiktok_url} target="_blank" rel="noopener noreferrer">
-                        <Music className="h-5 w-5" />
+                        <Music className="h-4 w-4" />
                         TikTok
                       </a>
                     </Button>
                   )}
                   {contractor.x_url && (
-                    <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
                       <a href={contractor.x_url} target="_blank" rel="noopener noreferrer">
-                        <X className="h-5 w-5" />
+                        <X className="h-4 w-4" />
                         X (Twitter)
                       </a>
                     </Button>
                   )}
                   {contractor.youtube_url && (
-                    <Button asChild variant="outline" className="w-full justify-start gap-3 h-12 text-base font-medium hover:scale-[1.02] transition-transform duration-200">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
                       <a href={contractor.youtube_url} target="_blank" rel="noopener noreferrer">
-                        <Video className="h-5 w-5" />
+                        <Video className="h-4 w-4" />
                         YouTube
                       </a>
                     </Button>
                   )}
-                 </div>
-              </div>
-            )}
-
-            {/* Separator */}
-            {(contractor.instagram_url || contractor.facebook_url || contractor.linkedin_url || 
-              contractor.tiktok_url || contractor.x_url || contractor.youtube_url) && (
-              <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
+                </CardContent>
+              </Card>
             )}
 
             {/* Location & Hours */}
-            <div className="pb-8">
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
                   Location & Hours
-                </h2>
-              </div>
-              <div className="space-y-4">
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <GoogleMap 
                   address={contractor.address || contractor.city || ""}
                   businessName={contractor.business_name}
                   city={contractor.city}
                   province={contractor.province}
                 />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <BusinessHours businessName={contractor.business_name} />
 
