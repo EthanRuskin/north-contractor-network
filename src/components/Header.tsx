@@ -12,14 +12,12 @@ const Header = () => {
     <header className="bg-background border-b shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">N</span>
-            </div>
-            <h1 className="text-lg sm:text-xl font-bold text-foreground">
-              <span className="hidden sm:inline">Northern Contractor Network</span>
-              <span className="sm:hidden">NCN</span>
-            </h1>
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/331e323b-8177-4b3d-bae3-e5583eaaaf68.png" 
+              alt="Northern Contractor Network" 
+              className="h-8 sm:h-10"
+            />
           </Link>
           
           <nav className="hidden lg:flex items-center space-x-6">
