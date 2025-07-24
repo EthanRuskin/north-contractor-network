@@ -28,8 +28,8 @@ const Hero = () => {
       backgroundSize: '60%'
     }}></div>
       <div className="relative container mx-auto px-4 py-20 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8 animate-fade-in mx-0">
+        <div className="flex justify-center">
+          <div className="space-y-8 animate-fade-in mx-0 max-w-4xl">
             <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
               Find Trusted Local Contractors
             </h1>
