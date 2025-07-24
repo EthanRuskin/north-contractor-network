@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Menu, X, User } from "lucide-react";
+import { Search, Menu, X, User, MapPin, ChevronDown } from "lucide-react";
 import { useGooglePlaces } from "@/hooks/useGooglePlaces";
+import { supabase } from "@/integrations/supabase/client";
 interface SearchHeaderProps {
   searchTerm?: string;
   locationQuery?: string;
@@ -22,11 +23,25 @@ const SearchHeader = ({
   autocompleteRef
 }: SearchHeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const {
     user,
     signOut
   } = useAuth();
   const navigate = useNavigate();
+
+  // Common Canadian cities for quick selection
+  const commonCities = [
+    "Toronto, ON",
+    "Vancouver, BC", 
+    "Montreal, QC",
+    "Calgary, AB",
+    "Ottawa, ON",
+    "Edmonton, AB",
+    "Mississauga, ON",
+    "Winnipeg, MB"
+  ];
 
   // Google Places integration
   const googlePlacesRef = useGooglePlaces({
@@ -41,6 +56,67 @@ const SearchHeader = ({
 
   // Use the external ref if provided, otherwise use our internal ref
   const locationInputRef = autocompleteRef || googlePlacesRef;
+
+  // Handle geolocation
+  const handleUseCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            // Reverse geocode to get address
+            const response = await fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${await getGoogleMapsKey()}`
+            );
+            const data = await response.json();
+            if (data.results && data.results[0]) {
+              const address = data.results[0].formatted_address;
+              onLocationChange?.(address);
+            }
+          } catch (error) {
+            console.error('Error reverse geocoding:', error);
+            onLocationChange?.(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          }
+          setShowLocationDropdown(false);
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          alert('Unable to get your location. Please enter manually.');
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by this browser.');
+    }
+  };
+
+  const getGoogleMapsKey = async () => {
+    try {
+      const { data } = await supabase.functions.invoke('get-google-maps-key');
+      return data?.apiKey || '';
+    } catch {
+      return '';
+    }
+  };
+
+  const handleCitySelect = (city: string) => {
+    onLocationChange?.(city);
+    setShowLocationDropdown(false);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowLocationDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleSearch = () => {
     if (onSearch) {
       onSearch();
@@ -64,7 +140,50 @@ const SearchHeader = ({
             <div className="flex w-full bg-white rounded-lg overflow-hidden shadow-sm">
               <Input placeholder="What service do you need?" value={searchTerm} onChange={e => onSearchChange?.(e.target.value)} onKeyDown={handleKeyDown} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none flex-1" />
               <div className="w-px bg-border"></div>
-              <Input ref={locationInputRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none flex-1" />
+              <div className="relative flex-1" ref={dropdownRef}>
+                <div className="relative">
+                  <Input 
+                    ref={locationInputRef} 
+                    placeholder="Where? (City, Province)" 
+                    value={locationQuery} 
+                    onChange={e => onLocationChange?.(e.target.value)} 
+                    onKeyDown={handleKeyDown}
+                    onFocus={() => setShowLocationDropdown(true)}
+                    className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none pr-8" 
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+                    className="absolute right-0 top-0 h-12 w-8 p-0 border-0 bg-transparent hover:bg-gray-100 text-gray-500"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {showLocationDropdown && (
+                  <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                    <div className="py-2">
+                      <button
+                        onClick={handleUseCurrentLocation}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-sm"
+                      >
+                        <MapPin className="h-4 w-4 text-blue-500" />
+                        Use my current location
+                      </button>
+                      <div className="border-t border-gray-100 my-1"></div>
+                      {commonCities.map((city) => (
+                        <button
+                          key={city}
+                          onClick={() => handleCitySelect(city)}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                        >
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
               <Button onClick={handleSearch} size="sm" className="h-12 px-6 rounded-none bg-primary-dark hover:bg-primary text-white">
                 <Search className="h-4 w-4" />
               </Button>
