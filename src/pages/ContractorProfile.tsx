@@ -495,88 +495,91 @@ const ContractorProfile = () => {
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6 order-last lg:order-first">
+          <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
             {/* Header */}
-            <Card>
-              <CardContent className="pt-6">
+            <div className="pb-8">
+              <div className="pt-6">
                  <div className="flex flex-col sm:flex-row items-start gap-4">
-                   <Avatar className="h-16 w-16 mx-auto sm:mx-0">
-                     <AvatarImage src={contractor.logo_url || ''} />
-                     <AvatarFallback className="text-lg">
-                       {contractor.business_name.slice(0, 2).toUpperCase()}
-                     </AvatarFallback>
-                   </Avatar>
-                   <div className="flex-1 text-center sm:text-left">
-                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
-                       <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
-                         <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{contractor.business_name}</h1>
-                        <GoogleVerificationBadge 
-                          isVerified={contractor.google_business_verified}
-                          verificationDate={contractor.google_verification_date}
-                          size="md"
-                        />
-                      </div>
-                      {user && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={toggleSaveContractor}
-                          disabled={savingContractor}
-                          className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
-                        >
-                          <Heart 
-                            className={`h-5 w-5 transition-colors ${
-                              isSaved ? 'fill-primary text-primary' : 'text-muted-foreground'
-                            }`}
-                          />
-                        </Button>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4 mt-2">
-                      {contractor.city && contractor.province && (
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <MapPin className="h-4 w-4" />
-                          {contractor.city}, {contractor.province}
-                        </div>
-                      )}
-                      {contractor.rating > 0 && (
-                        <div className="flex items-center gap-2">
-                          {renderStars(contractor.rating)}
-                          <span className="font-medium">{contractor.rating.toFixed(1)}</span>
-                          <span className="text-muted-foreground">
-                            ({contractor.review_count} reviews)
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                 {/* Gallery Images */}
-                 {contractor.gallery_images && contractor.gallery_images.length > 0 && (
-                   <div className="mt-6">
-                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-4">
-                       {contractor.gallery_images.map((image, index) => (
-                         <img
-                           key={index}
-                           src={image}
-                           alt={`${contractor.business_name} work ${index + 1}`}
-                           className="w-full h-24 sm:h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
-                           onClick={() => setSelectedImage(image)}
+                    <Avatar className="h-16 w-16 mx-auto sm:mx-0">
+                      <AvatarImage src={contractor.logo_url || ''} />
+                      <AvatarFallback className="text-lg">
+                        {contractor.business_name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 text-center sm:text-left">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
+                          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{contractor.business_name}</h1>
+                         <GoogleVerificationBadge 
+                           isVerified={contractor.google_business_verified}
+                           verificationDate={contractor.google_verification_date}
+                           size="md"
                          />
-                       ))}
+                       </div>
+                       {user && (
+                         <Button
+                           variant="ghost"
+                           size="icon"
+                           onClick={toggleSaveContractor}
+                           disabled={savingContractor}
+                           className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                         >
+                           <Heart 
+                             className={`h-5 w-5 transition-colors ${
+                               isSaved ? 'fill-primary text-primary' : 'text-muted-foreground'
+                             }`}
+                           />
+                         </Button>
+                       )}
+                     </div>
+                     <div className="flex items-center gap-4 mt-2">
+                       {contractor.city && contractor.province && (
+                         <div className="flex items-center gap-1 text-muted-foreground">
+                           <MapPin className="h-4 w-4" />
+                           {contractor.city}, {contractor.province}
+                         </div>
+                       )}
+                       {contractor.rating > 0 && (
+                         <div className="flex items-center gap-2">
+                           {renderStars(contractor.rating)}
+                           <span className="font-medium">{contractor.rating.toFixed(1)}</span>
+                           <span className="text-muted-foreground">
+                             ({contractor.review_count} reviews)
+                           </span>
+                         </div>
+                       )}
                      </div>
                    </div>
-                 )}
-              </CardContent>
-            </Card>
+                 </div>
+                 
+                  {/* Gallery Images */}
+                  {contractor.gallery_images && contractor.gallery_images.length > 0 && (
+                    <div className="mt-6">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-4">
+                        {contractor.gallery_images.map((image, index) => (
+                          <img
+                            key={index}
+                            src={image}
+                            alt={`${contractor.business_name} work ${index + 1}`}
+                            className="w-full h-24 sm:h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => setSelectedImage(image)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
 
             {/* About */}
-            <Card>
-              <CardHeader>
-                <CardTitle>About</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="pb-8">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold">About</h2>
+              </div>
+              <div className="space-y-4">
                 {contractor.description && (
                   <p className="text-muted-foreground">{contractor.description}</p>
                 )}
@@ -608,19 +611,22 @@ const ContractorProfile = () => {
                     ))}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
 
             {/* Projects */}
             {projects.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+              <div className="pb-8">
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
                     <FolderOpen className="h-5 w-5" />
                     Projects ({projects.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+                  </h2>
+                </div>
+                <div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {projects.map((project) => (
                       <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
@@ -658,10 +664,13 @@ const ContractorProfile = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+                </div>
+              </div>
             )}
+
+            {/* Separator */}
+            {projects.length > 0 && <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>}
 
             {/* Project Gallery Dialog */}
             <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
@@ -700,13 +709,13 @@ const ContractorProfile = () => {
 
 
             {/* Reviews */}
-            <Card>
-              <CardHeader>
+            <div className="pb-8">
+              <div className="mb-6">
                 <div className="flex justify-between items-center">
-                  <CardTitle className="flex items-center gap-2">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
                     <MessageSquare className="h-5 w-5" />
                     Reviews ({reviews.length})
-                  </CardTitle>
+                  </h2>
                   {(!user || userProfile?.user_type === 'homeowner') && (
                     <Dialog>
                       <DialogTrigger asChild>
@@ -761,8 +770,8 @@ const ContractorProfile = () => {
                     </Dialog>
                   )}
                 </div>
-              </CardHeader>
-              <CardContent>
+              </div>
+              <div>
                 {reviews.length === 0 ? (
                   <p className="text-muted-foreground text-center py-8">
                     No reviews yet. Be the first to leave a review!
@@ -770,7 +779,7 @@ const ContractorProfile = () => {
                 ) : (
                   <div className="space-y-4">
                     {reviews.map((review) => (
-                      <div key={review.id} className="border-b pb-4 last:border-b-0">
+                      <div key={review.id} className="border-b border-muted pb-4 last:border-b-0">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <div className="flex items-center gap-2 mb-1">
@@ -788,19 +797,19 @@ const ContractorProfile = () => {
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Contact */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
+            <div className="pb-8">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold">Contact Information</h2>
+              </div>
+              <div className="space-y-3">
                 {contractor.phone && (
                   <Button asChild variant="outline" className="w-full justify-start gap-2">
                     <a href={`tel:${contractor.phone}`}>
@@ -844,18 +853,21 @@ const ContractorProfile = () => {
                       )}
                     </p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                 )}
+               </div>
+            </div>
+
+            {/* Separator */}
+            <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
 
             {/* Social Profiles */}
             {(contractor.instagram_url || contractor.facebook_url || contractor.linkedin_url || 
               contractor.tiktok_url || contractor.x_url || contractor.youtube_url) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Social Profiles</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
+              <div className="pb-8">
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold">Social Profiles</h2>
+                </div>
+                <div className="space-y-3">
                   {contractor.instagram_url && (
                     <Button asChild variant="outline" className="w-full justify-start gap-2">
                       <a href={contractor.instagram_url} target="_blank" rel="noopener noreferrer">
@@ -904,27 +916,33 @@ const ContractorProfile = () => {
                       </a>
                     </Button>
                   )}
-                </CardContent>
-              </Card>
+                 </div>
+              </div>
+            )}
+
+            {/* Separator */}
+            {(contractor.instagram_url || contractor.facebook_url || contractor.linkedin_url || 
+              contractor.tiktok_url || contractor.x_url || contractor.youtube_url) && (
+              <div className="w-full h-[1px] bg-destructive opacity-30 my-8"></div>
             )}
 
             {/* Location & Hours */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+            <div className="pb-8">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
                   Location & Hours
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </h2>
+              </div>
+              <div className="space-y-4">
                 <GoogleMap 
                   address={contractor.address || contractor.city || ""}
                   businessName={contractor.business_name}
                   city={contractor.city}
                   province={contractor.province}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             <BusinessHours businessName={contractor.business_name} />
 
