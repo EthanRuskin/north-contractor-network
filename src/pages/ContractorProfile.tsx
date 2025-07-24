@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Star, MapPin, Phone, Mail, Globe, Calendar, Award, MessageSquare, X, Users, FolderOpen, Instagram, Facebook, Linkedin, Video, Music, Heart, Shield, Clock, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Header from '@/components/Header';
+import SearchHeader from '@/components/SearchHeader';
 import Footer from '@/components/Footer';
 import GoogleMap from '@/components/GoogleMap';
 import BusinessHours from '@/components/BusinessHours';
@@ -395,7 +395,7 @@ const ContractorProfile = () => {
   };
   if (loading) {
     return <div className="min-h-screen bg-background">
-        <Header />
+        <SearchHeader />
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -403,7 +403,7 @@ const ContractorProfile = () => {
   }
   if (!contractor) {
     return <div className="min-h-screen bg-background">
-        <Header />
+        <SearchHeader />
         <div className="container mx-auto px-4 py-8">
           <Card>
             <CardContent className="py-12 text-center">
@@ -417,7 +417,7 @@ const ContractorProfile = () => {
       </div>;
   }
   return <div className="min-h-screen bg-background">
-      <Header />
+      <SearchHeader />
       <div className="container mx-auto px-4 py-8">
         <Button variant="ghost" onClick={() => navigate('/search')} className="mb-6 gap-2">
           <ArrowLeft className="h-4 w-4" />
