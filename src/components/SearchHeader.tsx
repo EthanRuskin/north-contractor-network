@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Menu, X, User } from "lucide-react";
+import { useGooglePlaces } from "@/hooks/useGooglePlaces";
 interface SearchHeaderProps {
   searchTerm?: string;
   locationQuery?: string;
@@ -26,6 +27,20 @@ const SearchHeader = ({
     signOut
   } = useAuth();
   const navigate = useNavigate();
+
+  // Google Places integration
+  const googlePlacesRef = useGooglePlaces({
+    onPlaceSelect: (place) => {
+      if (place.formatted_address && onLocationChange) {
+        onLocationChange(place.formatted_address);
+      }
+    },
+    country: 'ca', // Restrict to Canada
+    types: ['geocode']
+  });
+
+  // Use the external ref if provided, otherwise use our internal ref
+  const locationInputRef = autocompleteRef || googlePlacesRef;
   const handleSearch = () => {
     if (onSearch) {
       onSearch();
@@ -49,7 +64,7 @@ const SearchHeader = ({
             <div className="flex w-full bg-white rounded-lg overflow-hidden shadow-sm">
               <Input placeholder="What service do you need?" value={searchTerm} onChange={e => onSearchChange?.(e.target.value)} onKeyDown={handleKeyDown} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none flex-1" />
               <div className="w-px bg-border"></div>
-              <Input ref={autocompleteRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none flex-1" />
+              <Input ref={locationInputRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none flex-1" />
               <Button onClick={handleSearch} size="sm" className="h-12 px-6 rounded-none bg-primary-dark hover:bg-primary text-white">
                 <Search className="h-4 w-4" />
               </Button>
@@ -86,7 +101,7 @@ const SearchHeader = ({
         {isMenuOpen && <div className="md:hidden mt-4 space-y-3">
             <div className="flex flex-col gap-2">
               <Input placeholder="What service do you need?" value={searchTerm} onChange={e => onSearchChange?.(e.target.value)} onKeyDown={handleKeyDown} className="bg-white h-12" />
-              <Input placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} className="bg-white h-12" />
+              <Input ref={locationInputRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} className="bg-white h-12" />
               <Button onClick={handleSearch} className="h-12 bg-primary-dark hover:bg-primary text-white">
                 <Search className="h-4 w-4 mr-2" />
                 Search
