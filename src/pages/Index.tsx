@@ -5,12 +5,12 @@ import HowItWorks from "@/components/HowItWorks";
 import FeaturedContractors from "@/components/FeaturedContractors";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
-import PromoBanner from "@/components/PromoBanner";
+
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <PromoBanner />
+      
       <Header />
       <Hero />
       <ServiceCategories />
