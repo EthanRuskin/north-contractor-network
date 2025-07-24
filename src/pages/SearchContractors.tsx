@@ -14,12 +14,10 @@ import SearchHeader from '@/components/SearchHeader';
 import CallToAction from '@/components/CallToAction';
 import Footer from '@/components/Footer';
 import canadaMapSubtle from '@/assets/canada-map-subtle.png';
-
 interface Service {
   id: string;
   name: string;
 }
-
 interface ContractorBusiness {
   id: string;
   business_name: string;
@@ -42,19 +40,18 @@ interface ContractorBusiness {
   longitude?: number;
   distance_km?: number;
 }
-
 interface UserLocation {
   latitude: number;
   longitude: number;
   address?: string;
 }
-
 const SearchContractors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const autocompleteRef = useRef<HTMLInputElement>(null);
-  
   const [contractors, setContractors] = useState<ContractorBusiness[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,18 +62,16 @@ const SearchContractors = () => {
   const [minRating, setMinRating] = useState([parseFloat(searchParams.get('minRating') || '0')]);
   const [minExperience, setMinExperience] = useState([parseInt(searchParams.get('minExperience') || '0')]);
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'rating');
-  
+
   // Location-based search state
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [locationQuery, setLocationQuery] = useState('');
   const [radius, setRadius] = useState([parseInt(searchParams.get('radius') || '30')]);
   const [isUsingLocation, setIsUsingLocation] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
-
   useEffect(() => {
     fetchServicesAndContractors();
   }, []);
-
   useEffect(() => {
     updateSearchParams();
   }, [searchTerm, selectedService, selectedCity, selectedProvince, minRating, minExperience, sortBy, radius]);
@@ -85,12 +80,12 @@ const SearchContractors = () => {
   useEffect(() => {
     const initAutocomplete = async () => {
       if (!autocompleteRef.current) return;
-
       try {
         // Get Google Maps API key from edge function
-        const { data: keyData } = await supabase.functions.invoke('get-google-maps-key');
+        const {
+          data: keyData
+        } = await supabase.functions.invoke('get-google-maps-key');
         const apiKey = keyData?.apiKey;
-
         if (!apiKey) {
           console.warn('Google Maps API key not available');
           return;
@@ -111,15 +106,14 @@ const SearchContractors = () => {
         console.error('Failed to load Google Maps API:', error);
       }
     };
-
     const setupAutocomplete = () => {
       if (!window.google || !autocompleteRef.current) return;
-
       const autocomplete = new window.google.maps.places.Autocomplete(autocompleteRef.current, {
         types: ['geocode'],
-        componentRestrictions: { country: 'ca' } // Restrict to Canada
+        componentRestrictions: {
+          country: 'ca'
+        } // Restrict to Canada
       });
-
       autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
         if (place.geometry && place.geometry.location) {
@@ -134,10 +128,8 @@ const SearchContractors = () => {
         }
       });
     };
-
     initAutocomplete();
   }, []);
-
   const updateSearchParams = () => {
     const params = new URLSearchParams();
     if (searchTerm) params.set('search', searchTerm);
@@ -155,53 +147,54 @@ const SearchContractors = () => {
   const getCurrentLocation = () => {
     setGettingLocation(true);
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location: UserLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          };
-          setUserLocation(location);
-          setIsUsingLocation(true);
-          setLocationQuery('Current Location');
-          setGettingLocation(false);
-          
-          // Reverse geocode to get address
-          if (window.google) {
-            const geocoder = new window.google.maps.Geocoder();
-            geocoder.geocode({
-              location: { lat: location.latitude, lng: location.longitude }
-            }, (results, status) => {
-              if (status === 'OK' && results[0]) {
-                setLocationQuery(results[0].formatted_address);
-                setUserLocation(prev => prev ? { ...prev, address: results[0].formatted_address } : null);
-              }
-            });
-          }
-        },
-        (error) => {
-          setGettingLocation(false);
-          toast({
-            title: "Location Error",
-            description: "Unable to get your current location. Please enter an address manually.",
-            variant: "destructive",
+      navigator.geolocation.getCurrentPosition(position => {
+        const location: UserLocation = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+        setUserLocation(location);
+        setIsUsingLocation(true);
+        setLocationQuery('Current Location');
+        setGettingLocation(false);
+
+        // Reverse geocode to get address
+        if (window.google) {
+          const geocoder = new window.google.maps.Geocoder();
+          geocoder.geocode({
+            location: {
+              lat: location.latitude,
+              lng: location.longitude
+            }
+          }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              setLocationQuery(results[0].formatted_address);
+              setUserLocation(prev => prev ? {
+                ...prev,
+                address: results[0].formatted_address
+              } : null);
+            }
           });
         }
-      );
+      }, error => {
+        setGettingLocation(false);
+        toast({
+          title: "Location Error",
+          description: "Unable to get your current location. Please enter an address manually.",
+          variant: "destructive"
+        });
+      });
     } else {
       setGettingLocation(false);
       toast({
         title: "Geolocation Not Supported",
         description: "Your browser doesn't support geolocation. Please enter an address manually.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   useEffect(() => {
     fetchServicesAndContractors();
   }, []);
-
   const handleSearch = () => {
     if (searchTerm.trim()) {
       searchContractors();
@@ -209,20 +202,21 @@ const SearchContractors = () => {
       fetchServicesAndContractors();
     }
   };
-
   const searchContractors = async () => {
     setLoading(true);
     try {
       // Fetch services first
-      const { data: servicesData } = await supabase
-        .from('services')
-        .select('*')
-        .order('name');
+      const {
+        data: servicesData
+      } = await supabase.from('services').select('*').order('name');
       setServices(servicesData || []);
 
       // Use location-based search if user location is available
       if (isUsingLocation && userLocation) {
-        const { data: searchResults, error } = await supabase.rpc('search_contractors_with_location', {
+        const {
+          data: searchResults,
+          error
+        } = await supabase.rpc('search_contractors_with_location', {
           search_query: searchTerm || null,
           service_filter: selectedService && selectedService !== 'all' ? selectedService : null,
           city_filter: !isUsingLocation && selectedCity && selectedCity !== 'all' ? selectedCity : null,
@@ -233,13 +227,11 @@ const SearchContractors = () => {
           user_longitude: userLocation.longitude,
           radius_km: radius[0]
         });
-
         if (error) {
           console.warn('Location-based search failed:', error.message);
           await fallbackSearch();
           return;
         }
-
         setContractors(searchResults || []);
       } else {
         await fallbackSearch();
@@ -251,9 +243,11 @@ const SearchContractors = () => {
       setLoading(false);
     }
   };
-
   const fallbackSearch = async () => {
-    const { data: searchResults, error } = await supabase.rpc('search_contractors_with_ranking', {
+    const {
+      data: searchResults,
+      error
+    } = await supabase.rpc('search_contractors_with_ranking', {
       search_query: searchTerm || null,
       service_filter: selectedService && selectedService !== 'all' ? selectedService : null,
       city_filter: selectedCity && selectedCity !== 'all' ? selectedCity : null,
@@ -261,96 +255,74 @@ const SearchContractors = () => {
       min_rating_filter: minRating[0],
       min_experience_filter: minExperience[0]
     });
-
     if (error) {
       console.warn('Fallback search failed:', error.message);
       await fetchServicesAndContractors();
       return;
     }
-
     setContractors(searchResults || []);
   };
-
   const fetchServicesAndContractors = async () => {
     try {
       // Fetch services
-      const { data: servicesData } = await supabase
-        .from('services')
-        .select('*')
-        .order('name');
-
+      const {
+        data: servicesData
+      } = await supabase.from('services').select('*').order('name');
       setServices(servicesData || []);
 
       // Use the secure search function instead of the removed view
-      const { data: contractorsData, error } = await supabase
-        .rpc('search_contractors_with_ranking', {
-          search_query: null,
-          service_filter: null,
-          city_filter: null,
-          province_filter: null,
-          min_rating_filter: 0,
-          min_experience_filter: 0
-        });
-
+      const {
+        data: contractorsData,
+        error
+      } = await supabase.rpc('search_contractors_with_ranking', {
+        search_query: null,
+        service_filter: null,
+        city_filter: null,
+        province_filter: null,
+        min_rating_filter: 0,
+        min_experience_filter: 0
+      });
       if (error) throw error;
-      
       setContractors(contractorsData || []);
     } catch (error: any) {
       toast({
         title: "Error loading contractors",
         description: error.message,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
-
-  const filteredAndSortedContractors = contractors
-    .filter(contractor => {
-      const matchesSearch = !searchTerm || 
-        contractor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contractor.description?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesService = !selectedService || selectedService === 'all' || 
-                            contractor.service_names?.some(serviceName => 
-                              serviceName === services.find(s => s.id === selectedService)?.name
-                            );
-      
-      const matchesCity = !selectedCity || selectedCity === 'all' || 
-                         contractor.city?.toLowerCase().includes(selectedCity.toLowerCase());
-      
-      const matchesProvince = !selectedProvince || selectedProvince === 'all' || 
-                             contractor.province?.toLowerCase().includes(selectedProvince.toLowerCase());
-
-      const matchesRating = contractor.rating >= minRating[0];
-      const matchesExperience = contractor.years_experience >= minExperience[0];
-
-      return matchesSearch && matchesService && matchesCity && matchesProvince && matchesRating && matchesExperience;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'relevance':
-          // Sort by search ranking score when available, fallback to base ranking
-          const scoreA = a.search_ranking_score || a.base_ranking_score || 0;
-          const scoreB = b.search_ranking_score || b.base_ranking_score || 0;
-          return scoreB - scoreA;
-        case 'name':
-          return a.business_name.localeCompare(b.business_name);
-        case 'rating':
-          return b.rating - a.rating;
-        case 'experience':
-          return b.years_experience - a.years_experience;
-        case 'reviews':
-          return b.review_count - a.review_count;
-        default:
-          return (b.search_ranking_score || b.base_ranking_score || 0) - (a.search_ranking_score || a.base_ranking_score || 0);
-      }
-    });
-
+  const filteredAndSortedContractors = contractors.filter(contractor => {
+    const matchesSearch = !searchTerm || contractor.business_name.toLowerCase().includes(searchTerm.toLowerCase()) || contractor.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesService = !selectedService || selectedService === 'all' || contractor.service_names?.some(serviceName => serviceName === services.find(s => s.id === selectedService)?.name);
+    const matchesCity = !selectedCity || selectedCity === 'all' || contractor.city?.toLowerCase().includes(selectedCity.toLowerCase());
+    const matchesProvince = !selectedProvince || selectedProvince === 'all' || contractor.province?.toLowerCase().includes(selectedProvince.toLowerCase());
+    const matchesRating = contractor.rating >= minRating[0];
+    const matchesExperience = contractor.years_experience >= minExperience[0];
+    return matchesSearch && matchesService && matchesCity && matchesProvince && matchesRating && matchesExperience;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'relevance':
+        // Sort by search ranking score when available, fallback to base ranking
+        const scoreA = a.search_ranking_score || a.base_ranking_score || 0;
+        const scoreB = b.search_ranking_score || b.base_ranking_score || 0;
+        return scoreB - scoreA;
+      case 'name':
+        return a.business_name.localeCompare(b.business_name);
+      case 'rating':
+        return b.rating - a.rating;
+      case 'experience':
+        return b.years_experience - a.years_experience;
+      case 'reviews':
+        return b.review_count - a.review_count;
+      default:
+        return (b.search_ranking_score || b.base_ranking_score || 0) - (a.search_ranking_score || a.base_ranking_score || 0);
+    }
+  });
   const uniqueCities = Array.from(new Set(contractors.map(c => c.city).filter(Boolean)));
   const uniqueProvinces = Array.from(new Set(contractors.map(c => c.province).filter(Boolean)));
-
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedService('all');
@@ -364,38 +336,23 @@ const SearchContractors = () => {
     setLocationQuery('');
     setIsUsingLocation(false);
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
+    return <div className="min-h-screen bg-background">
         <SearchHeader />
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-background relative">
+  return <div className="min-h-screen bg-background relative">
       {/* Canadian Map Background */}
-      <div 
-        className="fixed inset-0 opacity-5 bg-no-repeat bg-center bg-contain pointer-events-none z-0"
-        style={{
-          backgroundImage: `url(${canadaMapSubtle})`,
-          backgroundSize: '80%',
-        }}
-      ></div>
+      <div className="fixed inset-0 opacity-5 bg-no-repeat bg-center bg-contain pointer-events-none z-0" style={{
+      backgroundImage: `url(${canadaMapSubtle})`,
+      backgroundSize: '80%'
+    }}></div>
       
       <div className="relative z-10">
-        <SearchHeader 
-          searchTerm={searchTerm}
-          locationQuery={locationQuery}
-          onSearchChange={setSearchTerm}
-          onLocationChange={setLocationQuery}
-          onSearch={handleSearch}
-          autocompleteRef={autocompleteRef}
-        />
+        <SearchHeader searchTerm={searchTerm} locationQuery={locationQuery} onSearchChange={setSearchTerm} onLocationChange={setLocationQuery} onSearch={handleSearch} autocompleteRef={autocompleteRef} />
         
         <div className="container mx-auto px-4 py-8">
 
@@ -416,35 +373,7 @@ const SearchContractors = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Search */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">🔍 Keyword Search</label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Input
-                      placeholder='Try "best landscaper"...'
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSearch();
-                        }
-                      }}
-                      className="border-primary/20 focus:border-primary flex-1"
-                    />
-                    <Button 
-                      onClick={handleSearch}
-                      disabled={loading}
-                      className="px-4 w-full sm:w-auto"
-                    >
-                      <Search className="h-4 w-4 mr-1" />
-                      Search
-                    </Button>
-                  </div>
-                  {searchTerm && (
-                    <p className="text-xs text-muted-foreground">
-                      Press Enter or click Search to find: <span className="font-medium">"{searchTerm}"</span>
-                    </p>
-                  )}
-                </div>
+                
 
                 {/* Service */}
                 <div className="space-y-2">
@@ -455,11 +384,9 @@ const SearchContractors = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Services</SelectItem>
-                      {services.map(service => (
-                        <SelectItem key={service.id} value={service.id}>
+                      {services.map(service => <SelectItem key={service.id} value={service.id}>
                           {service.name}
-                        </SelectItem>
-                      ))}
+                        </SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -474,48 +401,28 @@ const SearchContractors = () => {
                     
                     {/* Google Places Autocomplete */}
                     <div className="space-y-2">
-                      <Input
-                        ref={autocompleteRef}
-                        placeholder="Enter your address or location..."
-                        value={locationQuery}
-                        onChange={(e) => setLocationQuery(e.target.value)}
-                        className="border-primary/20 focus:border-primary"
-                      />
+                      <Input ref={autocompleteRef} placeholder="Enter your address or location..." value={locationQuery} onChange={e => setLocationQuery(e.target.value)} className="border-primary/20 focus:border-primary" />
                       
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={getCurrentLocation}
-                        disabled={gettingLocation}
-                        className="w-full"
-                      >
-                        {gettingLocation ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
-                        ) : (
-                          <Target className="h-4 w-4 mr-2" />
-                        )}
+                      <Button type="button" variant="outline" size="sm" onClick={getCurrentLocation} disabled={gettingLocation} className="w-full">
+                        {gettingLocation ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div> : <Target className="h-4 w-4 mr-2" />}
                         Use My Current Location
                       </Button>
                     </div>
 
                     {/* Show current location */}
-                    {userLocation && (
-                      <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
+                    {userLocation && <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
                         <div className="flex items-center gap-1">
                           <Navigation className="h-3 w-3" />
                           <span>Using location: {userLocation.address || 'Current Location'}</span>
                         </div>
-                      </div>
-                    )}
+                      </div>}
 
                     {/* Radius Selector */}
-                    {userLocation && (
-                      <div className="space-y-2">
+                    {userLocation && <div className="space-y-2">
                         <label className="text-sm font-medium">
                           Search Radius: {radius[0]} km
                         </label>
-                        <Select value={radius[0].toString()} onValueChange={(value) => setRadius([parseInt(value)])}>
+                        <Select value={radius[0].toString()} onValueChange={value => setRadius([parseInt(value)])}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -529,13 +436,11 @@ const SearchContractors = () => {
                             <SelectItem value="100">100 km</SelectItem>
                           </SelectContent>
                         </Select>
-                      </div>
-                    )}
+                      </div>}
                   </div>
 
                   {/* Fallback city/province selectors */}
-                  {!isUsingLocation && (
-                    <>
+                  {!isUsingLocation && <>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">City</label>
                         <Select value={selectedCity} onValueChange={setSelectedCity}>
@@ -544,11 +449,9 @@ const SearchContractors = () => {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">All Cities</SelectItem>
-                            {uniqueCities.map(city => (
-                              <SelectItem key={city} value={city}>
+                            {uniqueCities.map(city => <SelectItem key={city} value={city}>
                                 {city}
-                              </SelectItem>
-                            ))}
+                              </SelectItem>)}
                           </SelectContent>
                         </Select>
                       </div>
@@ -561,16 +464,13 @@ const SearchContractors = () => {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">All Provinces</SelectItem>
-                            {uniqueProvinces.map(province => (
-                              <SelectItem key={province} value={province}>
+                            {uniqueProvinces.map(province => <SelectItem key={province} value={province}>
                                 {province}
-                              </SelectItem>
-                            ))}
+                              </SelectItem>)}
                           </SelectContent>
                         </Select>
                       </div>
-                    </>
-                  )}
+                    </>}
                 </div>
 
                 {/* Rating */}
@@ -578,14 +478,7 @@ const SearchContractors = () => {
                   <label className="text-sm font-medium">
                     Minimum Rating: {minRating[0].toFixed(1)}★
                   </label>
-                  <Slider
-                    value={minRating}
-                    onValueChange={setMinRating}
-                    max={5}
-                    min={0}
-                    step={0.5}
-                    className="w-full"
-                  />
+                  <Slider value={minRating} onValueChange={setMinRating} max={5} min={0} step={0.5} className="w-full" />
                 </div>
 
                 {/* Experience */}
@@ -593,14 +486,7 @@ const SearchContractors = () => {
                   <label className="text-sm font-medium">
                     Minimum Experience: {minExperience[0]} years
                   </label>
-                  <Slider
-                    value={minExperience}
-                    onValueChange={setMinExperience}
-                    max={30}
-                    min={0}
-                    step={1}
-                    className="w-full"
-                  />
+                  <Slider value={minExperience} onValueChange={setMinExperience} max={30} min={0} step={1} className="w-full" />
                 </div>
 
                 {/* Sort */}
@@ -631,22 +517,14 @@ const SearchContractors = () => {
               </h2>
             </div>
 
-            {filteredAndSortedContractors.length === 0 ? (
-              <Card>
+            {filteredAndSortedContractors.length === 0 ? <Card>
                 <CardContent className="py-12 text-center">
                   <p className="text-muted-foreground">
                     No contractors found matching your criteria. Try adjusting your filters.
                   </p>
                 </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-1">
-                {filteredAndSortedContractors.map(contractor => (
-                  <Card 
-                    key={contractor.id} 
-                    className="group hover:shadow-xl hover:scale-[1.01] transition-all duration-300 cursor-pointer border-l-4 border-l-primary/20 hover:border-l-primary bg-gradient-to-br from-card to-card/80 backdrop-blur-sm"
-                    onClick={() => navigate(`/contractor/${contractor.id}`)}
-                  >
+              </Card> : <div className="grid gap-4 sm:grid-cols-1">
+                {filteredAndSortedContractors.map(contractor => <Card key={contractor.id} className="group hover:shadow-xl hover:scale-[1.01] transition-all duration-300 cursor-pointer border-l-4 border-l-primary/20 hover:border-l-primary bg-gradient-to-br from-card to-card/80 backdrop-blur-sm" onClick={() => navigate(`/contractor/${contractor.id}`)}>
                     {/* Mobile-First Layout */}
                     <div className="flex flex-col sm:flex-row h-full">
                       {/* Main Content */}
@@ -657,15 +535,7 @@ const SearchContractors = () => {
                             {/* Logo Section */}
                             <div className="flex-shrink-0">
                               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/10 flex items-center justify-center overflow-hidden group-hover:shadow-lg transition-shadow">
-                                {contractor.logo_url ? (
-                                  <img 
-                                    src={contractor.logo_url} 
-                                    alt={`${contractor.business_name} logo`}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <Building2 className="h-6 w-6 text-primary/60" />
-                                )}
+                                {contractor.logo_url ? <img src={contractor.logo_url} alt={`${contractor.business_name} logo`} className="w-full h-full object-cover" /> : <Building2 className="h-6 w-6 text-primary/60" />}
                               </div>
                             </div>
                             
@@ -676,19 +546,15 @@ const SearchContractors = () => {
                                   <CardTitle className="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
                                     {contractor.business_name}
                                   </CardTitle>
-                                   {contractor.city && contractor.province && (
-                                     <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                                   {contractor.city && contractor.province && <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                                        <MapPin className="h-3 w-3 flex-shrink-0" />
                                        <span className="truncate">
                                          {contractor.city}, {contractor.province}
-                                         {contractor.distance_km && (
-                                           <span className="ml-1 text-primary font-medium">
+                                         {contractor.distance_km && <span className="ml-1 text-primary font-medium">
                                              • {contractor.distance_km.toFixed(1)} km away
-                                           </span>
-                                         )}
+                                           </span>}
                                        </span>
-                                     </div>
-                                   )}
+                                     </div>}
                                 </div>
                               </div>
                             </div>
@@ -697,44 +563,31 @@ const SearchContractors = () => {
 
                         <CardContent className="space-y-3 flex-1">
                           {/* Description */}
-                          {contractor.description && (
-                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                          {contractor.description && <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                               {contractor.description}
-                            </p>
-                          )}
+                            </p>}
 
                           {/* Services */}
                           <div className="flex flex-wrap gap-1">
-                            {contractor.service_names?.slice(0, 2).map((serviceName, index) => (
-                              <Badge 
-                                key={index} 
-                                variant="secondary" 
-                                className="text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                              >
+                            {contractor.service_names?.slice(0, 2).map((serviceName, index) => <Badge key={index} variant="secondary" className="text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
                                 {serviceName}
-                              </Badge>
-                            ))}
-                            {contractor.service_names && contractor.service_names.length > 2 && (
-                              <Badge variant="outline" className="text-xs border-dashed">
+                              </Badge>)}
+                            {contractor.service_names && contractor.service_names.length > 2 && <Badge variant="outline" className="text-xs border-dashed">
                                 +{contractor.service_names.length - 2} more
-                              </Badge>
-                            )}
+                              </Badge>}
                           </div>
 
                           {/* Footer */}
                           <div className="flex justify-between items-center pt-2 border-t border-border/50">
                             <div className="flex items-center gap-3">
                               {/* Experience */}
-                              {contractor.years_experience > 0 && (
-                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                              {contractor.years_experience > 0 && <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                   <Award className="h-3 w-3" />
                                   <span className="font-medium">{contractor.years_experience}y exp</span>
-                                </div>
-                              )}
+                                </div>}
                               
                               {/* Rating Badge - moved here under experience */}
-                              {contractor.rating > 0 && (
-                                <div className="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 px-2 py-1 rounded-full border border-yellow-200 dark:border-yellow-800">
+                              {contractor.rating > 0 && <div className="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 px-2 py-1 rounded-full border border-yellow-200 dark:border-yellow-800">
                                   <div className="flex items-center gap-1">
                                     <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
                                     <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300">
@@ -744,121 +597,75 @@ const SearchContractors = () => {
                                       ({contractor.review_count})
                                     </span>
                                   </div>
-                                </div>
-                              )}
+                                </div>}
                             </div>
                             
                             {/* Contact Icons */}
                             <div className="flex gap-2">
-                              {contractor.phone && (
-                                <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
+                              {contractor.phone && <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
                                   <Phone className="h-3 w-3 text-primary" />
-                                </div>
-                              )}
-                              {contractor.email && (
-                                <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
+                                </div>}
+                              {contractor.email && <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
                                   <Mail className="h-3 w-3 text-primary" />
-                                </div>
-                              )}
-                              {contractor.website && (
-                                <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
+                                </div>}
+                              {contractor.website && <div className="p-1.5 rounded-md bg-primary/5 hover:bg-primary/10 transition-colors">
                                   <Globe className="h-3 w-3 text-primary" />
-                                </div>
-                              )}
+                                </div>}
                             </div>
                           </div>
                         </CardContent>
                       </div>
 
                       {/* Image Gallery Section - Hide on mobile, show on larger screens */}
-                      <div className="hidden sm:flex w-48 flex-col" onClick={(e) => e.stopPropagation()}>
+                      <div className="hidden sm:flex w-48 flex-col" onClick={e => e.stopPropagation()}>
                         <div className="flex-1 p-3">
-                          {contractor.gallery_images && contractor.gallery_images.length > 0 ? (
-                            <Carousel className="w-full h-full">
+                          {contractor.gallery_images && contractor.gallery_images.length > 0 ? <Carousel className="w-full h-full">
                               <CarouselContent>
-                                {contractor.gallery_images.map((image, index) => (
-                                  <CarouselItem key={index}>
+                                {contractor.gallery_images.map((image, index) => <CarouselItem key={index}>
                                     <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                                      <img 
-                                        src={image} 
-                                        alt={`${contractor.business_name} gallery ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                      />
+                                      <img src={image} alt={`${contractor.business_name} gallery ${index + 1}`} className="w-full h-full object-cover" />
                                     </div>
-                                  </CarouselItem>
-                                ))}
+                                  </CarouselItem>)}
                               </CarouselContent>
-                              {contractor.gallery_images.length > 1 && (
-                                <>
+                              {contractor.gallery_images.length > 1 && <>
                                   <CarouselPrevious className="absolute left-1 top-1/2 -translate-y-1/2 h-6 w-6 bg-background/80 hover:bg-background border-border" />
                                   <CarouselNext className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 bg-background/80 hover:bg-background border-border" />
-                                </>
-                              )}
-                            </Carousel>
-                          ) : (
-                            <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
+                                </>}
+                            </Carousel> : <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
                               <div className="text-center text-muted-foreground">
                                 <Building2 className="h-8 w-8 mx-auto mb-2 opacity-50" />
                                 <p className="text-xs">No images</p>
                               </div>
-                            </div>
-                          )}
+                            </div>}
                         </div>
                         
                         {/* Send Message Button */}
-                        {contractor.email && (
-                          <div className="p-3 pt-0">
-                            <Button 
-                              variant="outline"
-                              size="sm"
-                              className="w-full text-xs"
-                              onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}
-                            >
+                        {contractor.email && <div className="p-3 pt-0">
+                            <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}>
                               <Send className="h-3 w-3 mr-1" />
                               Message
                             </Button>
-                          </div>
-                        )}
+                          </div>}
                       </div>
 
                       {/* Mobile Image Gallery - Show on mobile only */}
-                      <div className="sm:hidden" onClick={(e) => e.stopPropagation()}>
+                      <div className="sm:hidden" onClick={e => e.stopPropagation()}>
                         <CardContent className="pt-0 pb-3">
                           <h4 className="text-sm font-medium text-foreground mb-2">Portfolio Images</h4>
-                          {contractor.gallery_images && contractor.gallery_images.length > 0 ? (
-                            <div className="grid grid-cols-2 gap-2">
-                              {contractor.gallery_images.slice(0, 4).map((image, index) => (
-                                <img
-                                  key={index}
-                                  src={image}
-                                  alt={`${contractor.business_name} work ${index + 1}`}
-                                  className="w-full h-20 object-cover rounded-md"
-                                />
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-muted-foreground text-sm italic">No images</p>
-                          )}
+                          {contractor.gallery_images && contractor.gallery_images.length > 0 ? <div className="grid grid-cols-2 gap-2">
+                              {contractor.gallery_images.slice(0, 4).map((image, index) => <img key={index} src={image} alt={`${contractor.business_name} work ${index + 1}`} className="w-full h-20 object-cover rounded-md" />)}
+                            </div> : <p className="text-muted-foreground text-sm italic">No images</p>}
                           
                           {/* Mobile Message Button */}
-                          {contractor.email && (
-                            <Button 
-                              variant="outline"
-                              size="sm"
-                              className="w-full mt-3 text-sm"
-                              onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}
-                            >
+                          {contractor.email && <Button variant="outline" size="sm" className="w-full mt-3 text-sm" onClick={() => window.open(`mailto:${contractor.email}?subject=Inquiry about ${contractor.business_name} services`, '_blank')}>
                               <Send className="h-4 w-4 mr-2" />
                               Send Message
-                            </Button>
-                          )}
+                            </Button>}
                         </CardContent>
                       </div>
                     </div>
-                  </Card>
-                ))}
-              </div>
-            )}
+                  </Card>)}
+              </div>}
           </div>
         </div>
         </div>
@@ -869,8 +676,6 @@ const SearchContractors = () => {
         {/* Footer */}
         <Footer />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default SearchContractors;
