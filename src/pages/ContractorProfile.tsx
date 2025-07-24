@@ -92,6 +92,7 @@ const ContractorProfile = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [savingContractor, setSavingContractor] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [userProfile, setUserProfile] = useState<{user_type: string} | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -100,6 +101,7 @@ const ContractorProfile = () => {
       fetchProjects();
       if (user) {
         checkIfSaved();
+        fetchUserProfile();
       }
     }
   }, [id, user]);
@@ -336,6 +338,23 @@ const ContractorProfile = () => {
       });
     } finally {
       setSavingContractor(false);
+    }
+  };
+
+  const fetchUserProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_type')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) throw error;
+      setUserProfile(data);
+    } catch (error: any) {
+      console.error('Error fetching user profile:', error);
     }
   };
 
@@ -618,11 +637,12 @@ const ContractorProfile = () => {
                     <MessageSquare className="h-5 w-5" />
                     Reviews ({reviews.length})
                   </CardTitle>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button onClick={handleWriteReviewClick}>Write Review</Button>
-                    </DialogTrigger>
-                    {user && (
+                  {(!user || userProfile?.user_type === 'homeowner') && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button onClick={handleWriteReviewClick}>Write Review</Button>
+                      </DialogTrigger>
+                      {user && userProfile?.user_type === 'homeowner' && (
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Write a Review</DialogTitle>
@@ -659,8 +679,9 @@ const ContractorProfile = () => {
                           </Button>
                         </div>
                       </DialogContent>
-                    )}
-                  </Dialog>
+                      )}
+                    </Dialog>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
