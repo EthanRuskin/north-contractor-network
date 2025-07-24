@@ -91,6 +91,7 @@ const ContractorProfile = () => {
   const [selectedProject, setSelectedProject] = useState<ContractorProject | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [savingContractor, setSavingContractor] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -219,11 +220,7 @@ const ContractorProfile = () => {
 
   const submitReview = async () => {
     if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to leave a review",
-        variant: "destructive",
-      });
+      setShowAuthDialog(true);
       return;
     }
 
@@ -340,6 +337,13 @@ const ContractorProfile = () => {
     } finally {
       setSavingContractor(false);
     }
+  };
+
+  const handleWriteReviewClick = () => {
+    if (!user) {
+      setShowAuthDialog(true);
+    }
+    // If user is logged in, the dialog will open automatically via DialogTrigger
   };
 
   const renderStars = (rating: number, interactive = false, onRate?: (rating: number) => void) => {
@@ -614,11 +618,11 @@ const ContractorProfile = () => {
                     <MessageSquare className="h-5 w-5" />
                     Reviews ({reviews.length})
                   </CardTitle>
-                  {user && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button>Write Review</Button>
-                      </DialogTrigger>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button onClick={handleWriteReviewClick}>Write Review</Button>
+                    </DialogTrigger>
+                    {user && (
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Write a Review</DialogTitle>
@@ -655,8 +659,8 @@ const ContractorProfile = () => {
                           </Button>
                         </div>
                       </DialogContent>
-                    </Dialog>
-                  )}
+                    )}
+                  </Dialog>
                 </div>
               </CardHeader>
               <CardContent>
@@ -964,6 +968,29 @@ const ContractorProfile = () => {
           </Button>
         </div>
       </section>
+
+      {/* Authentication Dialog */}
+      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sign in to Write a Review</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              You need to be signed in as a homeowner to write reviews for contractors.
+            </p>
+            <div className="flex flex-col space-y-2">
+              <Button onClick={() => navigate('/auth')} className="w-full">
+                Sign In / Sign Up as Homeowner
+              </Button>
+              <Button variant="outline" onClick={() => setShowAuthDialog(false)} className="w-full">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
