@@ -23,15 +23,15 @@ const Header = () => {
           <nav className="hidden lg:flex items-center space-x-6">
             <button 
               onClick={() => navigate('/search')}
-              className="text-foreground hover:text-primary transition-colors flex items-center gap-1"
+              className="text-foreground hover:text-primary transition-colors flex items-center gap-1 font-heading"
             >
               <Search className="h-4 w-4" />
               Find Contractors
             </button>
-            <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors">
+            <Link to="/how-it-works" className="text-foreground hover:text-primary transition-colors font-heading">
               How It Works
             </Link>
-            <Link to="/industries" className="text-foreground hover:text-primary transition-colors">
+            <Link to="/industries" className="text-foreground hover:text-primary transition-colors font-heading">
               Industries
             </Link>
             
@@ -76,14 +76,14 @@ const Header = () => {
                   navigate('/search');
                   setIsMenuOpen(false);
                 }}
-                className="block w-full text-left px-2 py-2 text-foreground hover:text-primary transition-colors"
+                className="block w-full text-left px-2 py-2 text-foreground hover:text-primary transition-colors font-heading"
               >
                 Find Contractors
               </button>
-              <Link to="/how-it-works" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
+              <Link to="/how-it-works" className="block px-2 py-2 text-foreground hover:text-primary transition-colors font-heading">
                 How It Works
               </Link>
-              <Link to="/industries" className="block px-2 py-2 text-foreground hover:text-primary transition-colors">
+              <Link to="/industries" className="block px-2 py-2 text-foreground hover:text-primary transition-colors font-heading">
                 Industries
               </Link>
               

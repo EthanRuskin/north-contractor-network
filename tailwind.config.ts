@@ -138,7 +138,7 @@ export default {
 			fontFamily: {
 				'industrial': ['Inter', 'system-ui', 'sans-serif'],
 				'mono-industrial': ['JetBrains Mono', 'Consolas', 'monospace'],
-				'heading': ['Michroma', 'sans-serif']
+				'heading': ['Norwester', 'sans-serif']
 			},
 			spacing: {
 				'industrial': '0.375rem' /* 6px - precise industrial spacing */
