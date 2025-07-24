@@ -460,54 +460,6 @@ const ContractorProfile = () => {
                           </span>
                         </div>}
                     </div>
-                    
-                    {/* Social Icons */}
-                    {(contractor.instagram_url || contractor.facebook_url || contractor.linkedin_url || contractor.tiktok_url || contractor.x_url || contractor.youtube_url) && (
-                      <div className="flex gap-2 mt-3">
-                        {contractor.instagram_url && (
-                          <Button asChild variant="outline" size="icon" className="h-8 w-8">
-                            <a href={contractor.instagram_url} target="_blank" rel="noopener noreferrer">
-                              <Instagram className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        {contractor.facebook_url && (
-                          <Button asChild variant="outline" size="icon" className="h-8 w-8">
-                            <a href={contractor.facebook_url} target="_blank" rel="noopener noreferrer">
-                              <Facebook className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        {contractor.linkedin_url && (
-                          <Button asChild variant="outline" size="icon" className="h-8 w-8">
-                            <a href={contractor.linkedin_url} target="_blank" rel="noopener noreferrer">
-                              <Linkedin className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        {contractor.tiktok_url && (
-                          <Button asChild variant="outline" size="icon" className="h-8 w-8">
-                            <a href={contractor.tiktok_url} target="_blank" rel="noopener noreferrer">
-                              <Music className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        {contractor.x_url && (
-                          <Button asChild variant="outline" size="icon" className="h-8 w-8">
-                            <a href={contractor.x_url} target="_blank" rel="noopener noreferrer">
-                              <X className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        {contractor.youtube_url && (
-                          <Button asChild variant="outline" size="icon" className="h-8 w-8">
-                            <a href={contractor.youtube_url} target="_blank" rel="noopener noreferrer">
-                              <Video className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
                 
@@ -720,6 +672,46 @@ const ContractorProfile = () => {
               </CardContent>
             </Card>
 
+            {/* Social Profiles */}
+            {(contractor.instagram_url || contractor.facebook_url || contractor.linkedin_url || contractor.tiktok_url || contractor.x_url || contractor.youtube_url) && <Card>
+                <CardHeader>
+                  <CardTitle>Social Profiles</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-3">
+                    {contractor.instagram_url && <Button asChild variant="outline" size="icon">
+                        <a href={contractor.instagram_url} target="_blank" rel="noopener noreferrer">
+                          <Instagram className="h-4 w-4" />
+                        </a>
+                      </Button>}
+                    {contractor.facebook_url && <Button asChild variant="outline" size="icon">
+                        <a href={contractor.facebook_url} target="_blank" rel="noopener noreferrer">
+                          <Facebook className="h-4 w-4" />
+                        </a>
+                      </Button>}
+                    {contractor.linkedin_url && <Button asChild variant="outline" size="icon">
+                        <a href={contractor.linkedin_url} target="_blank" rel="noopener noreferrer">
+                          <Linkedin className="h-4 w-4" />
+                        </a>
+                      </Button>}
+                    {contractor.tiktok_url && <Button asChild variant="outline" size="icon">
+                        <a href={contractor.tiktok_url} target="_blank" rel="noopener noreferrer">
+                          <Music className="h-4 w-4" />
+                        </a>
+                      </Button>}
+                    {contractor.x_url && <Button asChild variant="outline" size="icon">
+                        <a href={contractor.x_url} target="_blank" rel="noopener noreferrer">
+                          <X className="h-4 w-4" />
+                        </a>
+                      </Button>}
+                    {contractor.youtube_url && <Button asChild variant="outline" size="icon">
+                        <a href={contractor.youtube_url} target="_blank" rel="noopener noreferrer">
+                          <Video className="h-4 w-4" />
+                        </a>
+                      </Button>}
+                  </div>
+                </CardContent>
+              </Card>}
 
             {/* Location & Hours */}
             <Card>
