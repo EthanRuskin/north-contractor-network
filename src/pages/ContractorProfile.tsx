@@ -226,10 +226,23 @@ const ContractorProfile = () => {
       return;
     }
 
-    if (!reviewTitle.trim() || !reviewComment.trim()) {
+    if (!userProfile || userProfile.user_type !== 'homeowner') {
       toast({
-        title: "Review incomplete",
-        description: "Please provide both a title and comment",
+        title: "Access denied",
+        description: "Only homeowners can write reviews.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Input validation and sanitization
+    const sanitizedComment = reviewComment.trim().slice(0, 1000);
+    const sanitizedTitle = reviewTitle.trim().slice(0, 200);
+    
+    if (sanitizedComment.length < 10) {
+      toast({
+        title: "Review too short",
+        description: "Please write a review with at least 10 characters.",
         variant: "destructive",
       });
       return;
@@ -237,17 +250,73 @@ const ContractorProfile = () => {
 
     setSubmittingReview(true);
     try {
+      // Check for rate limiting
+      const { data: rateLimitData } = await supabase
+        .from('review_rate_limits')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('last_review_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .maybeSingle();
+
+      if (rateLimitData && rateLimitData.review_count_today >= 5) {
+        toast({
+          title: "Daily limit reached",
+          description: "You can only submit 5 reviews per day. Please try again tomorrow.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check for existing review
+      const { data: existingReview } = await supabase
+        .from('reviews')
+        .select('id')
+        .eq('contractor_id', id!)
+        .eq('reviewer_id', user.id)
+        .maybeSingle();
+
+      if (existingReview) {
+        toast({
+          title: "Review already exists",
+          description: "You have already reviewed this contractor.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('reviews')
         .insert({
           contractor_id: id!,
           reviewer_id: user.id,
           rating: reviewRating,
-          title: reviewTitle,
-          comment: reviewComment,
+          title: sanitizedTitle || null,
+          comment: sanitizedComment,
         });
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505') {
+          toast({
+            title: "Review already exists",
+            description: "You have already reviewed this contractor.",
+            variant: "destructive",
+          });
+        } else {
+          throw error;
+        }
+        return;
+      }
+
+      // Update rate limiting
+      await supabase
+        .from('review_rate_limits')
+        .upsert({
+          user_id: user.id,
+          last_review_at: new Date().toISOString(),
+          review_count_today: (rateLimitData?.review_count_today || 0) + 1,
+        }, {
+          onConflict: 'user_id'
+        });
 
       toast({
         title: "Review submitted",
@@ -260,9 +329,10 @@ const ContractorProfile = () => {
       fetchReviews();
       fetchContractorProfile(); // Refresh to update rating
     } catch (error: any) {
+      console.error('Error submitting review:', error);
       toast({
-        title: "Error submitting review",
-        description: error.message,
+        title: "Error",
+        description: "Unable to submit review. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -652,31 +722,39 @@ const ContractorProfile = () => {
                             <label className="text-sm font-medium mb-2 block">Rating</label>
                             {renderStars(reviewRating, true, setReviewRating)}
                           </div>
-                          <div>
-                            <label className="text-sm font-medium mb-2 block">Title</label>
-                            <input
-                              className="w-full p-2 border rounded-md"
-                              value={reviewTitle}
-                              onChange={(e) => setReviewTitle(e.target.value)}
-                              placeholder="Review title"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium mb-2 block">Comment</label>
-                            <Textarea
-                              value={reviewComment}
-                              onChange={(e) => setReviewComment(e.target.value)}
-                              placeholder="Share your experience..."
-                              rows={4}
-                            />
-                          </div>
-                          <Button
-                            onClick={submitReview}
-                            disabled={submittingReview}
-                            className="w-full"
-                          >
-                            {submittingReview ? 'Submitting...' : 'Submit Review'}
-                          </Button>
+                           <div>
+                             <label className="text-sm font-medium mb-2 block">Title (optional)</label>
+                             <input
+                               className="w-full p-2 border rounded-md"
+                               value={reviewTitle}
+                               onChange={(e) => setReviewTitle(e.target.value.slice(0, 200))}
+                               placeholder="Review title"
+                               maxLength={200}
+                             />
+                             <p className="text-xs text-muted-foreground mt-1">
+                               {reviewTitle.length}/200 characters
+                             </p>
+                           </div>
+                           <div>
+                             <label className="text-sm font-medium mb-2 block">Comment</label>
+                             <Textarea
+                               value={reviewComment}
+                               onChange={(e) => setReviewComment(e.target.value.slice(0, 1000))}
+                               placeholder="Share your experience... (minimum 10 characters)"
+                               rows={4}
+                               maxLength={1000}
+                             />
+                             <p className="text-xs text-muted-foreground mt-1">
+                               {reviewComment.length}/1000 characters (minimum 10)
+                             </p>
+                           </div>
+                           <Button
+                             onClick={submitReview}
+                             disabled={submittingReview || reviewComment.trim().length < 10}
+                             className="w-full"
+                           >
+                             {submittingReview ? 'Submitting...' : 'Submit Review'}
+                           </Button>
                         </div>
                       </DialogContent>
                       )}

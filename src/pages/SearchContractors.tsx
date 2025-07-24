@@ -281,20 +281,20 @@ const SearchContractors = () => {
 
       setServices(servicesData || []);
 
-      // Use the new contractor_search_results view
+      // Use the secure search function instead of the removed view
       const { data: contractorsData, error } = await supabase
-        .from('contractor_search_results')
-        .select('*');
+        .rpc('search_contractors_with_ranking', {
+          search_query: null,
+          service_filter: null,
+          city_filter: null,
+          province_filter: null,
+          min_rating_filter: 0,
+          min_experience_filter: 0
+        });
 
       if (error) throw error;
       
-      // Transform data for compatibility
-      const transformedData = contractorsData?.map(contractor => ({
-        ...contractor,
-        service_names: contractor.service_names || []
-      })) || [];
-      
-      setContractors(transformedData);
+      setContractors(contractorsData || []);
     } catch (error: any) {
       toast({
         title: "Error loading contractors",

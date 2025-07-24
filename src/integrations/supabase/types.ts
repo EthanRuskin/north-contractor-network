@@ -164,13 +164,6 @@ export type Database = {
             referencedRelation: "contractor_businesses"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "fk_contractor_projects_contractor"
-            columns: ["contractor_id"]
-            isOneToOne: false
-            referencedRelation: "contractor_search_results"
-            referencedColumns: ["id"]
-          },
         ]
       }
       contractor_services: {
@@ -198,13 +191,6 @@ export type Database = {
             columns: ["contractor_id"]
             isOneToOne: false
             referencedRelation: "contractor_businesses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contractor_services_contractor_id_fkey"
-            columns: ["contractor_id"]
-            isOneToOne: false
-            referencedRelation: "contractor_search_results"
             referencedColumns: ["id"]
           },
           {
@@ -249,6 +235,30 @@ export type Database = {
         }
         Relationships: []
       }
+      review_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          last_review_at: string
+          review_count_today: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_review_at?: string
+          review_count_today?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_review_at?: string
+          review_count_today?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           comment: string | null
@@ -288,13 +298,6 @@ export type Database = {
             referencedRelation: "contractor_businesses"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "reviews_contractor_id_fkey"
-            columns: ["contractor_id"]
-            isOneToOne: false
-            referencedRelation: "contractor_search_results"
-            referencedColumns: ["id"]
-          },
         ]
       }
       saved_contractors: {
@@ -322,13 +325,6 @@ export type Database = {
             columns: ["contractor_id"]
             isOneToOne: false
             referencedRelation: "contractor_businesses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "saved_contractors_contractor_id_fkey"
-            columns: ["contractor_id"]
-            isOneToOne: false
-            referencedRelation: "contractor_search_results"
             referencedColumns: ["id"]
           },
         ]
@@ -359,37 +355,7 @@ export type Database = {
       }
     }
     Views: {
-      contractor_search_results: {
-        Row: {
-          address: string | null
-          base_ranking_score: number | null
-          business_hours: Json | null
-          business_name: string | null
-          city: string | null
-          created_at: string | null
-          description: string | null
-          email: string | null
-          gallery_images: string[] | null
-          id: string | null
-          insurance_verified: boolean | null
-          license_number: string | null
-          logo_url: string | null
-          phone: string | null
-          postal_code: string | null
-          province: string | null
-          rating: number | null
-          review_count: number | null
-          search_vector: unknown | null
-          service_ids: string[] | null
-          service_names: string[] | null
-          status: string | null
-          updated_at: string | null
-          user_id: string | null
-          website: string | null
-          years_experience: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       calculate_contractor_ranking: {
