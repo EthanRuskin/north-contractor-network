@@ -384,7 +384,11 @@ const SearchContractors = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Services</SelectItem>
-                      {services.map(service => {})}
+                      {services.map(service => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
