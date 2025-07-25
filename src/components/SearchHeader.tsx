@@ -128,10 +128,11 @@ const SearchHeader = ({
             <div className="flex w-full bg-white rounded-lg overflow-hidden shadow-sm">
               <Input placeholder="What service do you need?" value={searchTerm} onChange={e => onSearchChange?.(e.target.value)} onKeyDown={handleKeyDown} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none flex-1" />
               <div className="w-px bg-border"></div>
-              <div className="relative flex-1" ref={dropdownRef}>
+              <div className="relative flex-1 overflow-visible" ref={dropdownRef}>
                 <Input ref={locationInputRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} onFocus={() => setShowLocationDropdown(true)} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none" />
                 
-                {showLocationDropdown && <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-b-lg shadow-xl z-[60] max-h-80 overflow-y-auto">
+                {showLocationDropdown && (
+                  <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-b-lg shadow-2xl z-[9999] max-h-80 overflow-y-auto mt-0">
                     <div className="py-1">
                       <button onClick={handleUseCurrentLocation} className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center gap-3 text-sm font-medium border-b border-gray-100">
                         <MapPin className="h-4 w-4 text-blue-600" />
@@ -141,7 +142,8 @@ const SearchHeader = ({
                           {city}
                         </button>)}
                     </div>
-                  </div>}
+                  </div>
+                )}
               </div>
               <Button onClick={handleSearch} size="sm" className="h-12 px-6 rounded-none text-white" style={{ backgroundColor: '#161A1D' }}>
                 <Search className="h-4 w-4" />
