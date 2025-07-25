@@ -131,14 +131,13 @@ const SearchHeader = ({
               <div className="relative flex-1" ref={dropdownRef}>
                 <Input ref={locationInputRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} onFocus={() => setShowLocationDropdown(true)} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none" />
                 
-                {showLocationDropdown && <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                    <div className="py-2">
-                      <button onClick={handleUseCurrentLocation} className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-blue-500" />
-                        Use my current location
+                {showLocationDropdown && <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-b-lg shadow-xl z-[60] max-h-80 overflow-y-auto">
+                    <div className="py-1">
+                      <button onClick={handleUseCurrentLocation} className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center gap-3 text-sm font-medium border-b border-gray-100">
+                        <MapPin className="h-4 w-4 text-blue-600" />
+                        <span className="text-blue-600">Current Location</span>
                       </button>
-                      <div className="border-t border-gray-100 my-1"></div>
-                      {commonCities.map(city => <button key={city} onClick={() => handleCitySelect(city)} className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm">
+                      {commonCities.map(city => <button key={city} onClick={() => handleCitySelect(city)} className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm text-gray-700 border-b border-gray-50 last:border-b-0">
                           {city}
                         </button>)}
                     </div>
