@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Search, Star, Users, TrendingUp, ArrowRight, MessageSquare, Heart, Trash2, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-
 interface ContractorBusiness {
   id: string;
   business_name: string;
@@ -16,38 +15,37 @@ interface ContractorBusiness {
   rating: number;
   review_count: number;
 }
-
 interface SavedContractor {
   id: string;
   contractor_id: string;
   created_at: string;
   contractor_businesses: ContractorBusiness;
 }
-
 const HomeownerDashboard = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const [contractors, setContractors] = useState<ContractorBusiness[]>([]);
   const [savedContractors, setSavedContractors] = useState<SavedContractor[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchContractors();
     if (user) {
       fetchSavedContractors();
     }
   }, [user]);
-
   const fetchContractors = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('contractor_businesses')
-        .select('id, business_name, description, city, province, rating, review_count')
-        .eq('status', 'approved')
-        .order('rating', { ascending: false })
-        .limit(6);
-
+      const {
+        data,
+        error
+      } = await supabase.from('contractor_businesses').select('id, business_name, description, city, province, rating, review_count').eq('status', 'approved').order('rating', {
+        ascending: false
+      }).limit(6);
       if (error) throw error;
       setContractors(data || []);
     } catch (error) {
@@ -56,14 +54,13 @@ const HomeownerDashboard = () => {
       setLoading(false);
     }
   };
-
   const fetchSavedContractors = async () => {
     if (!user) return;
-    
     try {
-      const { data, error } = await supabase
-        .from('saved_contractors')
-        .select(`
+      const {
+        data,
+        error
+      } = await supabase.from('saved_contractors').select(`
           id,
           contractor_id,
           created_at,
@@ -76,50 +73,40 @@ const HomeownerDashboard = () => {
             rating,
             review_count
           )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
+        `).eq('user_id', user.id).order('created_at', {
+        ascending: false
+      });
       if (error) throw error;
       setSavedContractors(data || []);
     } catch (error) {
       console.error('Error fetching saved contractors:', error);
     }
   };
-
   const removeSavedContractor = async (savedContractorId: string) => {
     try {
-      const { error } = await supabase
-        .from('saved_contractors')
-        .delete()
-        .eq('id', savedContractorId);
-
+      const {
+        error
+      } = await supabase.from('saved_contractors').delete().eq('id', savedContractorId);
       if (error) throw error;
-
       setSavedContractors(prev => prev.filter(sc => sc.id !== savedContractorId));
       toast({
         title: "Contractor removed",
-        description: "Contractor removed from your saved list",
+        description: "Contractor removed from your saved list"
       });
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
+    return <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-8">
+  return <div className="space-y-8">
       {/* Welcome Section */}
       <div className="flex justify-between items-start">
         <div className="text-center flex-1">
@@ -191,64 +178,7 @@ const HomeownerDashboard = () => {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Contractors
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2,847</div>
-            <p className="text-xs text-muted-foreground">
-              Verified professionals
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Average Rating
-            </CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">4.8</div>
-            <p className="text-xs text-muted-foreground">
-              Based on 15,284 reviews
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Most Popular
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Plumbing</div>
-            <p className="text-xs text-muted-foreground">
-              Service category
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              New This Week
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">23</div>
-            <p className="text-xs text-muted-foreground">
-              New contractors joined
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      
 
       {/* Information sections */}
       <div className="grid md:grid-cols-2 gap-6">
@@ -291,13 +221,14 @@ const HomeownerDashboard = () => {
       </div>
 
       {/* Saved Contractors */}
-      {savedContractors.length > 0 && (
-        <Card>
+      {savedContractors.length > 0 && <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5" style={{ color: '#A4161A' }} />
+                  <Heart className="h-5 w-5" style={{
+                color: '#A4161A'
+              }} />
                   Saved Contractors ({savedContractors.length})
                 </CardTitle>
                 <CardDescription>
@@ -308,8 +239,7 @@ const HomeownerDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {savedContractors.map((savedContractor) => (
-                <Card key={savedContractor.id} className="hover:shadow-md transition-shadow">
+              {savedContractors.map(savedContractor => <Card key={savedContractor.id} className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
@@ -318,12 +248,7 @@ const HomeownerDashboard = () => {
                           {savedContractor.contractor_businesses.city}, {savedContractor.contractor_businesses.province}
                         </CardDescription>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeSavedContractor(savedContractor.id)}
-                        className="h-8 w-8 text-muted-foreground hover:text-primary"
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => removeSavedContractor(savedContractor.id)} className="h-8 w-8 text-muted-foreground hover:text-primary">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -350,12 +275,10 @@ const HomeownerDashboard = () => {
                       </Button>
                     </div>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </CardContent>
-        </Card>
-      )}
+        </Card>}
 
       {/* Top Rated Contractors */}
       <Card>
@@ -377,8 +300,7 @@ const HomeownerDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {contractors.map((contractor) => (
-              <Card key={contractor.id} className="hover:shadow-md transition-shadow">
+            {contractors.map(contractor => <Card key={contractor.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -408,13 +330,10 @@ const HomeownerDashboard = () => {
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default HomeownerDashboard;
