@@ -181,44 +181,7 @@ const HomeownerDashboard = () => {
       
 
       {/* Information sections */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Popular Services</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Link to="/services/plumbing" className="block text-sm text-primary hover:underline">
-                • Plumbing & Heating
-              </Link>
-              <Link to="/services/electrical" className="block text-sm text-primary hover:underline">
-                • Electrical Services
-              </Link>
-              <Link to="/services/roofing" className="block text-sm text-primary hover:underline">
-                • Roofing & Gutters
-              </Link>
-              <Link to="/services/flooring" className="block text-sm text-primary hover:underline">
-                • Flooring Installation
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>How It Works</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>1. Search for contractors in your area</p>
-              <p>2. Read reviews and compare profiles</p>
-              <p>3. Contact contractors directly</p>
-              <p>4. Get quotes and hire the best fit</p>
-              <p>5. Leave a review after completion</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      
 
       {/* Saved Contractors */}
       {savedContractors.length > 0 && <Card>
