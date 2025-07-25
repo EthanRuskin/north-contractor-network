@@ -149,7 +149,7 @@ const SearchHeader = ({
                     </div>
                   </div>}
               </div>
-              <Button onClick={handleSearch} size="sm" className="h-12 px-6 rounded-none bg-primary-dark hover:bg-primary text-white">
+              <Button onClick={handleSearch} size="sm" className="h-12 px-6 rounded-none text-white" style={{ backgroundColor: '#161A1D' }}>
                 <Search className="h-4 w-4" />
               </Button>
             </div>
