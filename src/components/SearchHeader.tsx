@@ -230,7 +230,7 @@ const SearchHeader = ({
       </div>
 
       {/* Navigation Categories - Hidden on mobile, show on larger screens */}
-      <div className="hidden md:block bg-primary-dark">
+      <div className="hidden md:block" style={{ backgroundColor: '#161A1D' }}>
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-center space-x-6 py-2 text-sm">
             <Link to="/service/plumbing" className="text-white hover:text-primary-light transition-colors">
