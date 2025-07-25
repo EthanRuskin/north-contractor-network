@@ -376,20 +376,7 @@ const SearchContractors = () => {
                 
 
                 {/* Service */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Service</label>
-                  <Select value={selectedService} onValueChange={setSelectedService}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Services" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Services</SelectItem>
-                      {services.map(service => <SelectItem key={service.id} value={service.id}>
-                          {service.name}
-                        </SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
+                
 
                 {/* Location */}
                 <div className="space-y-4">
