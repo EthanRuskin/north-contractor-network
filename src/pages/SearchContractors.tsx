@@ -384,62 +384,16 @@ const SearchContractors = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Services</SelectItem>
-                      {services.map(service => (
-                        <SelectItem key={service.id} value={service.id}>
+                      {services.map(service => <SelectItem key={service.id} value={service.id}>
                           {service.name}
-                        </SelectItem>
-                      ))}
+                        </SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Location */}
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      Location
-                    </label>
-                    
-                    {/* Google Places Autocomplete */}
-                    <div className="space-y-2">
-                      <Input ref={autocompleteRef} placeholder="Enter your address or location..." value={locationQuery} onChange={e => setLocationQuery(e.target.value)} className="border-primary/20 focus:border-primary" />
-                      
-                      <Button type="button" variant="outline" size="sm" onClick={getCurrentLocation} disabled={gettingLocation} className="w-full">
-                        {gettingLocation ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div> : <Target className="h-4 w-4 mr-2" />}
-                        Use My Current Location
-                      </Button>
-                    </div>
-
-                    {/* Show current location */}
-                    {userLocation && <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
-                        <div className="flex items-center gap-1">
-                          <Navigation className="h-3 w-3" />
-                          <span>Using location: {userLocation.address || 'Current Location'}</span>
-                        </div>
-                      </div>}
-
-                    {/* Radius Selector */}
-                    {userLocation && <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Search Radius: {radius[0]} km
-                        </label>
-                        <Select value={radius[0].toString()} onValueChange={value => setRadius([parseInt(value)])}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="10">10 km</SelectItem>
-                            <SelectItem value="20">20 km</SelectItem>
-                            <SelectItem value="30">30 km</SelectItem>
-                            <SelectItem value="40">40 km</SelectItem>
-                            <SelectItem value="50">50 km</SelectItem>
-                            <SelectItem value="75">75 km</SelectItem>
-                            <SelectItem value="100">100 km</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>}
-                  </div>
+                  
 
                   {/* Fallback city/province selectors */}
                   {!isUsingLocation && <>
