@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
-import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Award, Building2, ChevronLeft, ChevronRight, Send, Navigation, Target } from 'lucide-react';
+import { Search, MapPin, Star, Phone, Mail, Globe, Filter, SlidersHorizontal, Award, Building2, ChevronLeft, ChevronRight, Send, Navigation, Target, Clock, CheckSquare } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useToast } from '@/hooks/use-toast';
 import SearchHeader from '@/components/SearchHeader';
@@ -69,12 +71,18 @@ const SearchContractors = () => {
   const [radius, setRadius] = useState([parseInt(searchParams.get('radius') || '30')]);
   const [isUsingLocation, setIsUsingLocation] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
+  
+  // New filter states
+  const [showOpenOnly, setShowOpenOnly] = useState(searchParams.get('openOnly') === 'true');
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(
+    searchParams.get('features')?.split(',').filter(Boolean) || []
+  );
   useEffect(() => {
     fetchServicesAndContractors();
   }, []);
   useEffect(() => {
     updateSearchParams();
-  }, [searchTerm, selectedService, selectedCity, selectedProvince, minRating, minExperience, sortBy, radius]);
+  }, [searchTerm, selectedService, selectedCity, selectedProvince, minRating, minExperience, sortBy, radius, showOpenOnly, selectedFeatures]);
 
   // Initialize Google Places Autocomplete
   useEffect(() => {
@@ -140,6 +148,8 @@ const SearchContractors = () => {
     if (minExperience[0] > 0) params.set('minExperience', minExperience[0].toString());
     if (sortBy !== 'rating') params.set('sortBy', sortBy);
     if (radius[0] !== 30) params.set('radius', radius[0].toString());
+    if (showOpenOnly) params.set('openOnly', 'true');
+    if (selectedFeatures.length > 0) params.set('features', selectedFeatures.join(','));
     setSearchParams(params);
   };
 
@@ -323,6 +333,26 @@ const SearchContractors = () => {
   });
   const uniqueCities = Array.from(new Set(contractors.map(c => c.city).filter(Boolean)));
   const uniqueProvinces = Array.from(new Set(contractors.map(c => c.province).filter(Boolean)));
+  // Available features/amenities
+  const availableFeatures = [
+    'Licensed & Insured',
+    'Emergency Services',
+    'Free Estimates',
+    'Warranty Provided',
+    'Eco-Friendly',
+    'Senior Discount',
+    'Military Discount',
+    '24/7 Available'
+  ];
+
+  const toggleFeature = (feature: string) => {
+    setSelectedFeatures(prev => 
+      prev.includes(feature) 
+        ? prev.filter(f => f !== feature)
+        : [...prev, feature]
+    );
+  };
+
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedService('all');
@@ -335,6 +365,8 @@ const SearchContractors = () => {
     setUserLocation(null);
     setLocationQuery('');
     setIsUsingLocation(false);
+    setShowOpenOnly(false);
+    setSelectedFeatures([]);
   };
   if (loading) {
     return <div className="min-h-screen bg-background">
@@ -430,6 +462,63 @@ const SearchContractors = () => {
                     Minimum Experience: {minExperience[0]} years
                   </label>
                   <Slider value={minExperience} onValueChange={setMinExperience} max={30} min={0} step={1} className="w-full" />
+                </div>
+
+                {/* Open/Closed Filter */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    Business Hours
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="open-only"
+                      checked={showOpenOnly}
+                      onCheckedChange={setShowOpenOnly}
+                    />
+                    <label htmlFor="open-only" className="text-sm">
+                      Show only open businesses
+                    </label>
+                  </div>
+                </div>
+
+                {/* Features Filter */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <CheckSquare className="h-4 w-4" />
+                    Features & Services
+                  </label>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {availableFeatures.map((feature) => (
+                      <div key={feature} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={feature}
+                          checked={selectedFeatures.includes(feature)}
+                          onCheckedChange={() => toggleFeature(feature)}
+                        />
+                        <label
+                          htmlFor={feature}
+                          className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {feature}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  {selectedFeatures.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {selectedFeatures.map((feature) => (
+                        <Badge
+                          key={feature}
+                          variant="secondary"
+                          className="text-xs cursor-pointer"
+                          onClick={() => toggleFeature(feature)}
+                        >
+                          {feature} ×
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Sort */}
