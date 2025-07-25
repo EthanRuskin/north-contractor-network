@@ -41,6 +41,18 @@ interface ContractorBusiness {
   latitude?: number;
   longitude?: number;
   distance_km?: number;
+  features?: string[];
+  business_hours?: BusinessHours;
+}
+
+interface BusinessHours {
+  monday: { open: string; close: string; closed: boolean };
+  tuesday: { open: string; close: string; closed: boolean };
+  wednesday: { open: string; close: string; closed: boolean };
+  thursday: { open: string; close: string; closed: boolean };
+  friday: { open: string; close: string; closed: boolean };
+  saturday: { open: string; close: string; closed: boolean };
+  sunday: { open: string; close: string; closed: boolean };
 }
 interface UserLocation {
   latitude: number;
@@ -311,7 +323,16 @@ const SearchContractors = () => {
     const matchesProvince = !selectedProvince || selectedProvince === 'all' || contractor.province?.toLowerCase().includes(selectedProvince.toLowerCase());
     const matchesRating = contractor.rating >= minRating[0];
     const matchesExperience = contractor.years_experience >= minExperience[0];
-    return matchesSearch && matchesService && matchesCity && matchesProvince && matchesRating && matchesExperience;
+    
+    // Features filter - contractor must have ALL selected features
+    const matchesFeatures = selectedFeatures.length === 0 || 
+      selectedFeatures.every(feature => contractor.features?.includes(feature));
+    
+    // Business hours filter - check if contractor is currently open
+    const matchesOpen = !showOpenOnly || isBusinessCurrentlyOpen(contractor.business_hours);
+    
+    return matchesSearch && matchesService && matchesCity && matchesProvince && 
+           matchesRating && matchesExperience && matchesFeatures && matchesOpen;
   }).sort((a, b) => {
     switch (sortBy) {
       case 'relevance':
@@ -351,6 +372,25 @@ const SearchContractors = () => {
         ? prev.filter(f => f !== feature)
         : [...prev, feature]
     );
+  };
+
+  // Function to check if business is currently open
+  const isBusinessCurrentlyOpen = (businessHours?: BusinessHours): boolean => {
+    if (!businessHours) return true; // If no hours set, assume always open
+    
+    const now = new Date();
+    const currentDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.getDay()] as keyof BusinessHours;
+    const todaysHours = businessHours[currentDay];
+    
+    if (todaysHours.closed) return false;
+    
+    const currentTime = now.getHours() * 60 + now.getMinutes(); // Current time in minutes
+    const [openHour, openMin] = todaysHours.open.split(':').map(Number);
+    const [closeHour, closeMin] = todaysHours.close.split(':').map(Number);
+    const openTime = openHour * 60 + openMin;
+    const closeTime = closeHour * 60 + closeMin;
+    
+    return currentTime >= openTime && currentTime <= closeTime;
   };
 
   const clearFilters = () => {

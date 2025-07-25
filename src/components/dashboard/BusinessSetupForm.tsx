@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Upload, Image as ImageIcon, Trash2, Clock, Instagram, Facebook, Linkedin, Music, Video } from 'lucide-react';
+import { Upload, Image as ImageIcon, Trash2, Clock, Instagram, Facebook, Linkedin, Music, Video, CheckSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Service {
@@ -31,6 +31,7 @@ interface Business {
   license_number: string;
   gallery_images?: string[];
   business_hours?: BusinessHours;
+  features?: string[];
   instagram_url?: string;
   facebook_url?: string;
   linkedin_url?: string;
@@ -68,6 +69,20 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>(business?.gallery_images || []);
   const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Available features for contractors
+  const availableFeatures = [
+    'Licensed & Insured',
+    'Emergency Services',
+    'Free Estimates',
+    'Warranty Provided',
+    'Eco-Friendly',
+    'Senior Discount',
+    'Military Discount',
+    '24/7 Available'
+  ];
+  
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(business?.features || []);
   
   // Default business hours
   const defaultBusinessHours: BusinessHours = {
@@ -160,6 +175,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         license_number: formData.get('licenseNumber') as string,
         gallery_images: galleryImages,
         business_hours: businessHours as any,
+        features: selectedFeatures,
         instagram_url: (formData.get('instagramUrl') as string)?.trim() || null,
         facebook_url: (formData.get('facebookUrl') as string)?.trim() || null,
         linkedin_url: (formData.get('linkedinUrl') as string)?.trim() || null,
@@ -285,6 +301,14 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
       prev.includes(serviceId)
         ? prev.filter(id => id !== serviceId)
         : [...prev, serviceId]
+    );
+  };
+
+  const toggleFeature = (feature: string) => {
+    setSelectedFeatures(prev => 
+      prev.includes(feature) 
+        ? prev.filter(f => f !== feature)
+        : [...prev, feature]
     );
   };
 
@@ -759,6 +783,44 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
               <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded">
                 💡 <strong>Tip:</strong> Use the "Copy" button to apply the same hours to all days, then adjust individual days as needed.
               </div>
+            </div>
+
+            {/* Business Features Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold flex items-center gap-2">
+                  <CheckSquare className="h-5 w-5" />
+                  Business Features
+                </Label>
+                <p className="text-sm text-muted-foreground">What do you offer?</p>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Select the features and services that apply to your business. These help customers find you when they filter search results.
+              </p>
+              
+              <div className="grid gap-3 md:grid-cols-2">
+                {availableFeatures.map((feature) => (
+                  <div key={feature} className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50">
+                    <Checkbox
+                      id={feature}
+                      checked={selectedFeatures.includes(feature)}
+                      onCheckedChange={() => toggleFeature(feature)}
+                    />
+                    <Label
+                      htmlFor={feature}
+                      className="text-sm cursor-pointer flex-1"
+                    >
+                      {feature}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              
+              {selectedFeatures.length > 0 && (
+                <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded">
+                  💡 <strong>Selected:</strong> {selectedFeatures.join(', ')}
+                </div>
+              )}
             </div>
 
             {/* Social Media Links Section */}

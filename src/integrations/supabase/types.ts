@@ -24,6 +24,7 @@ export type Database = {
           description: string | null
           email: string | null
           facebook_url: string | null
+          features: string[] | null
           gallery_images: string[] | null
           google_business_url: string | null
           google_business_verified: boolean | null
@@ -61,6 +62,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           facebook_url?: string | null
+          features?: string[] | null
           gallery_images?: string[] | null
           google_business_url?: string | null
           google_business_verified?: boolean | null
@@ -98,6 +100,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           facebook_url?: string | null
+          features?: string[] | null
           gallery_images?: string[] | null
           google_business_url?: string | null
           google_business_verified?: boolean | null
