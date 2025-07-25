@@ -286,6 +286,7 @@ export type Database = {
           contractor_id: string
           created_at: string
           id: string
+          is_anonymous: boolean | null
           rating: number
           reviewer_id: string
           title: string | null
@@ -296,6 +297,7 @@ export type Database = {
           contractor_id: string
           created_at?: string
           id?: string
+          is_anonymous?: boolean | null
           rating: number
           reviewer_id: string
           title?: string | null
@@ -306,6 +308,7 @@ export type Database = {
           contractor_id?: string
           created_at?: string
           id?: string
+          is_anonymous?: boolean | null
           rating?: number
           reviewer_id?: string
           title?: string | null

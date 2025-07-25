@@ -56,6 +56,7 @@ interface Review {
   title: string;
   comment: string;
   created_at: string;
+  is_anonymous: boolean;
   profiles: {
     full_name: string;
   } | null;
@@ -88,6 +89,7 @@ const ContractorProfile = () => {
   const [reviewRating, setReviewRating] = useState<number>(5);
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewComment, setReviewComment] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<ContractorProject | null>(null);
@@ -142,20 +144,28 @@ const ContractorProfile = () => {
   const fetchReviews = async () => {
     try {
       const {
-        data,
+        data: reviewsData,
         error
       } = await supabase.from('reviews').select('*').eq('contractor_id', id).order('created_at', {
         ascending: false
       });
       if (error) throw error;
 
-      // For now, set reviews without profile information since there's no FK relationship
-      const reviewsWithProfiles = (data || []).map(review => ({
-        ...review,
-        profiles: {
-          full_name: 'Anonymous User'
+      // Fetch profiles for non-anonymous reviews
+      const reviewsWithProfiles = await Promise.all((reviewsData || []).map(async (review) => {
+        if (review.is_anonymous) {
+          return { ...review, profiles: null };
         }
+        
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('user_id', review.reviewer_id)
+          .single();
+        
+        return { ...review, profiles: profileData };
       }));
+
       setReviews(reviewsWithProfiles);
     } catch (error: any) {
       console.error('Error fetching reviews:', error);
@@ -266,7 +276,8 @@ const ContractorProfile = () => {
         reviewer_id: user.id,
         rating: reviewRating,
         title: sanitizedTitle || null,
-        comment: sanitizedComment
+        comment: sanitizedComment,
+        is_anonymous: isAnonymous
       });
       if (error) {
         if (error.code === '23505') {
@@ -296,6 +307,7 @@ const ContractorProfile = () => {
       setReviewTitle('');
       setReviewComment('');
       setReviewRating(5);
+      setIsAnonymous(false);
       fetchReviews();
       fetchContractorProfile(); // Refresh to update rating
     } catch (error: any) {
@@ -609,10 +621,22 @@ const ContractorProfile = () => {
                              <p className="text-xs text-muted-foreground mt-1">
                                {reviewComment.length}/1000 characters (minimum 10)
                              </p>
-                           </div>
-                           <Button onClick={submitReview} disabled={submittingReview || reviewComment.trim().length < 10} className="w-full">
-                             {submittingReview ? 'Submitting...' : 'Submit Review'}
-                           </Button>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input 
+                                type="checkbox" 
+                                id="anonymous"
+                                checked={isAnonymous}
+                                onChange={e => setIsAnonymous(e.target.checked)}
+                                className="rounded"
+                              />
+                              <label htmlFor="anonymous" className="text-sm font-medium">
+                                Post anonymously
+                              </label>
+                            </div>
+                            <Button onClick={submitReview} disabled={submittingReview || reviewComment.trim().length < 10} className="w-full">
+                              {submittingReview ? 'Submitting...' : 'Submit Review'}
+                            </Button>
                         </div>
                       </DialogContent>}
                     </Dialog>}
@@ -630,9 +654,9 @@ const ContractorProfile = () => {
                               <span className="font-medium">{review.title}</span>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              by {review.profiles?.full_name || 'Anonymous'} • {' '}
-                              {new Date(review.created_at).toLocaleDateString()}
-                            </p>
+                               by {review.is_anonymous ? 'Anonymous' : (review.profiles?.full_name || 'Anonymous')} • {' '}
+                               {new Date(review.created_at).toLocaleDateString()}
+                             </p>
                           </div>
                         </div>
                         <p className="text-sm">{review.comment}</p>
