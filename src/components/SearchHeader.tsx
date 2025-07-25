@@ -129,12 +129,7 @@ const SearchHeader = ({
               <Input placeholder="What service do you need?" value={searchTerm} onChange={e => onSearchChange?.(e.target.value)} onKeyDown={handleKeyDown} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none flex-1" />
               <div className="w-px bg-border"></div>
               <div className="relative flex-1" ref={dropdownRef}>
-                <div className="relative">
-                  <Input ref={locationInputRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} onFocus={() => setShowLocationDropdown(true)} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none pr-8" />
-                  <Button type="button" onClick={() => setShowLocationDropdown(!showLocationDropdown)} className="absolute right-0 top-0 h-12 w-8 p-0 border-0 bg-transparent hover:bg-gray-100 text-gray-500">
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Input ref={locationInputRef} placeholder="Where? (City, Province)" value={locationQuery} onChange={e => onLocationChange?.(e.target.value)} onKeyDown={handleKeyDown} onFocus={() => setShowLocationDropdown(true)} className="border-0 focus:ring-0 focus:outline-none h-12 text-base rounded-none" />
                 
                 {showLocationDropdown && <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
                     <div className="py-2">
