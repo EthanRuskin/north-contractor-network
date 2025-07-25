@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { sanitizeInput } from '@/hooks/useInputValidation';
 
 interface AuthContextType {
   user: User | null;
@@ -47,24 +48,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, userData: { full_name: string; user_type: string }) => {
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email).toLowerCase();
+    const sanitizedFullName = sanitizeInput(userData.full_name);
+    const sanitizedUserType = userData.user_type; // This should be validated from a whitelist
+
+    // Validate user type
+    if (!['homeowner', 'contractor'].includes(sanitizedUserType)) {
+      return { error: { message: 'Invalid user type' } };
+    }
+
     const redirectUrl = `${window.location.origin}/`;
     
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: sanitizedEmail,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: userData
+        data: {
+          full_name: sanitizedFullName,
+          user_type: sanitizedUserType
+        }
       }
     });
     
     if (!error && data.user) {
-      // Update user profile with user_type immediately after signup
+      // Update user profile with sanitized data
       await supabase
         .from('profiles')
         .update({ 
-          user_type: userData.user_type,
-          full_name: userData.full_name 
+          user_type: sanitizedUserType,
+          full_name: sanitizedFullName 
         })
         .eq('user_id', data.user.id);
     }
@@ -73,8 +87,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signIn = async (email: string, password: string) => {
+    // Sanitize email input
+    const sanitizedEmail = sanitizeInput(email).toLowerCase();
+    
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: sanitizedEmail,
       password,
     });
     return { error };

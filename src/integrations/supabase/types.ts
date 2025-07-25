@@ -235,6 +235,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          identifier: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          identifier: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          identifier?: string
+        }
+        Relationships: []
+      }
       review_rate_limits: {
         Row: {
           created_at: string
