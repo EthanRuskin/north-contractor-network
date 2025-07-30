@@ -54,11 +54,11 @@ const Footer = () => {
             <div className="space-y-3 text-background/80">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4" />
-                <span>(555) 123-4567</span>
+                <span>Contact us for support</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4" />
-                <span>info@northerncontractors.com</span>
+                <span>Get in touch</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4" />

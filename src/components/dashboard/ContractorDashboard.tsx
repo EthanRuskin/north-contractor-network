@@ -290,49 +290,30 @@ const ContractorDashboard = () => {
           </div>
 
           <div className="bg-muted/50 rounded-lg p-4 border">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">
-                  🚀 <strong>Advertised Solutions</strong> - Your Marketing Partner
-                </h4>
-                <p className="text-sm text-muted-foreground mb-3">
-                  We specialize in helping contractors like you grow their business with proven marketing strategies. 
-                  Get more leads, build your brand, and increase your revenue.
-                </p>
-                <div className="flex flex-wrap gap-2 text-xs">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                    Free Consultation
-                  </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                    Proven Results
-                  </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                    Contractor Specialists
-                  </Badge>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2 ml-4">
-                <Button 
-                  className="gap-2 whitespace-nowrap" 
-                  onClick={() => window.open('https://advertisedsolutions.com', '_blank')}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Get Free Consultation
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => window.open('mailto:ethan@advertisedsolutions.com?subject=Contractor Marketing Consultation', '_blank')}
-                >
-                  Contact Us
-                </Button>
+            <div className="text-center">
+              <h4 className="font-semibold text-foreground mb-2">
+                💡 Tips for Success
+              </h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                Complete your profile to attract more customers and build trust in your services.
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 text-xs">
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  Add Photos
+                </Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  Complete Services
+                </Badge>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  Get Reviews
+                </Badge>
               </div>
             </div>
           </div>
 
           <div className="text-center">
             <p className="text-xs text-muted-foreground">
-              Join <strong>100+</strong> contractors who have successfully scaled their business with our help
+              Start building your reputation and growing your business today
             </p>
           </div>
         </CardContent>

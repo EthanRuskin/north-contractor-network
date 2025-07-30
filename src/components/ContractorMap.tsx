@@ -61,7 +61,7 @@ const ContractorMap: React.FC<ContractorMapProps> = ({
         }
       } catch (error) {
         console.warn('Failed to get Mapbox token:', error);
-        // For demo purposes, you can temporarily use a placeholder
+        // Fallback for when token is not available
         // Users should add their Mapbox token to Supabase secrets
       }
     };
