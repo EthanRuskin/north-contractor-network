@@ -10,161 +10,304 @@ export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
-      contractor_businesses: {
+      appointments: {
         Row: {
-          address: string | null
-          business_hours: Json | null
-          business_name: string
-          city: string | null
-          created_at: string
+          appointment_date: string
+          client_id: string | null
+          contractor_id: string | null
+          created_at: string | null
           description: string | null
-          email: string | null
-          facebook_url: string | null
-          features: string[] | null
-          gallery_images: string[] | null
-          google_business_url: string | null
-          google_business_verified: boolean | null
-          google_place_id: string | null
-          google_verification_date: string | null
+          duration: number | null
           id: string
-          instagram_url: string | null
-          insurance_verified: boolean | null
-          latitude: number | null
-          license_number: string | null
-          linkedin_url: string | null
-          logo_url: string | null
-          longitude: number | null
-          phone: string | null
-          postal_code: string | null
-          province: string | null
-          rating: number | null
-          review_count: number | null
-          search_vector: unknown | null
-          status: string
-          tiktok_url: string | null
-          updated_at: string
-          user_id: string | null
-          website: string | null
-          x_url: string | null
-          years_experience: number | null
-          youtube_url: string | null
+          location: string | null
+          project_id: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
         }
         Insert: {
-          address?: string | null
-          business_hours?: Json | null
-          business_name: string
-          city?: string | null
-          created_at?: string
+          appointment_date: string
+          client_id?: string | null
+          contractor_id?: string | null
+          created_at?: string | null
           description?: string | null
-          email?: string | null
-          facebook_url?: string | null
-          features?: string[] | null
-          gallery_images?: string[] | null
-          google_business_url?: string | null
-          google_business_verified?: boolean | null
-          google_place_id?: string | null
-          google_verification_date?: string | null
+          duration?: number | null
           id?: string
-          instagram_url?: string | null
-          insurance_verified?: boolean | null
-          latitude?: number | null
-          license_number?: string | null
-          linkedin_url?: string | null
-          logo_url?: string | null
-          longitude?: number | null
-          phone?: string | null
-          postal_code?: string | null
-          province?: string | null
-          rating?: number | null
-          review_count?: number | null
-          search_vector?: unknown | null
-          status?: string
-          tiktok_url?: string | null
-          updated_at?: string
-          user_id?: string | null
-          website?: string | null
-          x_url?: string | null
-          years_experience?: number | null
-          youtube_url?: string | null
+          location?: string | null
+          project_id?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
         }
         Update: {
-          address?: string | null
-          business_hours?: Json | null
-          business_name?: string
-          city?: string | null
-          created_at?: string
+          appointment_date?: string
+          client_id?: string | null
+          contractor_id?: string | null
+          created_at?: string | null
           description?: string | null
-          email?: string | null
-          facebook_url?: string | null
-          features?: string[] | null
-          gallery_images?: string[] | null
-          google_business_url?: string | null
-          google_business_verified?: boolean | null
-          google_place_id?: string | null
-          google_verification_date?: string | null
+          duration?: number | null
           id?: string
-          instagram_url?: string | null
-          insurance_verified?: boolean | null
-          latitude?: number | null
-          license_number?: string | null
-          linkedin_url?: string | null
-          logo_url?: string | null
-          longitude?: number | null
-          phone?: string | null
-          postal_code?: string | null
-          province?: string | null
-          rating?: number | null
-          review_count?: number | null
-          search_vector?: unknown | null
-          status?: string
-          tiktok_url?: string | null
-          updated_at?: string
-          user_id?: string | null
-          website?: string | null
-          x_url?: string | null
-          years_experience?: number | null
-          youtube_url?: string | null
-        }
-        Relationships: []
-      }
-      contractor_projects: {
-        Row: {
-          contractor_id: string
-          created_at: string
-          description: string | null
-          id: string
-          images: string[] | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          contractor_id: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          images?: string[] | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          contractor_id?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          images?: string[] | null
+          location?: string | null
+          project_id?: string | null
+          status?: string | null
           title?: string
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "fk_contractor_projects_contractor"
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_contractor_id_fkey"
             columns: ["contractor_id"]
             isOneToOne: false
-            referencedRelation: "contractor_businesses"
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_hours: {
+        Row: {
+          close_time: string | null
+          contractor_id: string
+          created_at: string | null
+          day_of_week: number
+          is_closed: boolean | null
+          open_time: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          close_time?: string | null
+          contractor_id: string
+          created_at?: string | null
+          day_of_week: number
+          is_closed?: boolean | null
+          open_time?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          close_time?: string | null
+          contractor_id?: string
+          created_at?: string | null
+          day_of_week?: number
+          is_closed?: boolean | null
+          open_time?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_hours_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      certifications: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      contractor_certifications: {
+        Row: {
+          certification_id: number
+          contractor_id: string
+          created_at: string | null
+          expiry_date: string | null
+          issue_date: string | null
+        }
+        Insert: {
+          certification_id: number
+          contractor_id: string
+          created_at?: string | null
+          expiry_date?: string | null
+          issue_date?: string | null
+        }
+        Update: {
+          certification_id?: number
+          contractor_id?: string
+          created_at?: string | null
+          expiry_date?: string | null
+          issue_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_certifications_certification_id_fkey"
+            columns: ["certification_id"]
+            isOneToOne: false
+            referencedRelation: "certifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_certifications_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_licenses: {
+        Row: {
+          contractor_id: string
+          created_at: string | null
+          expiration_date: string | null
+          has_insurance: boolean | null
+          id: string
+          insurance_coverage: string | null
+          insurance_policy_number: string | null
+          insurance_provider: string | null
+          license_number: string
+          license_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          contractor_id: string
+          created_at?: string | null
+          expiration_date?: string | null
+          has_insurance?: boolean | null
+          id?: string
+          insurance_coverage?: string | null
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          license_number: string
+          license_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          contractor_id?: string
+          created_at?: string | null
+          expiration_date?: string | null
+          has_insurance?: boolean | null
+          id?: string
+          insurance_coverage?: string | null
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          license_number?: string
+          license_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_licenses_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contractor_profiles: {
+        Row: {
+          business_name: string
+          created_at: string | null
+          description: string | null
+          employees: string | null
+          featured: boolean | null
+          founded_year: number | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          primary_trade: string | null
+          service_area: string | null
+          updated_at: string | null
+          verified: boolean | null
+          website: string | null
+        }
+        Insert: {
+          business_name: string
+          created_at?: string | null
+          description?: string | null
+          employees?: string | null
+          featured?: boolean | null
+          founded_year?: number | null
+          id: string
+          latitude?: number | null
+          longitude?: number | null
+          primary_trade?: string | null
+          service_area?: string | null
+          updated_at?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Update: {
+          business_name?: string
+          created_at?: string | null
+          description?: string | null
+          employees?: string | null
+          featured?: boolean | null
+          founded_year?: number | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          primary_trade?: string | null
+          service_area?: string | null
+          updated_at?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -172,28 +315,28 @@ export type Database = {
       contractor_services: {
         Row: {
           contractor_id: string
-          created_at: string
-          id: string
-          service_id: string
+          created_at: string | null
+          price_range: string | null
+          service_id: number
         }
         Insert: {
           contractor_id: string
-          created_at?: string
-          id?: string
-          service_id: string
+          created_at?: string | null
+          price_range?: string | null
+          service_id: number
         }
         Update: {
           contractor_id?: string
-          created_at?: string
-          id?: string
-          service_id?: string
+          created_at?: string | null
+          price_range?: string | null
+          service_id?: number
         }
         Relationships: [
           {
             foreignKeyName: "contractor_services_contractor_id_fkey"
             columns: ["contractor_id"]
             isOneToOne: false
-            referencedRelation: "contractor_businesses"
+            referencedRelation: "contractor_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -205,294 +348,771 @@ export type Database = {
           },
         ]
       }
-      profiles: {
+      gallery_images: {
         Row: {
-          created_at: string
-          email: string
-          full_name: string | null
-          id: string
-          phone: string | null
-          updated_at: string
-          user_id: string
-          user_type: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          full_name?: string | null
-          id?: string
-          phone?: string | null
-          updated_at?: string
-          user_id: string
-          user_type?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          full_name?: string | null
-          id?: string
-          phone?: string | null
-          updated_at?: string
-          user_id?: string
-          user_type?: string
-        }
-        Relationships: []
-      }
-      rate_limit_log: {
-        Row: {
-          action: string
+          caption: string | null
+          contractor_id: string | null
           created_at: string | null
           id: string
-          identifier: string
+          image_url: string
+          project_id: string | null
         }
         Insert: {
-          action: string
+          caption?: string | null
+          contractor_id?: string | null
           created_at?: string | null
           id?: string
-          identifier: string
+          image_url: string
+          project_id?: string | null
         }
         Update: {
-          action?: string
+          caption?: string | null
+          contractor_id?: string | null
           created_at?: string | null
           id?: string
-          identifier?: string
+          image_url?: string
+          project_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_images_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_images_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      homeowner_profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homeowner_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspiration_collection_projects: {
+        Row: {
+          collection_id: string
+          created_at: string | null
+          project_id: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string | null
+          project_id: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string | null
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspiration_collection_projects_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "inspiration_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspiration_collection_projects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "inspiration_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspiration_collections: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          image_url: string
+          project_count: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          image_url: string
+          project_count?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          image_url?: string
+          project_count?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
-      review_rate_limits: {
+      inspiration_comment_replies: {
+        Row: {
+          comment_id: string | null
+          created_at: string | null
+          id: string
+          reply: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          reply: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          reply?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspiration_comment_replies_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "inspiration_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspiration_comments: {
+        Row: {
+          comment: string
+          created_at: string | null
+          id: string
+          project_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comment: string
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspiration_comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "inspiration_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspiration_likes: {
+        Row: {
+          created_at: string | null
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspiration_likes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "inspiration_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspiration_projects: {
+        Row: {
+          ai_insights: string | null
+          before_after_images: Json | null
+          budget: number | null
+          category: string
+          completion_date: string | null
+          contractor_id: string | null
+          created_at: string | null
+          description: string
+          duration: string | null
+          gallery_images: string[] | null
+          id: string
+          image_url: string
+          likes_count: number | null
+          location: string | null
+          materials: Json | null
+          size: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views_count: number | null
+        }
+        Insert: {
+          ai_insights?: string | null
+          before_after_images?: Json | null
+          budget?: number | null
+          category: string
+          completion_date?: string | null
+          contractor_id?: string | null
+          created_at?: string | null
+          description: string
+          duration?: string | null
+          gallery_images?: string[] | null
+          id?: string
+          image_url: string
+          likes_count?: number | null
+          location?: string | null
+          materials?: Json | null
+          size?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          ai_insights?: string | null
+          before_after_images?: Json | null
+          budget?: number | null
+          category?: string
+          completion_date?: string | null
+          contractor_id?: string | null
+          created_at?: string | null
+          description?: string
+          duration?: string | null
+          gallery_images?: string[] | null
+          id?: string
+          image_url?: string
+          likes_count?: number | null
+          location?: string | null
+          materials?: Json | null
+          size?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          project_id: string | null
+          recipient_id: string
+          sender_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          project_id?: string | null
+          recipient_id: string
+          sender_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          project_id?: string | null
+          recipient_id?: string
+          sender_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
         Row: {
           created_at: string
           id: string
-          last_review_at: string
-          review_count_today: number
+          is_read: boolean
+          link_url: string | null
+          message: string
+          title: string
+          type: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          id?: string
-          last_review_at?: string
-          review_count_today?: number
+          id: string
+          is_read?: boolean
+          link_url?: string | null
+          message: string
+          title: string
+          type?: string
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          last_review_at?: string
-          review_count_today?: number
+          is_read?: boolean
+          link_url?: string | null
+          message?: string
+          title?: string
+          type?: string
           user_id?: string
         }
         Relationships: []
+      }
+      portfolio_projects: {
+        Row: {
+          client_name: string | null
+          completion_date: string | null
+          contractor_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          title: string
+        }
+        Insert: {
+          client_name?: string | null
+          completion_date?: string | null
+          contractor_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          title: string
+        }
+        Update: {
+          client_name?: string | null
+          completion_date?: string | null
+          contractor_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_projects_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string | null
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          profile_image: string | null
+          state: string | null
+          updated_at: string | null
+          user_type: string
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          email: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          phone?: string | null
+          profile_image?: string | null
+          state?: string | null
+          updated_at?: string | null
+          user_type: string
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          profile_image?: string | null
+          state?: string | null
+          updated_at?: string | null
+          user_type?: string
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      project_bids: {
+        Row: {
+          contractor_id: string | null
+          created_at: string | null
+          estimated_duration: string | null
+          id: string
+          price: number | null
+          project_id: string | null
+          proposal: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contractor_id?: string | null
+          created_at?: string | null
+          estimated_duration?: string | null
+          id?: string
+          price?: number | null
+          project_id?: string | null
+          proposal?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contractor_id?: string | null
+          created_at?: string | null
+          estimated_duration?: string | null
+          id?: string
+          price?: number | null
+          project_id?: string | null
+          proposal?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_bids_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_bids_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          budget_range: string | null
+          client_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          location: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
-          comment: string | null
-          contractor_id: string
-          created_at: string
+          client_id: string | null
+          contractor_id: string | null
+          created_at: string | null
           id: string
-          is_anonymous: boolean | null
+          project_id: string | null
           rating: number
-          reviewer_id: string
-          title: string | null
-          updated_at: string
+          response_text: string | null
+          review_text: string | null
+          updated_at: string | null
         }
         Insert: {
-          comment?: string | null
-          contractor_id: string
-          created_at?: string
+          client_id?: string | null
+          contractor_id?: string | null
+          created_at?: string | null
           id?: string
-          is_anonymous?: boolean | null
+          project_id?: string | null
           rating: number
-          reviewer_id: string
-          title?: string | null
-          updated_at?: string
+          response_text?: string | null
+          review_text?: string | null
+          updated_at?: string | null
         }
         Update: {
-          comment?: string | null
-          contractor_id?: string
-          created_at?: string
+          client_id?: string | null
+          contractor_id?: string | null
+          created_at?: string | null
           id?: string
-          is_anonymous?: boolean | null
+          project_id?: string | null
           rating?: number
-          reviewer_id?: string
-          title?: string | null
-          updated_at?: string
+          response_text?: string | null
+          review_text?: string | null
+          updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_contractor_id_fkey"
             columns: ["contractor_id"]
             isOneToOne: false
-            referencedRelation: "contractor_businesses"
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
       }
       saved_contractors: {
         Row: {
+          client_id: string
           contractor_id: string
-          created_at: string
+          created_at: string | null
           id: string
-          user_id: string
         }
         Insert: {
+          client_id: string
           contractor_id: string
-          created_at?: string
+          created_at?: string | null
           id?: string
-          user_id: string
         }
         Update: {
+          client_id?: string
           contractor_id?: string
-          created_at?: string
+          created_at?: string | null
           id?: string
-          user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "saved_contractors_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "saved_contractors_contractor_id_fkey"
             columns: ["contractor_id"]
             isOneToOne: false
-            referencedRelation: "contractor_businesses"
+            referencedRelation: "contractor_profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      security_audit_log: {
+      service_area_cities: {
         Row: {
+          city: string
           created_at: string | null
-          event_data: Json | null
-          event_type: string
-          id: string
-          ip_address: unknown | null
-          user_agent: string | null
-          user_id: string | null
+          id: number
+          state: string
         }
         Insert: {
+          city: string
           created_at?: string | null
-          event_data?: Json | null
-          event_type: string
-          id?: string
-          ip_address?: unknown | null
-          user_agent?: string | null
-          user_id?: string | null
+          id?: number
+          state: string
         }
         Update: {
+          city?: string
           created_at?: string | null
-          event_data?: Json | null
-          event_type?: string
-          id?: string
-          ip_address?: unknown | null
-          user_agent?: string | null
-          user_id?: string | null
+          id?: number
+          state?: string
         }
         Relationships: []
       }
+      service_areas: {
+        Row: {
+          city: string
+          contractor_id: string
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+        }
+        Insert: {
+          city: string
+          contractor_id: string
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+        }
+        Update: {
+          city?: string
+          contractor_id?: string
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_areas_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
-          created_at: string
+          category_id: number | null
+          created_at: string | null
           description: string | null
-          icon: string | null
-          id: string
+          id: number
           name: string
         }
         Insert: {
-          created_at?: string
+          category_id?: number | null
+          created_at?: string | null
           description?: string | null
-          icon?: string | null
-          id?: string
+          id?: number
           name: string
         }
         Update: {
-          created_at?: string
+          category_id?: number | null
+          created_at?: string | null
           description?: string | null
-          icon?: string | null
-          id?: string
+          id?: number
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      calculate_contractor_ranking: {
-        Args: {
-          contractor_row: Database["public"]["Tables"]["contractor_businesses"]["Row"]
-          search_query?: string
-        }
+      decrement: {
+        Args: { x: number }
         Returns: number
       }
-      calculate_distance: {
-        Args: { lat1: number; lon1: number; lat2: number; lon2: number }
+      increment: {
+        Args: { x: number }
         Returns: number
-      }
-      sanitize_html_input: {
-        Args: { input_text: string }
-        Returns: string
-      }
-      search_contractors_with_location: {
-        Args: {
-          search_query?: string
-          service_filter?: string
-          city_filter?: string
-          province_filter?: string
-          min_rating_filter?: number
-          min_experience_filter?: number
-          user_latitude?: number
-          user_longitude?: number
-          radius_km?: number
-        }
-        Returns: {
-          id: string
-          business_name: string
-          description: string
-          phone: string
-          email: string
-          website: string
-          city: string
-          province: string
-          years_experience: number
-          rating: number
-          review_count: number
-          logo_url: string
-          gallery_images: string[]
-          service_ids: string[]
-          service_names: string[]
-          base_ranking_score: number
-          search_ranking_score: number
-          latitude: number
-          longitude: number
-          distance_km: number
-        }[]
-      }
-      search_contractors_with_ranking: {
-        Args: {
-          search_query?: string
-          service_filter?: string
-          city_filter?: string
-          province_filter?: string
-          min_rating_filter?: number
-          min_experience_filter?: number
-        }
-        Returns: {
-          id: string
-          business_name: string
-          description: string
-          phone: string
-          email: string
-          website: string
-          city: string
-          province: string
-          years_experience: number
-          rating: number
-          review_count: number
-          logo_url: string
-          gallery_images: string[]
-          service_ids: string[]
-          service_names: string[]
-          base_ranking_score: number
-          search_ranking_score: number
-        }[]
       }
     }
     Enums: {
