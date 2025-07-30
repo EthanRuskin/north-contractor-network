@@ -50,15 +50,40 @@ const ContractorDashboard = () => {
   const fetchBusiness = async () => {
     try {
       const { data, error } = await supabase
-        .from('contractor_businesses')
+        .from('contractor_profiles')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('id', user?.id)
         .maybeSingle();
 
       if (error) throw error;
-      setBusiness(data);
       
-      if (!data) {
+      // Transform the data to match Business interface
+      if (data) {
+        const transformedBusiness: Business = {
+          id: data.id,
+          business_name: data.business_name || '',
+          description: data.description || '',
+          phone: '',
+          email: '',
+          website: data.website || '',
+          address: '',
+          city: '',
+          province: '',
+          postal_code: '',
+          years_experience: data.founded_year ? new Date().getFullYear() - data.founded_year : 0,
+          license_number: data.primary_trade || '',
+          status: data.verified ? 'approved' : 'pending',
+          rating: 0,
+          review_count: 0,
+          created_at: data.created_at,
+          google_business_verified: data.verified,
+          google_place_id: '',
+          google_verification_date: '',
+          google_business_url: ''
+        };
+        setBusiness(transformedBusiness);
+      } else {
+        setBusiness(null);
         setShowOnboarding(true);
       }
     } catch (error) {

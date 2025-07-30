@@ -11,7 +11,7 @@ import { Upload, Image as ImageIcon, Trash2, Clock, Instagram, Facebook, Linkedi
 import { useToast } from '@/hooks/use-toast';
 
 interface Service {
-  id: string;
+  id: number;
   name: string;
   description: string;
 }
@@ -66,7 +66,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<(number | string)[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>(business?.gallery_images || []);
   const [uploadingImage, setUploadingImage] = useState(false);
   
@@ -130,7 +130,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
         .eq('contractor_id', business.id);
 
       if (error) throw error;
-      setSelectedServices(data?.map(cs => cs.service_id) || []);
+      setSelectedServices(data?.map(cs => Number(cs.service_id)) || []);
     } catch (error) {
       console.error('Error fetching business services:', error);
     }
@@ -199,16 +199,31 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
       if (business) {
         // Update existing business
         const { error } = await supabase
-          .from('contractor_businesses')
-          .update(businessData)
+          .from('contractor_profiles')
+          .update({
+            business_name: businessData.business_name,
+            description: businessData.description,
+            website: businessData.website,
+            service_area: `${businessData.city}, ${businessData.province}`,
+            primary_trade: businessData.license_number,
+            founded_year: new Date().getFullYear() - businessData.years_experience
+          })
           .eq('id', business.id);
 
         if (error) throw error;
       } else {
-        // Create new business
+        // Create new business profile
         const { data, error } = await supabase
-          .from('contractor_businesses')
-          .insert(businessData)
+          .from('contractor_profiles')
+          .insert({
+            id: user?.id,
+            business_name: businessData.business_name,
+            description: businessData.description,
+            website: businessData.website,
+            service_area: `${businessData.city}, ${businessData.province}`,
+            primary_trade: businessData.license_number,
+            founded_year: new Date().getFullYear() - businessData.years_experience
+          })
           .select('id')
           .single();
 
@@ -230,7 +245,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
           
           // Process each selected service
           for (const serviceId of selectedServices) {
-            if (serviceId.startsWith('custom-')) {
+            if (typeof serviceId === 'string' && serviceId.startsWith('custom-')) {
               // Handle custom service - create it first
               const customServiceName = serviceId.replace('custom-', '');
               
@@ -296,7 +311,7 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
     }
   };
 
-  const handleServiceToggle = (serviceId: string) => {
+  const handleServiceToggle = (serviceId: number | string) => {
     setSelectedServices(prev => 
       prev.includes(serviceId)
         ? prev.filter(id => id !== serviceId)
@@ -559,12 +574,12 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                   {services.map(service => (
                     <div key={service.id} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-muted/50">
                       <Checkbox
-                        id={service.id}
+                        id={`service-${service.id}`}
                         checked={selectedServices.includes(service.id)}
                         onCheckedChange={() => handleServiceToggle(service.id)}
                       />
                       <Label 
-                        htmlFor={service.id}
+                        htmlFor={`service-${service.id}`}
                         className="text-sm font-normal cursor-pointer flex-1"
                       >
                         {service.name}
@@ -610,15 +625,15 @@ const BusinessSetupForm = ({ business, onComplete }: BusinessSetupFormProps) => 
                       Add
                     </Button>
                   </div>
-                  {selectedServices.filter(id => id.startsWith('custom-')).length > 0 && (
+                  {selectedServices.filter(id => typeof id === 'string' && id.startsWith('custom-')).length > 0 && (
                     <div className="mt-3 space-y-2">
                       <Label className="text-xs text-muted-foreground">Custom Services:</Label>
                       <div className="flex flex-wrap gap-2">
                         {selectedServices
-                          .filter(id => id.startsWith('custom-'))
+                          .filter(id => typeof id === 'string' && id.startsWith('custom-'))
                           .map(customId => (
                             <div key={customId} className="flex items-center gap-1 bg-muted px-2 py-1 rounded text-sm">
-                              <span>{customId.replace('custom-', '')}</span>
+                              <span>{typeof customId === 'string' ? customId.replace('custom-', '') : customId}</span>
                               <button
                                 type="button"
                                 onClick={() => setSelectedServices(prev => prev.filter(id => id !== customId))}

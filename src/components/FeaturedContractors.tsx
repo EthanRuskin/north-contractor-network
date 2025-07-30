@@ -11,14 +11,9 @@ interface ContractorBusiness {
   id: string;
   business_name: string;
   description: string;
-  city: string;
-  province: string;
-  years_experience: number;
-  rating: number;
-  review_count: number;
-  logo_url?: string;
-  google_business_verified: boolean;
-  google_verification_date: string;
+  service_area: string;
+  founded_year: number;
+  verified: boolean;
   contractor_services: {
     services: {
       name: string;
@@ -38,7 +33,7 @@ const FeaturedContractors = () => {
   const fetchFeaturedContractors = async () => {
     try {
       const { data, error } = await supabase
-        .from('contractor_businesses')
+        .from('contractor_profiles')
         .select(`
           *,
           contractor_services (
@@ -47,8 +42,7 @@ const FeaturedContractors = () => {
             )
           )
         `)
-        .eq('status', 'approved')
-        .order('rating', { ascending: false })
+        .eq('verified', true)
         .limit(6);
 
       if (error) throw error;
@@ -110,13 +104,9 @@ const FeaturedContractors = () => {
                 >
                   <div className="text-center mb-3">
                     <Avatar className="w-12 h-12 mx-auto mb-2 ring-2 ring-primary/10 group-hover:ring-primary/20 transition-all">
-                      <AvatarImage src={contractor.logo_url || ''} alt={contractor.business_name} />
+                      <AvatarImage src="" alt={contractor.business_name} />
                       <AvatarFallback className="text-sm bg-gradient-to-br from-primary/10 to-primary/5">
-                        {contractor.logo_url ? (
-                          contractor.business_name.slice(0, 2).toUpperCase()
-                        ) : (
-                          <Building2 className="h-5 w-5 text-primary/60" />
-                        )}
+                        <Building2 className="h-5 w-5 text-primary/60" />
                       </AvatarFallback>
                     </Avatar>
                     
@@ -125,8 +115,8 @@ const FeaturedContractors = () => {
                         {contractor.business_name}
                       </h3>
                       <GoogleVerificationBadge 
-                        isVerified={contractor.google_business_verified}
-                        verificationDate={contractor.google_verification_date}
+                        isVerified={contractor.verified}
+                        verificationDate=""
                         size="sm"
                         showTooltip={false}
                       />
@@ -139,32 +129,16 @@ const FeaturedContractors = () => {
                     <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
                       <MapPin className="w-3 h-3" />
                       <span className="truncate">
-                        {contractor.city && contractor.province 
-                          ? `${contractor.city}, ${contractor.province}` 
-                          : 'Location Available'
-                        }
+                        {contractor.service_area || 'Location Available'}
                       </span>
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    {contractor.rating > 0 && (
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="flex text-yellow-400">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`w-3 h-3 ${i < Math.floor(contractor.rating) ? 'fill-current' : ''}`} 
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs font-semibold">{contractor.rating.toFixed(1)}</span>
-                        <span className="text-xs text-muted-foreground">({contractor.review_count})</span>
-                      </div>
-                    )}
-                    
                     <div className="text-center">
-                      <span className="text-xs text-muted-foreground">{contractor.years_experience} yrs exp</span>
+                      <span className="text-xs text-muted-foreground">
+                        {contractor.founded_year ? `Since ${contractor.founded_year}` : 'Professional Service'}
+                      </span>
                     </div>
                     
                     <Button 
