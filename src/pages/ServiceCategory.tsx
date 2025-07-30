@@ -1,36 +1,32 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, Star, Users } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import Header from '@/components/Header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ArrowLeft, Building2, MapPin, Star } from 'lucide-react';
+import SearchHeader from '@/components/SearchHeader';
+import GoogleVerificationBadge from '@/components/GoogleVerificationBadge';
 
 interface Service {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  icon: string;
+  icon?: string;
 }
 
 interface ContractorBusiness {
   id: string;
   business_name: string;
   description: string;
-  city: string;
-  province: string;
-  years_experience: number;
-  rating: number;
-  review_count: number;
+  service_area: string;
+  founded_year: number;
+  verified: boolean;
 }
 
 const ServiceCategory = () => {
-  const { serviceId } = useParams<{ serviceId: string }>();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
+  const { serviceId } = useParams();
   const [service, setService] = useState<Service | null>(null);
   const [contractors, setContractors] = useState<ContractorBusiness[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +43,7 @@ const ServiceCategory = () => {
       const { data: serviceData, error: serviceError } = await supabase
         .from('services')
         .select('*')
-        .eq('id', serviceId)
+        .eq('id', parseInt(serviceId || '0'))
         .single();
 
       if (serviceError) throw serviceError;
@@ -55,37 +51,22 @@ const ServiceCategory = () => {
 
       // Fetch contractors offering this service
       const { data: contractorsData, error: contractorsError } = await supabase
-        .from('contractor_businesses')
+        .from('contractor_profiles')
         .select(`
           id,
           business_name,
           description,
-          city,
-          province,
-          years_experience,
-          rating,
-          review_count
+          service_area,
+          founded_year,
+          verified
         `)
-        .eq('status', 'approved')
-        .in('id', 
-          // Subquery to get contractor IDs that offer this service
-          await supabase
-            .from('contractor_services')
-            .select('contractor_id')
-            .eq('service_id', serviceId)
-            .then(({ data }) => data?.map(cs => cs.contractor_id) || [])
-        )
-        .order('rating', { ascending: false });
+        .eq('verified', true)
+        .order('created_at', { ascending: false });
 
       if (contractorsError) throw contractorsError;
       setContractors(contractorsData || []);
-    } catch (error: any) {
-      toast({
-        title: "Error loading service",
-        description: error.message,
-        variant: "destructive",
-      });
-      navigate('/');
+    } catch (error) {
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -94,7 +75,7 @@ const ServiceCategory = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+        <SearchHeader />
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -105,16 +86,14 @@ const ServiceCategory = () => {
   if (!service) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+        <SearchHeader />
         <div className="container mx-auto px-4 py-8">
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">Service not found</p>
-              <Button onClick={() => navigate('/')} className="mt-4">
-                Back to Home
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
+            <Button asChild>
+              <Link to="/search">Back to Search</Link>
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -122,156 +101,109 @@ const ServiceCategory = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <SearchHeader />
+      
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
+        <Button 
+          variant="ghost" 
+          asChild 
           className="mb-6 gap-2"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Home
+          <Link to="/search">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Search
+          </Link>
         </Button>
 
         {/* Service Header */}
-        <div className="text-center mb-12 px-4 sm:px-0">
-          <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
-            {service.icon ? (
-              <span className="text-2xl">{service.icon}</span>
-            ) : (
-              <span className="text-2xl">🔧</span>
-            )}
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{service.name}</h1>
-          {service.description && (
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              {service.description}
-            </p>
-          )}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span>{contractors.length} contractors available</span>
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-primary/10 rounded-lg">
+              {service.icon && <span className="text-2xl">{service.icon}</span>}
             </div>
-            <Button 
-              onClick={() => navigate(`/search?service=${serviceId}`)}
-              className="gap-2"
-            >
-              Search All {service.name} Contractors
-            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">{service.name}</h1>
+              <p className="text-lg text-muted-foreground">{service.description}</p>
+            </div>
           </div>
         </div>
 
-        {/* Top Contractors */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-6">Top {service.name} Contractors</h2>
-          
-          {contractors.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground">
-                  No contractors currently offering {service.name} services.
-                </p>
-                <Button 
-                  onClick={() => navigate('/search')} 
-                  className="mt-4"
-                >
-                  Browse All Contractors
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {contractors.slice(0, 6).map(contractor => (
-                <Card 
-                  key={contractor.id} 
-                  className="hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/contractor/${contractor.id}`)}
-                >
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
+        {/* Contractors */}
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">
+              Available Contractors ({contractors.length})
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {contractors.map((contractor) => (
+              <Card key={contractor.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src="" alt={contractor.business_name} />
+                        <AvatarFallback>
+                          <Building2 className="h-6 w-6" />
+                        </AvatarFallback>
+                      </Avatar>
                       <div>
                         <CardTitle className="text-lg">{contractor.business_name}</CardTitle>
-                        {contractor.city && contractor.province && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                            <MapPin className="h-3 w-3" />
-                            {contractor.city}, {contractor.province}
-                          </div>
-                        )}
-                      </div>
-                      {contractor.rating > 0 && (
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-medium">{contractor.rating.toFixed(1)}</span>
-                          <span className="text-xs text-muted-foreground">
-                            ({contractor.review_count})
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            {contractor.service_area || 'Service area available'}
                           </span>
                         </div>
+                      </div>
+                    </div>
+                    <GoogleVerificationBadge 
+                      isVerified={contractor.verified}
+                      verificationDate=""
+                      size="sm"
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                    {contractor.description || 'Professional contractor services available.'}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {contractor.founded_year && (
+                        <Badge variant="secondary">
+                          Since {contractor.founded_year}
+                        </Badge>
                       )}
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {contractor.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {contractor.description}
-                      </p>
-                    )}
+                    <Button asChild size="sm">
+                      <Link to={`/contractor/${contractor.id}`}>
+                        View Profile
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-                    <div className="flex justify-between items-center">
-                      {contractor.years_experience > 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          {contractor.years_experience} years experience
-                        </p>
-                      )}
-                      <Badge variant="secondary">{service.name}</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {contractors.length > 6 && (
-            <div className="text-center mt-8">
-              <Button 
-                onClick={() => navigate(`/search?service=${serviceId}`)}
-                variant="outline"
-                size="lg"
-              >
-                View All {contractors.length} {service.name} Contractors
-              </Button>
-            </div>
+          {contractors.length === 0 && (
+            <Card className="text-center py-12">
+              <CardContent>
+                <div className="text-muted-foreground">
+                  <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-semibold mb-2">No contractors found</h3>
+                  <p>No contractors are currently offering this service.</p>
+                  <Button asChild className="mt-4">
+                    <Link to="/search">Browse All Contractors</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
-
-        {/* Service Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>About {service.name} Services</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-              <div>
-                <h4 className="font-semibold mb-3">What to Expect</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Professional and licensed contractors</li>
-                  <li>• Verified business credentials</li>
-                  <li>• Customer reviews and ratings</li>
-                  <li>• Direct contact with contractors</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3">How It Works</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Browse and compare contractors</li>
-                  <li>• Read reviews from other customers</li>
-                  <li>• Contact contractors directly</li>
-                  <li>• Get quotes and schedule services</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

@@ -74,13 +74,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (!error && data.user) {
       // Update user profile with sanitized data
+      const [firstName, ...lastNameParts] = sanitizedFullName.split(' ');
       await supabase
         .from('profiles')
         .update({ 
           user_type: sanitizedUserType,
-          full_name: sanitizedFullName 
+          first_name: firstName || '',
+          last_name: lastNameParts.join(' ') || ''
         })
-        .eq('user_id', data.user.id);
+        .eq('id', data.user.id);
     }
     
     return { error };
