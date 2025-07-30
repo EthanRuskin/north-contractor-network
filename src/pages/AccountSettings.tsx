@@ -6,15 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, User, Mail, Phone, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 
 interface Profile {
   id: string;
-  user_id: string;
-  full_name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   user_type: string;
@@ -28,7 +27,8 @@ const AccountSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    full_name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
     user_type: 'homeowner'
@@ -45,14 +45,15 @@ const AccountSettings = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('id', user?.id)
         .single();
 
       if (error) throw error;
       
       setProfile(data);
       setFormData({
-        full_name: data.full_name || '',
+        first_name: data.first_name || '',
+        last_name: data.last_name || '',
         email: data.email || '',
         phone: data.phone || '',
         user_type: data.user_type || 'homeowner'
@@ -75,11 +76,12 @@ const AccountSettings = () => {
       const { error } = await supabase
         .from('profiles')
         .update({
-          full_name: formData.full_name,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
           phone: formData.phone,
           user_type: formData.user_type
         })
-        .eq('user_id', user?.id);
+        .eq('id', user?.id);
 
       if (error) throw error;
 
@@ -88,7 +90,6 @@ const AccountSettings = () => {
         description: "Your account settings have been saved successfully.",
       });
 
-      // Refresh profile data
       fetchProfile();
     } catch (error: any) {
       toast({
@@ -129,7 +130,7 @@ const AccountSettings = () => {
           Back to Dashboard
         </Button>
 
-        <div className="max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
+        <div className="max-w-2xl mx-auto space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Account Settings</h1>
             <p className="text-muted-foreground mt-2">
@@ -148,15 +149,28 @@ const AccountSettings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="full_name">Full Name</Label>
-                <Input
-                  id="full_name"
-                  type="text"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                  placeholder="Enter your full name"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first_name">First Name</Label>
+                  <Input
+                    id="first_name"
+                    type="text"
+                    value={formData.first_name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
+                    placeholder="First name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="last_name">Last Name</Label>
+                  <Input
+                    id="last_name"
+                    type="text"
+                    value={formData.last_name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
+                    placeholder="Last name"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -189,25 +203,6 @@ const AccountSettings = () => {
                     placeholder="Enter your phone number"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="user_type">Account Type</Label>
-                <Select 
-                  value={formData.user_type} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, user_type: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select account type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="homeowner">Homeowner</SelectItem>
-                    <SelectItem value="contractor">Contractor</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Changing from contractor to homeowner will hide your business profile.
-                </p>
               </div>
             </CardContent>
           </Card>

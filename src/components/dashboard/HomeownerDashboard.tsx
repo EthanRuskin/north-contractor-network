@@ -10,16 +10,16 @@ interface ContractorBusiness {
   id: string;
   business_name: string;
   description: string;
-  city: string;
-  province: string;
-  rating: number;
-  review_count: number;
+  service_area: string;
+  founded_year: number;
+  verified: boolean;
 }
+
 interface SavedContractor {
   id: string;
   contractor_id: string;
   created_at: string;
-  contractor_businesses: ContractorBusiness;
+  contractor_profiles: ContractorBusiness;
 }
 const HomeownerDashboard = () => {
   const {
@@ -43,7 +43,7 @@ const HomeownerDashboard = () => {
       const {
         data,
         error
-      } = await supabase.from('contractor_businesses').select('id, business_name, description, city, province, rating, review_count').eq('status', 'approved').order('rating', {
+      } = await supabase.from('contractor_profiles').select('id, business_name, description, service_area, founded_year, verified').eq('verified', true).order('created_at', {
         ascending: false
       }).limit(6);
       if (error) throw error;
@@ -64,16 +64,15 @@ const HomeownerDashboard = () => {
           id,
           contractor_id,
           created_at,
-          contractor_businesses (
+          contractor_profiles (
             id,
             business_name,
             description,
-            city,
-            province,
-            rating,
-            review_count
+            service_area,
+            founded_year,
+            verified
           )
-        `).eq('user_id', user.id).order('created_at', {
+        `).eq('client_id', user.id).order('created_at', {
         ascending: false
       });
       if (error) throw error;
@@ -206,33 +205,31 @@ const HomeownerDashboard = () => {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <CardTitle className="text-lg">{savedContractor.contractor_businesses.business_name}</CardTitle>
+                        <CardTitle className="text-lg">{savedContractor.contractor_profiles.business_name}</CardTitle>
                         <CardDescription className="text-sm">
-                          {savedContractor.contractor_businesses.city}, {savedContractor.contractor_businesses.province}
+                          {savedContractor.contractor_profiles.service_area}
                         </CardDescription>
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => removeSavedContractor(savedContractor.id)} className="h-8 w-8 text-muted-foreground hover:text-primary">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">{savedContractor.contractor_businesses.rating}</span>
-                      <span className="text-sm text-muted-foreground">
-                        ({savedContractor.contractor_businesses.review_count} reviews)
-                      </span>
-                    </div>
+                    {savedContractor.contractor_profiles.verified && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-primary font-medium">✓ Verified</span>
+                      </div>
+                    )}
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {savedContractor.contractor_businesses.description}
+                      {savedContractor.contractor_profiles.description}
                     </p>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-muted-foreground">
                         Saved {new Date(savedContractor.created_at).toLocaleDateString()}
                       </span>
                       <Button size="sm" asChild>
-                        <Link to={`/contractor/${savedContractor.contractor_businesses.id}`}>
+                        <Link to={`/contractor/${savedContractor.contractor_profiles.id}`}>
                           View Profile
                         </Link>
                       </Button>
@@ -269,13 +266,14 @@ const HomeownerDashboard = () => {
                     <div>
                       <CardTitle className="text-lg">{contractor.business_name}</CardTitle>
                       <CardDescription className="text-sm">
-                        {contractor.city}, {contractor.province}
+                        {contractor.service_area}
                       </CardDescription>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">{contractor.rating}</span>
-                    </div>
+                    {contractor.verified && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-primary font-medium">✓ Verified</span>
+                      </div>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -284,7 +282,7 @@ const HomeownerDashboard = () => {
                   </p>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
-                      {contractor.review_count} reviews
+                      {contractor.founded_year ? `Since ${contractor.founded_year}` : 'Professional Service'}
                     </span>
                     <Button size="sm" asChild>
                       <Link to={`/contractor/${contractor.id}`}>

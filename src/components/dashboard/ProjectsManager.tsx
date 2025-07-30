@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { FolderOpen, Plus, Trash2, Upload, X, Edit3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,7 +12,7 @@ interface Project {
   id: string;
   title: string;
   description: string | null;
-  images: string[];
+  image_url: string | null;
   created_at: string;
 }
 
@@ -28,12 +27,12 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
   const [newProject, setNewProject] = useState({
     title: '',
     description: '',
-    images: [] as string[]
+    image_url: ''
   });
   const [uploading, setUploading] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [editImages, setEditImages] = useState<string[]>([]);
+  const [editImageUrl, setEditImageUrl] = useState<string>('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -43,7 +42,7 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
   const fetchProjects = async () => {
     try {
       const { data, error } = await supabase
-        .from('contractor_projects')
+        .from('portfolio_projects')
         .select('*')
         .eq('contractor_id', contractorId)
         .order('created_at', { ascending: false });
@@ -66,35 +65,31 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    const uploadedUrls: string[] = [];
+    const file = files[0]; // Only take the first file
 
     try {
-      for (const file of Array.from(files)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `project-${Date.now()}-${Math.random()}.${fileExt}`;
-        const filePath = `${contractorId}/${fileName}`;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `project-${Date.now()}-${Math.random()}.${fileExt}`;
+      const filePath = `${contractorId}/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('contractor-galleries')
-          .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage
+        .from('contractor-galleries')
+        .upload(filePath, file);
 
-        if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('contractor-galleries')
-          .getPublicUrl(filePath);
-
-        uploadedUrls.push(publicUrl);
-      }
+      const { data: { publicUrl } } = supabase.storage
+        .from('contractor-galleries')
+        .getPublicUrl(filePath);
 
       setNewProject(prev => ({
         ...prev,
-        images: [...prev.images, ...uploadedUrls]
+        image_url: publicUrl
       }));
 
       toast({
-        title: "Images uploaded",
-        description: `${uploadedUrls.length} image(s) uploaded successfully`,
+        title: "Image uploaded",
+        description: "Image uploaded successfully",
       });
     } catch (error: any) {
       toast({
@@ -112,32 +107,28 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    const uploadedUrls: string[] = [];
+    const file = files[0]; // Only take the first file
 
     try {
-      for (const file of Array.from(files)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `project-${Date.now()}-${Math.random()}.${fileExt}`;
-        const filePath = `${contractorId}/${fileName}`;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `project-${Date.now()}-${Math.random()}.${fileExt}`;
+      const filePath = `${contractorId}/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('contractor-galleries')
-          .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage
+        .from('contractor-galleries')
+        .upload(filePath, file);
 
-        if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('contractor-galleries')
-          .getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage
+        .from('contractor-galleries')
+        .getPublicUrl(filePath);
 
-        uploadedUrls.push(publicUrl);
-      }
-
-      setEditImages(prev => [...prev, ...uploadedUrls]);
+      setEditImageUrl(publicUrl);
 
       toast({
-        title: "Images uploaded",
-        description: `${uploadedUrls.length} image(s) uploaded successfully`,
+        title: "Image uploaded",
+        description: "Image uploaded successfully",
       });
     } catch (error: any) {
       toast({
@@ -148,13 +139,6 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
     } finally {
       setUploading(false);
     }
-  };
-
-  const removeImage = (index: number) => {
-    setNewProject(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
   };
 
   const createProject = async () => {
@@ -169,12 +153,12 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
 
     try {
       const { error } = await supabase
-        .from('contractor_projects')
+        .from('portfolio_projects')
         .insert({
           contractor_id: contractorId,
           title: newProject.title,
           description: newProject.description || null,
-          images: newProject.images
+          image_url: newProject.image_url || null
         });
 
       if (error) throw error;
@@ -184,7 +168,7 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
         description: "Your project has been added successfully",
       });
 
-      setNewProject({ title: '', description: '', images: [] });
+      setNewProject({ title: '', description: '', image_url: '' });
       setShowDialog(false);
       fetchProjects();
     } catch (error: any) {
@@ -196,13 +180,9 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
     }
   };
 
-  const removeEditImage = (index: number) => {
-    setEditImages(prev => prev.filter((_, i) => i !== index));
-  };
-
   const startEditingProject = (project: Project) => {
     setEditingProject(project);
-    setEditImages([...project.images]);
+    setEditImageUrl(project.image_url || '');
   };
 
   const updateProject = async () => {
@@ -210,9 +190,9 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
 
     try {
       const { error } = await supabase
-        .from('contractor_projects')
+        .from('portfolio_projects')
         .update({
-          images: editImages
+          image_url: editImageUrl || null
         })
         .eq('id', editingProject.id);
 
@@ -220,11 +200,11 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
 
       toast({
         title: "Project updated",
-        description: "Project images have been updated successfully",
+        description: "Project image has been updated successfully",
       });
 
       setEditingProject(null);
-      setEditImages([]);
+      setEditImageUrl('');
       fetchProjects();
     } catch (error: any) {
       toast({
@@ -238,7 +218,7 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
   const deleteProject = async (projectId: string) => {
     try {
       const { error } = await supabase
-        .from('contractor_projects')
+        .from('portfolio_projects')
         .delete()
         .eq('id', projectId);
 
@@ -313,16 +293,15 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Project Images</label>
+                  <label className="text-sm font-medium mb-2 block">Project Image</label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                     <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                     <p className="text-sm text-gray-600 mb-2">
-                      Upload project photos to showcase your work
+                      Upload a project photo to showcase your work
                     </p>
                     <input
                       type="file"
                       accept="image/*"
-                      multiple
                       onChange={handleImageUpload}
                       className="hidden"
                       id="image-upload"
@@ -334,28 +313,26 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
                       disabled={uploading}
                       onClick={() => document.getElementById('image-upload')?.click()}
                     >
-                      {uploading ? 'Uploading...' : 'Choose Images'}
+                      {uploading ? 'Uploading...' : 'Choose Image'}
                     </Button>
                   </div>
-                  {newProject.images.length > 0 && (
-                    <div className="grid grid-cols-3 gap-2 mt-4">
-                      {newProject.images.map((image, index) => (
-                        <div key={index} className="relative">
-                          <img
-                            src={image}
-                            alt={`Project image ${index + 1}`}
-                            className="w-full h-24 object-cover rounded-lg"
-                          />
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="absolute top-1 right-1 h-6 w-6 p-0"
-                            onClick={() => removeImage(index)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
+                  {newProject.image_url && (
+                    <div className="mt-4">
+                      <div className="relative inline-block">
+                        <img
+                          src={newProject.image_url}
+                          alt="Project preview"
+                          className="w-32 h-24 object-cover rounded-lg"
+                        />
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="absolute top-1 right-1 h-6 w-6 p-0"
+                          onClick={() => setNewProject(prev => ({ ...prev, image_url: '' }))}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -389,22 +366,15 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
             {projects.map((project) => (
               <div key={project.id} className="relative group cursor-pointer" onClick={() => setSelectedProject(project)}>
                 <div className="relative overflow-hidden rounded-lg aspect-[4/3]">
-                  {project.images.length > 0 ? (
+                  {project.image_url ? (
                     <img
-                      src={project.images[0]}
+                      src={project.image_url}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                       <FolderOpen className="h-12 w-12 text-gray-400" />
-                    </div>
-                  )}
-                  
-                  {/* Image count badge */}
-                  {project.images.length > 0 && (
-                    <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm flex items-center gap-1">
-                      <span>{project.images.length}</span>
                     </div>
                   )}
                   
@@ -452,9 +422,9 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
         )}
       </CardContent>
 
-      {/* Project Gallery Dialog */}
+      {/* Project Details Dialog */}
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+        <DialogContent className="max-w-2xl">
           {selectedProject && (
             <>
               <DialogHeader>
@@ -463,22 +433,17 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
                   <p className="text-muted-foreground">{selectedProject.description}</p>
                 )}
               </DialogHeader>
-              <div className="overflow-y-auto max-h-[70vh]">
-                {selectedProject.images.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedProject.images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`${selectedProject.title} ${index + 1}`}
-                        className="w-full h-64 object-cover rounded-lg"
-                      />
-                    ))}
-                  </div>
+              <div className="mt-4">
+                {selectedProject.image_url ? (
+                  <img
+                    src={selectedProject.image_url}
+                    alt={selectedProject.title}
+                    className="w-full h-64 object-cover rounded-lg"
+                  />
                 ) : (
-                  <div className="flex items-center justify-center h-32 text-muted-foreground">
+                  <div className="flex items-center justify-center h-32 text-muted-foreground bg-gray-100 rounded-lg">
                     <FolderOpen className="h-8 w-8 mr-2" />
-                    No images in this project
+                    No image for this project
                   </div>
                 )}
               </div>
@@ -487,31 +452,29 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Project Images Dialog */}
+      {/* Edit Project Image Dialog */}
       <Dialog open={!!editingProject} onOpenChange={() => {
         setEditingProject(null);
-        setEditImages([]);
+        setEditImageUrl('');
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden">
+        <DialogContent className="max-w-md">
           {editingProject && (
             <>
               <DialogHeader>
-                <DialogTitle>Edit Images - {editingProject.title}</DialogTitle>
-                <p className="text-muted-foreground">Add, remove, or reorder project images</p>
+                <DialogTitle>Edit Image - {editingProject.title}</DialogTitle>
+                <p className="text-muted-foreground">Update the project image</p>
               </DialogHeader>
-              <div className="overflow-y-auto max-h-[70vh] space-y-4">
-                {/* Upload new images */}
+              <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Add New Images</label>
+                  <label className="text-sm font-medium mb-2 block">Project Image</label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
                     <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
                     <p className="text-sm text-gray-600 mb-2">
-                      Upload additional project photos
+                      Upload a new project image
                     </p>
                     <input
                       type="file"
                       accept="image/*"
-                      multiple
                       onChange={handleEditImageUpload}
                       className="hidden"
                       id="edit-image-upload"
@@ -524,51 +487,26 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
                       disabled={uploading}
                       onClick={() => document.getElementById('edit-image-upload')?.click()}
                     >
-                      {uploading ? 'Uploading...' : 'Add Images'}
+                      {uploading ? 'Uploading...' : 'Choose Image'}
                     </Button>
                   </div>
                 </div>
 
-                {/* Current images */}
-                {editImages.length > 0 && (
+                {editImageUrl && (
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Current Images ({editImages.length})
-                    </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {editImages.map((image, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={image}
-                            alt={`Project image ${index + 1}`}
-                            className="w-full h-24 object-cover rounded-lg"
-                          />
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => removeEditImage(index)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                          <div className="absolute bottom-1 left-1 bg-black/70 text-white px-1 py-0.5 rounded text-xs">
-                            {index + 1}
-                          </div>
-                        </div>
-                      ))}
+                    <label className="text-sm font-medium mb-2 block">Preview</label>
+                    <div className="relative inline-block">
+                      <img
+                        src={editImageUrl}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
                     </div>
-                  </div>
-                )}
-
-                {editImages.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <FolderOpen className="h-8 w-8 mx-auto mb-2" />
-                    No images in this project
                   </div>
                 )}
               </div>
               
-              <div className="flex gap-2 pt-4 border-t">
+              <div className="flex gap-2 pt-4">
                 <Button 
                   onClick={updateProject} 
                   disabled={uploading}
@@ -579,7 +517,7 @@ const ProjectsManager = ({ contractorId }: ProjectsManagerProps) => {
                   variant="outline" 
                   onClick={() => {
                     setEditingProject(null);
-                    setEditImages([]);
+                    setEditImageUrl('');
                   }}
                 >
                   Cancel
