@@ -16,11 +16,11 @@ export const SecurityHeaders = () => {
     // Content Security Policy
     setMetaTag('Content-Security-Policy', 
       "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://www.google.com; " +
+      "script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://www.google.com; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
       "font-src 'self' https://fonts.gstatic.com; " +
       "img-src 'self' data: https: blob:; " +
-      "connect-src 'self' https://moczxroojvdjevnorfiy.supabase.co wss://moczxroojvdjevnorfiy.supabase.co https://maps.googleapis.com; " +
+      "connect-src 'self' https://blvcxbqqqjdhvrkgondd.supabase.co wss://blvcxbqqqjdhvrkgondd.supabase.co https://maps.googleapis.com; " +
       "frame-src 'self' https://www.google.com; " +
       "object-src 'none'; " +
       "base-uri 'self';"
@@ -68,9 +68,11 @@ export const SecurityHeaders = () => {
 export const sanitizeForDisplay = (input: string): string => {
   if (!input) return '';
   
+  // Use textContent to escape HTML entities safely
   const div = document.createElement('div');
   div.textContent = input;
-  return div.innerHTML;
+  // Return the escaped text content, not innerHTML
+  return div.textContent || '';
 };
 
 // Helper function to validate file uploads

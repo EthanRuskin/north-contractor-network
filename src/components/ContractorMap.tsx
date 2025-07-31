@@ -97,7 +97,14 @@ const ContractorMap: React.FC<ContractorMapProps> = ({
         scale: 1.2
       })
         .setLngLat([userLocation.longitude, userLocation.latitude])
-        .setPopup(new mapboxgl.Popup().setHTML('<div class="p-2"><strong>Your Location</strong></div>'))
+        .setPopup(new mapboxgl.Popup().setDOMContent((() => {
+          const div = document.createElement('div');
+          div.className = 'p-2';
+          const strong = document.createElement('strong');
+          strong.textContent = 'Your Location';
+          div.appendChild(strong);
+          return div;
+        })()))
         .addTo(map.current);
     }
 
@@ -121,11 +128,12 @@ const ContractorMap: React.FC<ContractorMapProps> = ({
       // Create custom marker element
       const el = document.createElement('div');
       el.className = `contractor-marker ${selectedContractorId === contractor.id ? 'selected' : ''}`;
-      el.innerHTML = `
-        <div class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg border-2 border-white cursor-pointer hover:scale-110 transition-transform">
-          ${index + 1}
-        </div>
-      `;
+      
+      // Create marker content safely without innerHTML
+      const markerDiv = document.createElement('div');
+      markerDiv.className = 'w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg border-2 border-white cursor-pointer hover:scale-110 transition-transform';
+      markerDiv.textContent = String(index + 1);
+      el.appendChild(markerDiv);
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([contractor.longitude, contractor.latitude])
@@ -148,34 +156,73 @@ const ContractorMap: React.FC<ContractorMapProps> = ({
           popup.current.remove();
         }
         
+        // Create popup content safely
+        const popupContainer = document.createElement('div');
+        popupContainer.className = 'p-3 max-w-xs';
+        
+        const title = document.createElement('h3');
+        title.className = 'font-bold text-sm mb-1';
+        title.textContent = contractor.business_name;
+        popupContainer.appendChild(title);
+        
+        const ratingContainer = document.createElement('div');
+        ratingContainer.className = 'flex items-center gap-1 mb-2';
+        
+        const starsContainer = document.createElement('div');
+        starsContainer.className = 'flex items-center';
+        for (let i = 0; i < 5; i++) {
+          const star = document.createElement('span');
+          star.className = 'text-yellow-400';
+          star.textContent = i < Math.floor(contractor.rating) ? '★' : '☆';
+          starsContainer.appendChild(star);
+        }
+        ratingContainer.appendChild(starsContainer);
+        
+        const reviewCount = document.createElement('span');
+        reviewCount.className = 'text-xs text-gray-600';
+        reviewCount.textContent = `(${contractor.review_count})`;
+        ratingContainer.appendChild(reviewCount);
+        popupContainer.appendChild(ratingContainer);
+        
+        if (contractor.description) {
+          const description = document.createElement('p');
+          description.className = 'text-xs text-gray-600 mb-2 line-clamp-2';
+          description.textContent = contractor.description;
+          popupContainer.appendChild(description);
+        }
+        
+        if (contractor.service_names?.length) {
+          const servicesContainer = document.createElement('div');
+          servicesContainer.className = 'flex gap-1 mb-2';
+          contractor.service_names.slice(0, 2).forEach(service => {
+            const badge = document.createElement('span');
+            badge.className = 'bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded';
+            badge.textContent = service;
+            servicesContainer.appendChild(badge);
+          });
+          popupContainer.appendChild(servicesContainer);
+        }
+        
+        if (contractor.phone) {
+          const phoneContainer = document.createElement('div');
+          phoneContainer.className = 'flex items-center gap-2 text-xs';
+          const phoneSpan = document.createElement('span');
+          phoneSpan.className = 'flex items-center gap-1';
+          const phoneIcon = document.createElement('span');
+          phoneIcon.textContent = '📞';
+          phoneSpan.appendChild(phoneIcon);
+          phoneSpan.appendChild(document.createTextNode(` ${contractor.phone}`));
+          phoneContainer.appendChild(phoneSpan);
+          popupContainer.appendChild(phoneContainer);
+        }
+
         popup.current = new mapboxgl.Popup({
           offset: 25,
           closeButton: true,
           closeOnClick: false
         })
           .setLngLat([contractor.longitude!, contractor.latitude!])
-          .setHTML(`
-            <div class="p-3 max-w-xs">
-              <h3 class="font-bold text-sm mb-1">${contractor.business_name}</h3>
-              <div class="flex items-center gap-1 mb-2">
-                <div class="flex items-center">
-                  ${Array.from({length: 5}, (_, i) => 
-                    `<span class="text-yellow-400">${i < Math.floor(contractor.rating) ? '★' : '☆'}</span>`
-                  ).join('')}
-                </div>
-                <span class="text-xs text-gray-600">(${contractor.review_count})</span>
-              </div>
-              <p class="text-xs text-gray-600 mb-2 line-clamp-2">${contractor.description || ''}</p>
-              <div class="flex gap-1 mb-2">
-                ${contractor.service_names?.slice(0, 2).map(service => 
-                  `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${service}</span>`
-                ).join('') || ''}
-              </div>
-              <div class="flex items-center gap-2 text-xs">
-                ${contractor.phone ? `<span class="flex items-center gap-1"><span>📞</span> ${contractor.phone}</span>` : ''}
-              </div>
-            </div>
-          `)
+          .setDOMContent(popupContainer)
           .addTo(map.current!);
       });
 

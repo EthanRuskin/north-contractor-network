@@ -23,10 +23,18 @@ export const useSecureAuth = () => {
 
   const logSecurityEvent = useCallback(async (eventType: string, eventData: any = {}) => {
     try {
-      // Log to console for now since security tables are being created
-      console.log('Security Event:', { eventType, eventData, user: auth.user?.id });
+      // Log to security audit table
+      await supabase.from('security_audit_log').insert({
+        user_id: auth.user?.id,
+        event_type: eventType,
+        event_data: eventData,
+        ip_address: null, // Could be populated with real IP if needed
+        user_agent: navigator.userAgent
+      });
     } catch (error) {
-      console.error('Failed to log security event:', error);
+      // Fallback to console if database logging fails
+      console.log('Security Event:', { eventType, eventData, user: auth.user?.id });
+      console.error('Failed to log security event to database:', error);
     }
   }, [auth.user?.id]);
 
