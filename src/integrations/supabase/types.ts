@@ -922,6 +922,27 @@ export type Database = {
           },
         ]
       }
+      rate_limit_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          identifier: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          identifier: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          identifier?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           client_id: string | null
@@ -1015,6 +1036,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_audit_log: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       service_area_cities: {
         Row: {
